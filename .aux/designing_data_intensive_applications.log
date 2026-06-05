@@ -1,0 +1,1605 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.5.9)  4 JUN 2026 16:43
+entering extended mode
+ \write18 enabled.
+ file:line:error style messages enabled.
+ %&-line parsing enabled.
+**designing_data_intensive_applications.tex
+(./designing_data_intensive_applications.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+(/usr/share/texlive/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2025/01/22 v1.4n Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count275
+\c@chapter=\count276
+\c@section=\count277
+\c@subsection=\count278
+\c@subsubsection=\count279
+\c@paragraph=\count280
+\c@subparagraph=\count281
+\c@figure=\count282
+\c@table=\count283
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen148
+) (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.sty (/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+\lst@mode=\count284
+\lst@gtempboxa=\box53
+\lst@token=\toks18
+\lst@length=\count285
+\lst@currlwidth=\dimen149
+\lst@column=\count286
+\lst@pos=\count287
+\lst@lostspace=\dimen150
+\lst@width=\dimen151
+\lst@newlines=\count288
+\lst@lineno=\count289
+\lst@maxwidth=\dimen152
+ (/usr/share/texlive/texmf-dist/tex/latex/listings/lstpatch.sty
+File: lstpatch.sty 2025/11/14 1.11b (Carsten Heinz)
+) (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
+File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
+\c@lstnumber=\count290
+\lst@skipnumbers=\count291
+\lst@framebox=\box54
+) (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
+File: listings.cfg 2025/11/14 1.11b listings configuration
+))
+Package: listings 2025/11/14 1.11b (Carsten Heinz)
+
+==> First Aid for listings.sty no longer applied!
+    Expected:
+        2024/09/23 1.10c (Carsten Heinz)
+    but found:
+        2025/11/14 1.11b (Carsten Heinz)
+    so I'm assuming it got fixed.
+(/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2020/05/29 v2.20.6
+\thm@style=\toks19
+\thm@bodyfont=\toks20
+\thm@headfont=\toks21
+\thm@notefont=\toks22
+\thm@headpunct=\toks23
+\thm@preskip=\skip51
+\thm@postskip=\skip52
+\thm@headsep=\skip53
+\dth@everypar=\toks24
+) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip54
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+ (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks25
+\ex@=\dimen153
+)) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen154
+) (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count292
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count293
+\leftroot@=\count294
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count295
+\DOTSCASE@=\count296
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box55
+\strutbox@=\box56
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen155
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count297
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count298
+\dotsspace@=\muskip17
+\c@parentequation=\count299
+\dspbrk@lvl=\count300
+\tag@help=\toks26
+\row@=\count301
+\column@=\count302
+\maxfields@=\count303
+\andhelp@=\toks27
+\eqnshift@=\dimen156
+\alignsep@=\dimen157
+\tagshift@=\dimen158
+\tagwidth@=\dimen159
+\totwidth@=\dimen160
+\lineht@=\dimen161
+\@envbody=\toks28
+\multlinegap=\skip55
+\multlinetaggap=\skip56
+\mathdisplay@stack=\toks29
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+) (/usr/share/texlive/texmf-dist/tex/latex/tcolorbox/tcolorbox.sty
+Package: tcolorbox 2025/11/28 version 6.9.0 text color boxes
+ (/usr/share/texlive/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
+\pgfutil@everybye=\toks30
+\pgfutil@tempdima=\dimen162
+\pgfutil@tempdimb=\dimen163
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box57
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex (/usr/share/texlive/texmf-dist/tex/generic/pgf/pgf.revision.tex)
+Package: pgfrcs 2025-08-29 v3.1.11a (3.1.11a)
+))
+Package: pgf 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+) (/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 106.
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen164
+\Gin@req@width=\dimen165
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks31
+\pgfkeys@temptoks=\toks32
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeyslibraryfiltered.code.tex
+\pgfkeys@tmptoks=\toks33
+))
+\pgf@x=\dimen166
+\pgf@y=\dimen167
+\pgf@xa=\dimen168
+\pgf@ya=\dimen169
+\pgf@xb=\dimen170
+\pgf@yb=\dimen171
+\pgf@xc=\dimen172
+\pgf@yc=\dimen173
+\pgf@xd=\dimen174
+\pgf@yd=\dimen175
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count304
+\c@pgf@countb=\count305
+\c@pgf@countc=\count306
+\c@pgf@countd=\count307
+\t@pgf@toka=\toks34
+\t@pgf@tokb=\toks35
+\t@pgf@tokc=\toks36
+\pgf@sys@id@count=\count308
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2025-08-29 v3.1.11a (3.1.11a)
+)
+Driver file for pgf: pgfsys-pdftex.def
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+File: pgfsys-pdftex.def 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def
+File: pgfsys-common-pdf.def 2025-08-29 v3.1.11a (3.1.11a)
+))) (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfsyssoftpath@smallbuffer@items=\count309
+\pgfsyssoftpath@bigbuffer@items=\count310
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+File: pgfsysprotocol.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)) (/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+ (/usr/share/texlive/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen176
+\pgfmath@count=\count311
+\pgfmath@box=\box58
+\pgfmath@toks=\toks37
+\pgfmath@stack@operand=\toks38
+\pgfmath@stack@operation=\toks39
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.random.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integerarithmetics.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count312
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfint.code.tex) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
+File: pgfcorepoints.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@picminx=\dimen177
+\pgf@picmaxx=\dimen178
+\pgf@picminy=\dimen179
+\pgf@picmaxy=\dimen180
+\pgf@pathminx=\dimen181
+\pgf@pathmaxx=\dimen182
+\pgf@pathminy=\dimen183
+\pgf@pathmaxy=\dimen184
+\pgf@xx=\dimen185
+\pgf@xy=\dimen186
+\pgf@yx=\dimen187
+\pgf@yy=\dimen188
+\pgf@zx=\dimen189
+\pgf@zy=\dimen190
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@path@lastx=\dimen191
+\pgf@path@lasty=\dimen192
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex
+File: pgfcorepathusage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@shorten@end@additional=\dimen193
+\pgf@shorten@start@additional=\dimen194
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex
+File: pgfcorescopes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfpic=\box59
+\pgf@hbox=\box60
+\pgf@layerbox@main=\box61
+\pgf@picture@serial@count=\count313
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgflinewidth=\dimen195
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex
+File: pgfcoretransformations.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@pt@x=\dimen196
+\pgf@pt@y=\dimen197
+\pgf@pt@temp=\dimen198
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
+File: pgfcorequick.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex
+File: pgfcoreobjects.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex
+File: pgfcorearrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfarrowsep=\dimen199
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
+File: pgfcoreshade.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@max=\dimen256
+\pgf@sys@shading@range@num=\count314
+\pgf@shadingcount=\count315
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+File: pgfcoreimage.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex
+File: pgfcoreexternal.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfexternal@startupbox=\box62
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex
+File: pgfcorelayers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex
+File: pgfcoretransparency.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex
+File: pgfcorepatterns.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/basiclayer/pgfcorerdf.code.tex
+File: pgfcorerdf.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))) (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfnodeparttextbox=\box63
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
+Package: pgfcomp-version-0-65 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@nodesepstart=\dimen257
+\pgf@nodesepend=\dimen258
+) (/usr/share/texlive/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
+Package: pgfcomp-version-1-18 2025-08-29 v3.1.11a (3.1.11a)
+)) (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgffor.sty (/usr/share/texlive/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)) (/usr/share/texlive/texmf-dist/tex/latex/pgf/math/pgfmath.sty (/usr/share/texlive/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2025-08-29 v3.1.11a (3.1.11a)
+\pgffor@iter=\dimen259
+\pgffor@skip=\dimen260
+\pgffor@stack=\toks40
+\pgffor@toks=\toks41
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Package: tikz 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgf@plot@mark@count=\count316
+\pgfplotmarksize=\dimen261
+)
+\tikz@lastx=\dimen262
+\tikz@lasty=\dimen263
+\tikz@lastxsaved=\dimen264
+\tikz@lastysaved=\dimen265
+\tikz@lastmovetox=\dimen266
+\tikz@lastmovetoy=\dimen267
+\tikzleveldistance=\dimen268
+\tikzsiblingdistance=\dimen269
+\tikz@figbox=\box64
+\tikz@figbox@bg=\box65
+\tikz@tempbox=\box66
+\tikz@tempbox@bg=\box67
+\tikztreelevel=\count317
+\tikznumberofchildren=\count318
+\tikznumberofcurrentchild=\count319
+\tikz@fig@count=\count320
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfmatrixcurrentrow=\count321
+\pgfmatrixcurrentcolumn=\count322
+\pgf@matrix@numberofcolumns=\count323
+)
+\tikz@expandcount=\count324
+
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))) (/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty
+Package: verbatim 2024-01-22 v1.5x LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks42
+\verbatim@line=\toks43
+\verbatim@in@stream=\read3
+) (/usr/share/texlive/texmf-dist/tex/latex/environ/environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+ (/usr/share/texlive/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+)) (/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count325
+)
+\tcb@titlebox=\box68
+\tcb@upperbox=\box69
+\tcb@lowerbox=\box70
+\tcb@phantombox=\box71
+\c@tcbbreakpart=\count326
+\c@tcblayer=\count327
+\c@tcolorbox@number=\count328
+\l__tcobox_tmpa_box=\box72
+\l__tcobox_tmpa_dim=\dimen270
+\tcb@temp=\box73
+\tcb@temp=\box74
+\tcb@temp=\box75
+\tcb@temp=\box76
+) (/usr/share/texlive/texmf-dist/tex/latex/fundus-calligra/calligra.sty
+Package: calligra 2012/04/10 v1.9 LaTeX package calligra
+) (/usr/share/texlive/texmf-dist/tex/latex/siunitx/siunitx.sty
+Package: siunitx 2025-07-09 v3.4.14 A comprehensive (SI) units package
+\l__siunitx_number_uncert_offset_int=\count329
+\l__siunitx_number_exponent_fixed_int=\count330
+\l__siunitx_number_min_decimal_int=\count331
+\l__siunitx_number_min_integer_int=\count332
+\l__siunitx_number_round_precision_int=\count333
+\l__siunitx_number_lower_threshold_int=\count334
+\l__siunitx_number_upper_threshold_int=\count335
+\l__siunitx_number_group_first_int=\count336
+\l__siunitx_number_group_size_int=\count337
+\l__siunitx_number_group_minimum_int=\count338
+\l__siunitx_angle_tmp_dim=\dimen271
+\l__siunitx_angle_marker_box=\box77
+\l__siunitx_angle_unit_box=\box78
+\l__siunitx_compound_count_int=\count339
+ (/usr/share/texlive/texmf-dist/tex/latex/translations/translations.sty
+Package: translations 2022/02/05 v1.12 internationalization of LaTeX2e packages (CN)
+ (/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO)
+ (/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+) (/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+) (/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+\l__siunitx_table_tmp_box=\box79
+\l__siunitx_table_tmp_dim=\dimen272
+\l__siunitx_table_column_width_dim=\dimen273
+\l__siunitx_table_integer_box=\box80
+\l__siunitx_table_decimal_box=\box81
+\l__siunitx_table_uncert_box=\box82
+\l__siunitx_table_before_box=\box83
+\l__siunitx_table_after_box=\box84
+\l__siunitx_table_before_dim=\dimen274
+\l__siunitx_table_carry_dim=\dimen275
+\l__siunitx_unit_tmp_int=\count340
+\l__siunitx_unit_position_int=\count341
+\l__siunitx_unit_total_int=\count342
+ (/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen276
+\ar@mcellbox=\box85
+\extrarowheight=\dimen277
+\NC@list=\toks44
+\extratabsurround=\skip57
+\backup@length=\skip58
+\ar@cellbox=\box86
+)) (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+) (/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count343
+\float@exts=\toks45
+\float@box=\box87
+\@float@everytoks=\toks46
+\@floatcapt=\box88
+) (/usr/share/texlive/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
+ (/usr/share/texlive/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
+\caption@tempdima=\dimen278
+\captionmargin=\dimen279
+\caption@leftmargin=\dimen280
+\caption@rightmargin=\dimen281
+\caption@width=\dimen282
+\caption@indent=\dimen283
+\caption@parindent=\dimen284
+\caption@hangindent=\dimen285
+Package caption Info: Standard document class detected.
+)
+\c@caption@flags=\count344
+\c@continuedfloat=\count345
+Package caption Info: float package is loaded.
+Package caption Info: listings package is loaded.
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.code.tex
+File: tikzlibraryshapes.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.geometric.code.tex
+File: tikzlibraryshapes.geometric.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.geometric.code.tex
+File: pgflibraryshapes.geometric.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.misc.code.tex
+File: tikzlibraryshapes.misc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.misc.code.tex
+File: pgflibraryshapes.misc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.symbols.code.tex
+File: tikzlibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.symbols.code.tex
+File: pgflibraryshapes.symbols.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+))
+(/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.arrows.code.tex
+File: tikzlibraryshapes.arrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.arrows.code.tex
+File: pgflibraryshapes.arrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.callouts.code.tex (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.callouts.code.tex)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryshapes.multipart.code.tex
+File: tikzlibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshapes.multipart.code.tex
+File: pgflibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\pgfnodepartlowerbox=\box89
+\pgfnodeparttwobox=\box90
+\pgfnodepartthreebox=\box91
+\pgfnodepartfourbox=\box92
+\pgfnodeparttwentybox=\box93
+\pgfnodepartnineteenbox=\box94
+\pgfnodeparteighteenbox=\box95
+\pgfnodepartseventeenbox=\box96
+\pgfnodepartsixteenbox=\box97
+\pgfnodepartfifteenbox=\box98
+\pgfnodepartfourteenbox=\box99
+\pgfnodepartthirteenbox=\box100
+\pgfnodeparttwelvebox=\box101
+\pgfnodepartelevenbox=\box102
+\pgfnodeparttenbox=\box103
+\pgfnodepartninebox=\box104
+\pgfnodeparteightbox=\box105
+\pgfnodepartsevenbox=\box106
+\pgfnodepartsixbox=\box107
+\pgfnodepartfivebox=\box108
+))) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryarrows.code.tex
+File: tikzlibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+ (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.code.tex
+File: pgflibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+\arrowsize=\dimen286
+)) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibraryfit.code.tex
+File: tikzlibraryfit.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarycalc.code.tex
+File: tikzlibrarycalc.code.tex 2025-08-29 v3.1.11a (3.1.11a)
+) (/usr/share/texlive/texmf-dist/tex/latex/parskip/parskip.sty
+Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
+ (/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+ (/usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)))
+Package translations Info: No language package found. I am going to use `english' as default language. on input line 60.
+ (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count346
+) (.aux/designing_data_intensive_applications.aux)
+\openout1 = `designing_data_intensive_applications.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
+LaTeX Font Info:    ... okay on input line 60.
+\c@lstlisting=\count347
+ (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count348
+\scratchdimen=\dimen287
+\scratchbox=\box109
+\nofMPsegments=\count349
+\nofMParguments=\count350
+\everyMPshowfont=\toks47
+\MPscratchCnt=\count351
+\MPscratchDim=\dimen288
+\MPnumerator=\count352
+\makeMPintoPDFobject=\count353
+\everyMPtoPDFconversion=\toks48
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
+ (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
+)) (/usr/share/texlive/texmf-dist/tex/latex/translations/translations-basic-dictionary-english.trsl
+File: translations-basic-dictionary-english.trsl (english translation file `translations-basic-dictionary')
+)
+Package translations Info: loading dictionary `translations-basic-dictionary' for `english'. on input line 60.
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: End \AtBeginDocument code.
+
+Chapter 1.
+
+Overfull \hbox (3.73224pt too wide) in paragraph at lines 70--72
+[]\OT1/cmr/m/n/10 Store data so they, or an-other ap-pli-ca-tion, can find it again later (\OT1/cmr/m/it/10 databases\OT1/cmr/m/n/10 ) 
+ []
+
+[1
+
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
+<images/possible_architecture_that_combines_several_components.png, id=13, 421.575pt x 309.155pt>
+File: images/possible_architecture_that_combines_several_components.png Graphic file (type png)
+<use images/possible_architecture_that_combines_several_components.png>
+Package pdftex.def Info: images/possible_architecture_that_combines_several_components.png  used on input line 129.
+(pdftex.def)             Requested size: 276.00105pt x 202.406pt.
+ [2] [3 <./images/possible_architecture_that_combines_several_components.png>] [4] [5] [6] [7] [8] [9]
+Overfull \hbox (0.33395pt too wide) in paragraph at lines 391--393
+[]\OT1/cmr/m/n/10 Simply han-dling 12,000 writes per sec-ond (the peak rate for post-ing tweets)
+ []
+
+[10]
+<images/simple_relational_schema_for_implementing_a_twitter_home_timeline.png, id=47, 383.4325pt x 152.57pt>
+File: images/simple_relational_schema_for_implementing_a_twitter_home_timeline.png Graphic file (type png)
+<use images/simple_relational_schema_for_implementing_a_twitter_home_timeline.png>
+Package pdftex.def Info: images/simple_relational_schema_for_implementing_a_twitter_home_timeline.png  used on input line 424.
+(pdftex.def)             Requested size: 276.00105pt x 109.82936pt.
+<images/twitter_data_pipeline_for_delivering_tweets_to_followers_with_load_parameters.png, id=48, 383.4325pt x 152.57pt>
+File: images/twitter_data_pipeline_for_delivering_tweets_to_followers_with_load_parameters.png Graphic file (type png)
+<use images/twitter_data_pipeline_for_delivering_tweets_to_followers_with_load_parameters.png>
+Package pdftex.def Info: images/twitter_data_pipeline_for_delivering_tweets_to_followers_with_load_parameters.png  used on input line 431.
+(pdftex.def)             Requested size: 276.00105pt x 109.82936pt.
+ [11 <./images/simple_relational_schema_for_implementing_a_twitter_home_timeline.png> <./images/twitter_data_pipeline_for_delivering_tweets_to_followers_with_load_parameters.png>] [12] [13]
+<images/illustrating_mean_and_percentiles_response_times_for_a_sample.png, id=61, 390.45876pt x 115.43124pt>
+File: images/illustrating_mean_and_percentiles_response_times_for_a_sample.png Graphic file (type png)
+<use images/illustrating_mean_and_percentiles_response_times_for_a_sample.png>
+Package pdftex.def Info: images/illustrating_mean_and_percentiles_response_times_for_a_sample.png  used on input line 524.
+(pdftex.def)             Requested size: 276.00105pt x 81.59743pt.
+ [14 <./images/illustrating_mean_and_percentiles_response_times_for_a_sample.png>] [15]
+<images/when_several_backend_calls_are_needed_to_serve_a_request.png, id=69, 373.395pt x 172.645pt>
+File: images/when_several_backend_calls_are_needed_to_serve_a_request.png Graphic file (type png)
+<use images/when_several_backend_calls_are_needed_to_serve_a_request.png>
+Package pdftex.def Info: images/when_several_backend_calls_are_needed_to_serve_a_request.png  used on input line 612.
+(pdftex.def)             Requested size: 276.00105pt x 127.6183pt.
+ [16] [17 <./images/when_several_backend_calls_are_needed_to_serve_a_request.png>] [18] [19] [20] [21]
+Chapter 2.
+[22
+
+]
+Overfull \hbox (16.19508pt too wide) in paragraph at lines 838--840
+[]\OT1/cmr/m/n/10 However, by the mid-1980s, re-la-tional database man-age-ment sys-tems (RDBM-
+ []
+
+[23] [24] [25]
+<images/representing_a_linkedin_profile_using_a_relational_schema.png, id=103, 480.79625pt x 466.74374pt>
+File: images/representing_a_linkedin_profile_using_a_relational_schema.png Graphic file (type png)
+<use images/representing_a_linkedin_profile_using_a_relational_schema.png>
+Package pdftex.def Info: images/representing_a_linkedin_profile_using_a_relational_schema.png  used on input line 935.
+(pdftex.def)             Requested size: 276.00105pt x 267.94113pt.
+ [26] [27 <./images/representing_a_linkedin_profile_using_a_relational_schema.png>]
+<images/one_to_many_relationships_forming_a_tree_structure.png, id=111, 298.11375pt x 213.79875pt>
+File: images/one_to_many_relationships_forming_a_tree_structure.png Graphic file (type png)
+<use images/one_to_many_relationships_forming_a_tree_structure.png>
+Package pdftex.def Info: images/one_to_many_relationships_forming_a_tree_structure.png  used on input line 990.
+(pdftex.def)             Requested size: 276.00105pt x 197.94995pt.
+ [28]
+Overfull \hbox (27.14305pt too wide) in paragraph at lines 999--1001
+\OT1/cmr/m/n/10 given as IDs, not as plain-text strings "[][][][][][][][][][][][]" and "[]
+ []
+
+[29 <./images/one_to_many_relationships_forming_a_tree_structure.png>]
+Overfull \hbox (14.52847pt too wide) in paragraph at lines 1022--1024
+[]\OT1/cmr/m/n/10 When you store the texte di-rectly, you are du-plib-ca-tion the human-meaningful
+ []
+
+
+Overfull \hbox (8.25618pt too wide) in paragraph at lines 1030--1032
+[]\OT1/cmr/m/n/10 Removing such du-pli-ca-tion is the key idea be-hind \OT1/cmr/m/it/10 nor-mal-iza-tion \OT1/cmr/m/n/10 in databases 
+ []
+
+[30]
+<images/the_company_name_is_not_just_a_string.png, id=123, 327.2225pt x 253.94875pt>
+File: images/the_company_name_is_not_just_a_string.png Graphic file (type png)
+<use images/the_company_name_is_not_just_a_string.png>
+Package pdftex.def Info: images/the_company_name_is_not_just_a_string.png  used on input line 1070.
+(pdftex.def)             Requested size: 276.00105pt x 214.19897pt.
+ [31 <./images/the_company_name_is_not_just_a_string.png>]
+<images/extending_resumes_with_many_to_many_relationships.png, id=129, 455.7025pt x 312.16624pt>
+File: images/extending_resumes_with_many_to_many_relationships.png Graphic file (type png)
+<use images/extending_resumes_with_many_to_many_relationships.png>
+Package pdftex.def Info: images/extending_resumes_with_many_to_many_relationships.png  used on input line 1080.
+(pdftex.def)             Requested size: 276.00105pt x 189.06836pt.
+
+Overfull \hbox (0.11063pt too wide) in paragraph at lines 1101--1103
+[]\OT1/cmr/m/n/10 Like doc-u-ment databases, IMS worked well for one-to-many re-la-tion-shipos,
+ []
+
+[32 <./images/extending_resumes_with_many_to_many_relationships.png>] [33] [34]
+Overfull \hbox (4.21611pt too wide) in paragraph at lines 1190--1192
+\OT1/cmr/m/n/10 stor-gin nested records (one-to-many re-la-tion-ships, like [][][][], []
+ []
+
+
+Overfull \hbox (4.55612pt too wide) in paragraph at lines 1203--1205
+[]\OT1/cmr/m/n/10 There are many dif-fer-ences to con-sider when com-par-ing re-la-tional databases
+ []
+
+
+Overfull \hbox (0.55615pt too wide) in paragraph at lines 1203--1205
+\OT1/cmr/m/n/10 to doc-u-ment datab-ses, in-clud-ing their fault-tolerance properites (see Chap-
+ []
+
+[35]
+Overfull \hbox (12.05621pt too wide) in paragraph at lines 1224--1226
+[]\OT1/cmr/m/n/10 For ex-am-ple, many-to-may re-la-tion-ships may never be needed in an analysitcs
+ []
+
+[36] [37] [38] [39] [40] [41]
+Overfull \hbox (2.75061pt too wide) in paragraph at lines 1434--1436
+[]\OT1/cmr/m/n/10 To il-lus-trate the point, let's com-pare declartive and im-po-er-a-tive ap-proaches
+ []
+
+[42]
+Overfull \hbox (46.72366pt too wide) in paragraph at lines 1506--1508
+[]\OT1/cmr/m/n/10 If you want to take ad-van-tage of a new API, such as [][][][][]
+ []
+
+[43] [44] [45] [46] [47]
+<images/example_of_graph_structured_data.png, id=184, 419.5675pt x 247.92625pt>
+File: images/example_of_graph_structured_data.png Graphic file (type png)
+<use images/example_of_graph_structured_data.png>
+Package pdftex.def Info: images/example_of_graph_structured_data.png  used on input line 1698.
+(pdftex.def)             Requested size: 276.00105pt x 163.09085pt.
+ [48 <./images/example_of_graph_structured_data.png>] [49] [50] [51] [52] [53] [54] [55] [56] [57] [58] [59] [60]
+<images/determining_that_idaho_is_in_north_america.png, id=229, 414.54875pt x 145.54375pt>
+File: images/determining_that_idaho_is_in_north_america.png Graphic file (type png)
+<use images/determining_that_idaho_is_in_north_america.png>
+Package pdftex.def Info: images/determining_that_idaho_is_in_north_america.png  used on input line 2241.
+(pdftex.def)             Requested size: 276.00105pt x 96.90306pt.
+
+Overfull \hbox (1.33958pt too wide) in paragraph at lines 2250--2252
+[]\OT1/cmr/m/n/10 By query-ing with [][][][][][][][][][][][][][][][][][][][] and [][][][][][][][][][][][][][][][], and
+ []
+
+[61 <./images/determining_that_idaho_is_in_north_america.png>]
+Overfull \hbox (8.51495pt too wide) in paragraph at lines 2272--2274
+[]\OT1/cmr/m/it/10 Document databases \OT1/cmr/m/n/10 tar-get use cases where data comes in self-contained
+ []
+
+
+Overfull \hbox (5.24455pt too wide) in paragraph at lines 2298--2300
+[]\OT1/cmr/m/n/10 Researchers work-ing with genome data of-ten need to per-form \OT1/cmr/m/it/10 sequence-
+ []
+
+[62] [63]
+Chapter 3.
+[64
+
+] [65] [66] [67]
+<images/storing_a_log_of_key_value_pairs_in_a_csv_format.png, id=254, 375.4025pt x 191.71625pt>
+File: images/storing_a_log_of_key_value_pairs_in_a_csv_format.png Graphic file (type png)
+<use images/storing_a_log_of_key_value_pairs_in_a_csv_format.png>
+Package pdftex.def Info: images/storing_a_log_of_key_value_pairs_in_a_csv_format.png  used on input line 2464.
+(pdftex.def)             Requested size: 276.00105pt x 140.96094pt.
+ [68 <./images/storing_a_log_of_key_value_pairs_in_a_csv_format.png>]
+<images/compaction_of_key_value_update_log.png, id=259, 431.6125pt x 159.59625pt>
+File: images/compaction_of_key_value_update_log.png Graphic file (type png)
+<use images/compaction_of_key_value_update_log.png>
+Package pdftex.def Info: images/compaction_of_key_value_update_log.png  used on input line 2498.
+(pdftex.def)             Requested size: 276.00105pt x 102.05844pt.
+<images/performing_compaction_and_segment_merging_simultaneously.png, id=260, 357.335pt x 190.7125pt>
+File: images/performing_compaction_and_segment_merging_simultaneously.png Graphic file (type png)
+<use images/performing_compaction_and_segment_merging_simultaneously.png>
+Package pdftex.def Info: images/performing_compaction_and_segment_merging_simultaneously.png  used on input line 2516.
+(pdftex.def)             Requested size: 276.00105pt x 147.31175pt.
+ [69 <./images/compaction_of_key_value_update_log.png>] [70 <./images/performing_compaction_and_segment_merging_simultaneously.png>] [71]
+<images/merging_several_sstable_segments_retaining_only_the_most_recent_values.png, id=272, 367.3725pt x 260.975pt>
+File: images/merging_several_sstable_segments_retaining_only_the_most_recent_values.png Graphic file (type png)
+<use images/merging_several_sstable_segments_retaining_only_the_most_recent_values.png>
+Package pdftex.def Info: images/merging_several_sstable_segments_retaining_only_the_most_recent_values.png  used on input line 2621.
+(pdftex.def)             Requested size: 276.00105pt x 196.07721pt.
+ [72]
+Overfull \hbox (2.88612pt too wide) in paragraph at lines 2631--2633
+[]\OT1/cmr/m/n/10 See Fig-ure 3-5 for an ex-am-ple: say you're look-ing for the key []
+ []
+
+<images/an_sstable_with_an_in_memory_index.png, id=276, 426.59375pt x 199.74625pt>
+File: images/an_sstable_with_an_in_memory_index.png Graphic file (type png)
+<use images/an_sstable_with_an_in_memory_index.png>
+Package pdftex.def Info: images/an_sstable_with_an_in_memory_index.png  used on input line 2644.
+(pdftex.def)             Requested size: 276.00105pt x 129.24223pt.
+[73 <./images/merging_several_sstable_segments_retaining_only_the_most_recent_values.png>] [74 <./images/an_sstable_with_an_in_memory_index.png>] [75] [76]
+<images/looking_up_a_key_using_b_tree_index.png, id=292, 453.695pt x 261.97874pt>
+File: images/looking_up_a_key_using_b_tree_index.png Graphic file (type png)
+<use images/looking_up_a_key_using_b_tree_index.png>
+Package pdftex.def Info: images/looking_up_a_key_using_b_tree_index.png  used on input line 2785.
+(pdftex.def)             Requested size: 276.00105pt x 159.37108pt.
+ [77] [78 <./images/looking_up_a_key_using_b_tree_index.png>]
+<images/growing_a_b_tree_by_splitting_a_page.png, id=300, 442.65375pt x 245.91875pt>
+File: images/growing_a_b_tree_by_splitting_a_page.png Graphic file (type png)
+<use images/growing_a_b_tree_by_splitting_a_page.png>
+Package pdftex.def Info: images/growing_a_b_tree_by_splitting_a_page.png  used on input line 2821.
+(pdftex.def)             Requested size: 276.00105pt x 153.34235pt.
+ [79 <./images/growing_a_b_tree_by_splitting_a_page.png>] [80] [81] [82] [83] [84] [85] [86] [87] [88] [89]
+Overfull \hbox (1.13954pt too wide) in paragraph at lines 3196--3197
+[]\OT1/cmr/m/n/10 As databases ex-panded into ar-eas that didn't in-volve meoy chang-ing hands,
+ []
+
+[90]
+Underfull \hbox (badness 10000) in paragraph at lines 3255--3255
+[]|\OT1/cmr/m/n/10 Transaction Pro-cess-ing sys-tems
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3259--3259
+[]|\OT1/cmr/m/n/10 Random-access, low-latency writes
+ []
+
+
+Overfull \hbox (128.6443pt too wide) in paragraph at lines 3253--3268
+ [][] 
+ []
+
+[91]
+<images/simplified_outline_of_etl_into_a_data_warehouse.png, id=345, 396.48125pt x 296.10625pt>
+File: images/simplified_outline_of_etl_into_a_data_warehouse.png Graphic file (type png)
+<use images/simplified_outline_of_etl_into_a_data_warehouse.png>
+Package pdftex.def Info: images/simplified_outline_of_etl_into_a_data_warehouse.png  used on input line 3313.
+(pdftex.def)             Requested size: 276.00105pt x 206.12984pt.
+ [92] [93 <./images/simplified_outline_of_etl_into_a_data_warehouse.png>]
+Overfull \hbox (1.49942pt too wide) in paragraph at lines 3349--3351
+[]\OT1/cmr/m/n/10 Data war-house ven-dros such as Ter-a-data, Ver-tica, SAP HANA, and ParAc-
+ []
+
+
+Overfull \hbox (3.83397pt too wide) in paragraph at lines 3355--3357
+[]\OT1/cmr/m/n/10 These in-clude Apache Hive, Spark SQL, Cloud-era Im-pala, Face-book Presto,
+ []
+
+<images/example_of_a_star_schema_for_use_in_a_data_warehouse.png, id=353, 398.48875pt x 471.7625pt>
+File: images/example_of_a_star_schema_for_use_in_a_data_warehouse.png Graphic file (type png)
+<use images/example_of_a_star_schema_for_use_in_a_data_warehouse.png>
+Package pdftex.def Info: images/example_of_a_star_schema_for_use_in_a_data_warehouse.png  used on input line 3381.
+(pdftex.def)             Requested size: 276.00105pt x 326.76181pt.
+[94]
+Overfull \hbox (5.86061pt too wide) in paragraph at lines 3392--3394
+[]\OT1/cmr/m/n/10 A big en-ter-prise like Ap-ple, Wal-mart, or eBayt maybe have tens of petabytes
+ []
+
+[95 <./images/example_of_a_star_schema_for_use_in_a_data_warehouse.png>] [96] [97]
+<images/fact_sales_table.png, id=368, 386.44376pt x 285.065pt>
+File: images/fact_sales_table.png Graphic file (type png)
+<use images/fact_sales_table.png>
+Package pdftex.def Info: images/fact_sales_table.png  used on input line 3481.
+(pdftex.def)             Requested size: 276.00105pt x 203.59808pt.
+ [98 <./images/fact_sales_table.png>]
+<images/compressed_bitmap_indexed_storage_single_column.png, id=373, 308.15125pt x 250.9375pt>
+File: images/compressed_bitmap_indexed_storage_single_column.png Graphic file (type png)
+<use images/compressed_bitmap_indexed_storage_single_column.png>
+Package pdftex.def Info: images/compressed_bitmap_indexed_storage_single_column.png  used on input line 3505.
+(pdftex.def)             Requested size: 276.00105pt x 224.77336pt.
+ [99 <./images/compressed_bitmap_indexed_storage_single_column.png>] [100] [101] [102] [103]
+<images/two_dimensions_of_a_data_cube_aggregating_data_by_summing.png, id=392, 366.36874pt x 204.765pt>
+File: images/two_dimensions_of_a_data_cube_aggregating_data_by_summing.png Graphic file (type png)
+<use images/two_dimensions_of_a_data_cube_aggregating_data_by_summing.png>
+Package pdftex.def Info: images/two_dimensions_of_a_data_cube_aggregating_data_by_summing.png  used on input line 3706.
+(pdftex.def)             Requested size: 276.00105pt x 154.26698pt.
+ [104 <./images/two_dimensions_of_a_data_cube_aggregating_data_by_summing.png>] [105] [106] [107] [108]
+Overfull \hbox (5.52853pt too wide) in paragraph at lines 3883--3884
+\OT1/cmr/m/n/10 Many pro-gram-ming lan-guages come with built-in sup-port for en-cod-ing in-memory
+ []
+
+[109] [110] [111] [112]
+<images/example_record_encoded_using_messagepack.png, id=422, 438.63875pt x 381.425pt>
+File: images/example_record_encoded_using_messagepack.png Graphic file (type png)
+<use images/example_record_encoded_using_messagepack.png>
+Package pdftex.def Info: images/example_record_encoded_using_messagepack.png  used on input line 4047.
+(pdftex.def)             Requested size: 276.00105pt x 240.00218pt.
+ [113 <./images/example_record_encoded_using_messagepack.png>]
+<images/example_record_encoded_using_thrifts_binary_protocol.png, id=427, 438.63875pt x 315.1775pt>
+File: images/example_record_encoded_using_thrifts_binary_protocol.png Graphic file (type png)
+<use images/example_record_encoded_using_thrifts_binary_protocol.png>
+Package pdftex.def Info: images/example_record_encoded_using_thrifts_binary_protocol.png  used on input line 4094.
+(pdftex.def)             Requested size: 276.00105pt x 198.3176pt.
+ [114 <./images/example_record_encoded_using_thrifts_binary_protocol.png>]
+<images/example_record_encoded_using_thrifts_compact_protocol.png, id=432, 474.77374pt x 295.1025pt>
+File: images/example_record_encoded_using_thrifts_compact_protocol.png Graphic file (type png)
+<use images/example_record_encoded_using_thrifts_compact_protocol.png>
+Package pdftex.def Info: images/example_record_encoded_using_thrifts_compact_protocol.png  used on input line 4124.
+(pdftex.def)             Requested size: 276.00105pt x 171.56032pt.
+ [115 <./images/example_record_encoded_using_thrifts_compact_protocol.png>]
+<images/example_record_encoded_using_protocol_buffers.png, id=438, 385.44pt x 249.93375pt>
+File: images/example_record_encoded_using_protocol_buffers.png Graphic file (type png)
+<use images/example_record_encoded_using_protocol_buffers.png>
+Package pdftex.def Info: images/example_record_encoded_using_protocol_buffers.png  used on input line 4133.
+(pdftex.def)             Requested size: 276.00105pt x 178.96823pt.
+ [116 <./images/example_record_encoded_using_protocol_buffers.png>] [117] [118]
+Overfull \hbox (2.02835pt too wide) in paragraph at lines 4264--4265
+[]\OT1/cmr/m/n/10 An in-te-ger is en-coded us-ing a variable-length en-cod-ing (the same as Thrift's
+ []
+
+<images/example_record_encoded_using_avro.jpg, id=449, 1119.18124pt x 772.8875pt>
+File: images/example_record_encoded_using_avro.jpg Graphic file (type jpg)
+<use images/example_record_encoded_using_avro.jpg>
+Package pdftex.def Info: images/example_record_encoded_using_avro.jpg  used on input line 4269.
+(pdftex.def)             Requested size: 276.00105pt x 190.60329pt.
+[119 <./images/example_record_encoded_using_avro.jpg>]
+<images/an_avro_reader_resolves_differences_between_the_writers_schema.png, id=453, 553.06625pt x 257.96375pt>
+File: images/an_avro_reader_resolves_differences_between_the_writers_schema.png Graphic file (type png)
+<use images/an_avro_reader_resolves_differences_between_the_writers_schema.png>
+Package pdftex.def Info: images/an_avro_reader_resolves_differences_between_the_writers_schema.png  used on input line 4312.
+(pdftex.def)             Requested size: 276.00105pt x 128.73357pt.
+ [120] [121 <./images/an_avro_reader_resolves_differences_between_the_writers_schema.png>] [122] [123] [124] [125] [126]
+<images/when_an_older_version_of_the_application_updates_data_previously_written_by_a_newer_version.png, id=477, 505.89pt x 279.0425pt>
+File: images/when_an_older_version_of_the_application_updates_data_previously_written_by_a_newer_version.png Graphic file (type png)
+<use images/when_an_older_version_of_the_application_updates_data_previously_written_by_a_newer_version.png>
+Package pdftex.def Info: images/when_an_older_version_of_the_application_updates_data_previously_written_by_a_newer_version.png  used on input line 4563.
+(pdftex.def)             Requested size: 276.00105pt x 152.23906pt.
+ [127] [128 <./images/when_an_older_version_of_the_application_updates_data_previously_written_by_a_newer_version.png>] [129]
+Overfull \hbox (8.88939pt too wide) in paragraph at lines 4632--4634
+\OT1/cmr/m/n/10 puter can also make net-work re-qurests to a server, and a client-sde JavaScript
+ []
+
+[130] [131] [132] [133] [134] [135] [136] [137] [138] [139] [140]
+Chapter 4.
+[141
+
+] [142] [143]
+<images/a_database_into_two_partitions.png, id=533, 551.05875pt x 312.16624pt>
+File: images/a_database_into_two_partitions.png Graphic file (type png)
+<use images/a_database_into_two_partitions.png>
+Package pdftex.def Info: images/a_database_into_two_partitions.png  used on input line 5120.
+(pdftex.def)             Requested size: 276.00105pt x 156.35423pt.
+ [144 <./images/a_database_into_two_partitions.png>]
+Chapter 5.
+[145
+
+]
+Overfull \hbox (6.3617pt too wide) in paragraph at lines 5174--5176
+[]\OT1/cmr/m/n/10 There are many trade-offs to con-sider with repli-ca-tion: for ex-am-ple, whether
+ []
+
+[146]
+<images/leader_based_replication.png, id=545, 493.845pt x 172.645pt>
+File: images/leader_based_replication.png Graphic file (type png)
+<use images/leader_based_replication.png>
+Package pdftex.def Info: images/leader_based_replication.png  used on input line 5216.
+(pdftex.def)             Requested size: 276.00105pt x 96.48558pt.
+ [147 <./images/leader_based_replication.png>]
+<images/leader_based_replication_with_one_asynchronous_follower_and_one_synchronous_follower.png, id=550, 493.845pt x 207.77625pt>
+File: images/leader_based_replication_with_one_asynchronous_follower_and_one_synchronous_follower.png Graphic file (type png)
+<use images/leader_based_replication_with_one_asynchronous_follower_and_one_synchronous_follower.png>
+Package pdftex.def Info: images/leader_based_replication_with_one_asynchronous_follower_and_one_synchronous_follower.png  used on input line 5253.
+(pdftex.def)             Requested size: 276.00105pt x 116.11928pt.
+ [148 <./images/leader_based_replication_with_one_asynchronous_follower_and_one_synchronous_follower.png>]
+Overfull \hbox (1.94507pt too wide) in paragraph at lines 5288--5290
+[]\OT1/cmr/m/n/10 Often, leader-based repli-ca-tion is con-fig-ured to be com-pletely asyn-chronous 
+ []
+
+[149] [150] [151] [152] [153] [154] [155]
+Overfull \hbox (5.36168pt too wide) in paragraph at lines 5582--5584
+[]\OT1/cmr/m/n/10 The repli-ca-tion ap-proaches de-scribed so-far are im-ple-mented by the database
+ []
+
+[156] [157] [158]
+<images/user_makes_a_write_followed_by_a_read.png, id=588, 493.845pt x 207.77625pt>
+File: images/user_makes_a_write_followed_by_a_read.png Graphic file (type png)
+<use images/user_makes_a_write_followed_by_a_read.png>
+Package pdftex.def Info: images/user_makes_a_write_followed_by_a_read.png  used on input line 5665.
+(pdftex.def)             Requested size: 276.00105pt x 116.11928pt.
+ [159 <./images/user_makes_a_write_followed_by_a_read.png>] [160]
+<images/a_user_first_reads_from_a_fresh_replica.png, id=596, 488.82625pt x 257.96375pt>
+File: images/a_user_first_reads_from_a_fresh_replica.png Graphic file (type png)
+<use images/a_user_first_reads_from_a_fresh_replica.png>
+Package pdftex.def Info: images/a_user_first_reads_from_a_fresh_replica.png  used on input line 5769.
+(pdftex.def)             Requested size: 276.00105pt x 145.65137pt.
+ [161 <./images/a_user_first_reads_from_a_fresh_replica.png>]
+<images/if_some_partitions_are_replicated_slower_than_others.png, id=601, 488.82625pt x 317.185pt>
+File: images/if_some_partitions_are_replicated_slower_than_others.png Graphic file (type png)
+<use images/if_some_partitions_are_replicated_slower_than_others.png>
+Package pdftex.def Info: images/if_some_partitions_are_replicated_slower_than_others.png  used on input line 5825.
+(pdftex.def)             Requested size: 276.00105pt x 179.08885pt.
+ [162] [163 <./images/if_some_partitions_are_replicated_slower_than_others.png>]
+Overfull \hbox (1.61172pt too wide) in paragraph at lines 5870--5872
+[]\OT1/cmr/m/n/10 However, in the move to dis-tributed (repli-cated and parit-tioned) databases,
+ []
+
+[164]
+<images/multi_leader_replication.png, id=613, 488.82625pt x 242.9075pt>
+File: images/multi_leader_replication.png Graphic file (type png)
+<use images/multi_leader_replication.png>
+Package pdftex.def Info: images/multi_leader_replication.png  used on input line 5923.
+(pdftex.def)             Requested size: 276.00105pt x 137.15031pt.
+ [165 <./images/multi_leader_replication.png>] [166] [167]
+<images/a_write_conflict_caused_by_two_leaders.png, id=624, 488.82625pt x 208.78pt>
+File: images/a_write_conflict_caused_by_two_leaders.png Graphic file (type png)
+<use images/a_write_conflict_caused_by_two_leaders.png>
+Package pdftex.def Info: images/a_write_conflict_caused_by_two_leaders.png  used on input line 6049.
+(pdftex.def)             Requested size: 276.00105pt x 117.88126pt.
+ [168] [169 <./images/a_write_conflict_caused_by_two_leaders.png>] [170] [171] [172] [173]
+<images/three_example_topologies_in_which_multi_leader_replication.png, id=645, 487.8225pt x 149.55875pt>
+File: images/three_example_topologies_in_which_multi_leader_replication.png Graphic file (type png)
+<use images/three_example_topologies_in_which_multi_leader_replication.png>
+Package pdftex.def Info: images/three_example_topologies_in_which_multi_leader_replication.png  used on input line 6266.
+(pdftex.def)             Requested size: 276.00105pt x 84.61723pt.
+ [174 <./images/three_example_topologies_in_which_multi_leader_replication.png>]
+<images/with_multi_leader_replication_writes_may_arrive_in_the_wrong_order.png, id=650, 488.82625pt x 278.03876pt>
+File: images/with_multi_leader_replication_writes_may_arrive_in_the_wrong_order.png Graphic file (type png)
+<use images/with_multi_leader_replication_writes_may_arrive_in_the_wrong_order.png>
+Package pdftex.def Info: images/with_multi_leader_replication_writes_may_arrive_in_the_wrong_order.png  used on input line 6304.
+(pdftex.def)             Requested size: 276.00105pt x 156.98611pt.
+ [175] [176 <./images/with_multi_leader_replication_writes_may_arrive_in_the_wrong_order.png>] [177]
+<images/a_quorum_write_quorum_read_and_read_repair_after_a_node_outage.png, id=662, 488.82625pt x 276.03125pt>
+File: images/a_quorum_write_quorum_read_and_read_repair_after_a_node_outage.png Graphic file (type png)
+<use images/a_quorum_write_quorum_read_and_read_repair_after_a_node_outage.png>
+Package pdftex.def Info: images/a_quorum_write_quorum_read_and_read_repair_after_a_node_outage.png  used on input line 6372.
+(pdftex.def)             Requested size: 276.00105pt x 155.85263pt.
+ [178 <./images/a_quorum_write_quorum_read_and_read_repair_after_a_node_outage.png>]
+Overfull \hbox (1.27785pt too wide) in paragraph at lines 6424--6425
+[]\OT1/cmr/m/n/10 Unlike the repli-ca-toin log in leader-based repli-ca-tion, this \OT1/cmr/m/it/10 anti-entropy
+ []
+
+[179] [180]
+<images/at_least_one_of_the_r_replicas_you_read-from_must_have_seen_the_most_recent_successful_write.png, id=673, 488.82625pt x 221.82875pt>
+File: images/at_least_one_of_the_r_replicas_you_read-from_must_have_seen_the_most_recent_successful_write.png Graphic file (type png)
+<use images/at_least_one_of_the_r_replicas_you_read-from_must_have_seen_the_most_recent_successful_write.png>
+Package pdftex.def Info: images/at_least_one_of_the_r_replicas_you_read-from_must_have_seen_the_most_recent_successful_write.png  used on input line 6493.
+(pdftex.def)             Requested size: 276.00105pt x 125.24884pt.
+ [181 <./images/at_least_one_of_the_r_replicas_you_read-from_must_have_seen_the_most_recent_successful_write.png>] [182] [183] [184] [185]
+Overfull \hbox (21.69504pt too wide) in paragraph at lines 6677--6678
+[]\OT1/cmr/m/n/10 Cross-datacenter repli-ca-tion be-tween database clus-ters hap-pens asyn-chronously
+ []
+
+<images/concurrent_writes_in_a_dynamo_style_datastore.png, id=691, 488.82625pt x 244.915pt>
+File: images/concurrent_writes_in_a_dynamo_style_datastore.png Graphic file (type png)
+<use images/concurrent_writes_in_a_dynamo_style_datastore.png>
+Package pdftex.def Info: images/concurrent_writes_in_a_dynamo_style_datastore.png  used on input line 6702.
+(pdftex.def)             Requested size: 276.00105pt x 138.28378pt.
+[186 <./images/concurrent_writes_in_a_dynamo_style_datastore.png>] [187] [188] [189]
+<images/capturing_causal_dependencies.png, id=706, 488.82625pt x 281.05pt>
+File: images/capturing_causal_dependencies.png Graphic file (type png)
+<use images/capturing_causal_dependencies.png>
+Package pdftex.def Info: images/capturing_causal_dependencies.png  used on input line 6880.
+(pdftex.def)             Requested size: 276.00105pt x 158.68633pt.
+ [190]
+<images/graph_of_causal_dependencies.png, id=710, 488.82625pt x 134.5025pt>
+File: images/graph_of_causal_dependencies.png Graphic file (type png)
+<use images/graph_of_causal_dependencies.png>
+Package pdftex.def Info: images/graph_of_causal_dependencies.png  used on input line 6898.
+(pdftex.def)             Requested size: 276.00105pt x 75.94273pt.
+ [191 <./images/capturing_causal_dependencies.png> <./images/graph_of_causal_dependencies.png>] [192] [193] [194]
+Overfull \hbox (2.62227pt too wide) in paragraph at lines 7047--7049
+[]\OT1/cmr/m/it/10 Single-leader repli-ca-tion \OT1/cmr/m/n/10 Clients send all writes to a sin-gle node (the leader),
+ []
+
+[195]
+Overfull \hbox (0.75061pt too wide) in paragraph at lines 7091--7093
+[]\OT1/cmr/m/n/10 We ex-am-ined an al-go-rithm that a database might use to de-ter-mine whether
+ []
+
+[196]
+Chapter 6.
+[197
+
+] [198]
+<images/combining_replication_and_partitioning.png, id=738, 732.7375pt x 391.4625pt>
+File: images/combining_replication_and_partitioning.png Graphic file (type png)
+<use images/combining_replication_and_partitioning.png>
+Package pdftex.def Info: images/combining_replication_and_partitioning.png  used on input line 7172.
+(pdftex.def)             Requested size: 276.00105pt x 147.45512pt.
+ [199 <./images/combining_replication_and_partitioning.png>]
+<images/a_print_encyclopedia_is_partitioned.png, id=744, 730.73pt x 274.02374pt>
+File: images/a_print_encyclopedia_is_partitioned.png Graphic file (type png)
+<use images/a_print_encyclopedia_is_partitioned.png>
+Package pdftex.def Info: images/a_print_encyclopedia_is_partitioned.png  used on input line 7219.
+(pdftex.def)             Requested size: 276.00105pt x 103.49873pt.
+ [200 <./images/a_print_encyclopedia_is_partitioned.png>] [201]
+<images/partitioning_by_hash_of_key.png, id=753, 614.295pt x 206.7725pt>
+File: images/partitioning_by_hash_of_key.png Graphic file (type png)
+<use images/partitioning_by_hash_of_key.png>
+Package pdftex.def Info: images/partitioning_by_hash_of_key.png  used on input line 7286.
+(pdftex.def)             Requested size: 276.00105pt x 92.90163pt.
+ [202 <./images/partitioning_by_hash_of_key.png>] [203] [204] [205]
+<images/partitioning_secondary_indexes_by_document.png, id=768, 607.26875pt x 301.125pt>
+File: images/partitioning_secondary_indexes_by_document.png Graphic file (type png)
+<use images/partitioning_secondary_indexes_by_document.png>
+Package pdftex.def Info: images/partitioning_secondary_indexes_by_document.png  used on input line 7423.
+(pdftex.def)             Requested size: 276.00105pt x 136.86044pt.
+ [206 <./images/partitioning_secondary_indexes_by_document.png>]
+<images/partitioning_secondary_indexes_by_term.png, id=773, 610.28pt x 276.03125pt>
+File: images/partitioning_secondary_indexes_by_term.png Graphic file (type png)
+<use images/partitioning_secondary_indexes_by_term.png>
+Package pdftex.def Info: images/partitioning_secondary_indexes_by_term.png  used on input line 7455.
+(pdftex.def)             Requested size: 276.00105pt x 124.84047pt.
+ [207 <./images/partitioning_secondary_indexes_by_term.png>] [208] [209]
+<images/adding_a_new_node_to_a_database_clust_with_multiple_partitions_per_node.png, id=784, 610.28pt x 338.26375pt>
+File: images/adding_a_new_node_to_a_database_clust_with_multiple_partitions_per_node.png Graphic file (type png)
+<use images/adding_a_new_node_to_a_database_clust_with_multiple_partitions_per_node.png>
+Package pdftex.def Info: images/adding_a_new_node_to_a_database_clust_with_multiple_partitions_per_node.png  used on input line 7581.
+(pdftex.def)             Requested size: 276.00105pt x 152.98633pt.
+ [210] [211 <./images/adding_a_new_node_to_a_database_clust_with_multiple_partitions_per_node.png>] [212] [213] [214]
+Overfull \hbox (3.77838pt too wide) in paragraph at lines 7720--7722
+[]\OT1/cmr/m/n/10 As par-ti-o-tions are re-bal-anced, the as-sign-ment of par-ti-tions to nodes changes 
+ []
+
+<images/three_different_ways_of_routing_a_request.png, id=802, 610.28pt x 282.05376pt>
+File: images/three_different_ways_of_routing_a_request.png Graphic file (type png)
+<use images/three_different_ways_of_routing_a_request.png>
+Package pdftex.def Info: images/three_different_ways_of_routing_a_request.png  used on input line 7748.
+(pdftex.def)             Requested size: 276.00105pt x 127.56427pt.
+[215]
+<images/using_zookeeper_to_keep_track_of_the_assignment.png, id=806, 610.28pt x 282.05376pt>
+File: images/using_zookeeper_to_keep_track_of_the_assignment.png Graphic file (type png)
+<use images/using_zookeeper_to_keep_track_of_the_assignment.png>
+Package pdftex.def Info: images/using_zookeeper_to_keep_track_of_the_assignment.png  used on input line 7770.
+(pdftex.def)             Requested size: 276.00105pt x 127.56427pt.
+ [216 <./images/three_different_ways_of_routing_a_request.png> <./images/using_zookeeper_to_keep_track_of_the_assignment.png>] [217] [218] [219]
+Chapter 7.
+[220
+
+] [221] [222] [223] [224]
+<images/a_race_condition_between_two_clients.png, id=838, 733.74126pt x 232.87pt>
+File: images/a_race_condition_between_two_clients.png Graphic file (type png)
+<use images/a_race_condition_between_two_clients.png>
+Package pdftex.def Info: images/a_race_condition_between_two_clients.png  used on input line 8105.
+(pdftex.def)             Requested size: 276.00105pt x 87.59607pt.
+ [225] [226 <./images/a_race_condition_between_two_clients.png>] [227]
+Overfull \hbox (2.63947pt too wide) in paragraph at lines 8239--8240
+[]\OT1/cmr/m/n/10 Concurrently run-ning trans-ac-tions shouldn't in-ter-fere with each other.
+ []
+
+[228]
+<images/violating_isolation_one_transaction_reads_another.png, id=852, 733.74126pt x 308.15125pt>
+File: images/violating_isolation_one_transaction_reads_another.png Graphic file (type png)
+<use images/violating_isolation_one_transaction_reads_another.png>
+Package pdftex.def Info: images/violating_isolation_one_transaction_reads_another.png  used on input line 8271.
+(pdftex.def)             Requested size: 276.00105pt x 115.91377pt.
+<images/atomicity_ensures_that_if_an_error_occurs.png, id=853, 733.74126pt x 218.8175pt>
+File: images/atomicity_ensures_that_if_an_error_occurs.png Graphic file (type png)
+<use images/atomicity_ensures_that_if_an_error_occurs.png>
+Package pdftex.def Info: images/atomicity_ensures_that_if_an_error_occurs.png  used on input line 8285.
+(pdftex.def)             Requested size: 276.00105pt x 82.3101pt.
+ [229 <./images/violating_isolation_one_transaction_reads_another.png> <./images/atomicity_ensures_that_if_an_error_occurs.png>]
+Overfull \hbox (17.13945pt too wide) in paragraph at lines 8305--8306
+[]\OT1/cmr/m/n/10 We will re-turn to this topic in ``The End-to-End Ar-gu-ment for Databases''
+ []
+
+[230] [231] [232] [233] [234]
+<images/no_dirty_reads_user_2_sees_the_new_value.png, id=875, 731.73375pt x 229.85875pt>
+File: images/no_dirty_reads_user_2_sees_the_new_value.png Graphic file (type png)
+<use images/no_dirty_reads_user_2_sees_the_new_value.png>
+Package pdftex.def Info: images/no_dirty_reads_user_2_sees_the_new_value.png  used on input line 8511.
+(pdftex.def)             Requested size: 276.00105pt x 86.69836pt.
+ [235 <./images/no_dirty_reads_user_2_sees_the_new_value.png>] [236]
+<images/with_dirty_writes_conflicting_writes_from_different_transactions.png, id=884, 731.73375pt x 341.275pt>
+File: images/with_dirty_writes_conflicting_writes_from_different_transactions.png Graphic file (type png)
+<use images/with_dirty_writes_conflicting_writes_from_different_transactions.png>
+Package pdftex.def Info: images/with_dirty_writes_conflicting_writes_from_different_transactions.png  used on input line 8592.
+(pdftex.def)             Requested size: 276.00105pt x 128.72246pt.
+ [237 <./images/with_dirty_writes_conflicting_writes_from_different_transactions.png>]
+<images/read_skew_alice_observes_the_database.png, id=889, 731.73375pt x 341.275pt>
+File: images/read_skew_alice_observes_the_database.png Graphic file (type png)
+<use images/read_skew_alice_observes_the_database.png>
+Package pdftex.def Info: images/read_skew_alice_observes_the_database.png  used on input line 8643.
+(pdftex.def)             Requested size: 276.00105pt x 128.72246pt.
+ [238] [239 <./images/read_skew_alice_observes_the_database.png>] [240]
+<images/implementing_snapshot_isolation_using_multi_version_objects.png, id=900, 731.73375pt x 554.07pt>
+File: images/implementing_snapshot_isolation_using_multi_version_objects.png Graphic file (type png)
+<use images/implementing_snapshot_isolation_using_multi_version_objects.png>
+Package pdftex.def Info: images/implementing_snapshot_isolation_using_multi_version_objects.png  used on input line 8748.
+(pdftex.def)             Requested size: 276.00105pt x 208.98471pt.
+ [241] [242 <./images/implementing_snapshot_isolation_using_multi_version_objects.png>]
+Overfull \hbox (8.86166pt too wide) in paragraph at lines 8782--8784
+\OT1/cmr/m/n/10 started af-ter the cur-rent trans-ac-tion started) are ig-nored, re-gard-less ofwheter
+ []
+
+[243] [244] [245] [246] [247]
+Overfull \hbox (11.83282pt too wide) in paragraph at lines 8993--8995
+[]\OT1/cmr/m/n/10 Indeed, Post-greSQL's re-peat-able read, Or-a-cle's se-ri-al-iz-able, and SQL Server's
+ []
+
+
+Overfull \hbox (0.334pt too wide) in paragraph at lines 9007--9009
+[]\OT1/cmr/m/n/10 In databases that don't pro-vide trans-ac-tions, you some-times find an atomic
+ []
+
+[248]
+Overfull \hbox (9.83392pt too wide) in paragraph at lines 9036--9038
+\OT1/cmr/m/n/10 low sev-eral writes to hap-pen con-cur-rently and repli-cate them asyn-chronously,
+ []
+
+[249]
+Overfull \hbox (9.83392pt too wide) in paragraph at lines 9055--9057
+\OT1/cmr/m/n/10 low sev-eral writes to hap-pen con-cur-rently and repli-cate them asyn-chronously,
+ []
+
+[250]
+<images/example_of_write_skew.png, id=935, 731.73375pt x 514.92375pt>
+File: images/example_of_write_skew.png Graphic file (type png)
+<use images/example_of_write_skew.png>
+Package pdftex.def Info: images/example_of_write_skew.png  used on input line 9105.
+(pdftex.def)             Requested size: 276.00105pt x 194.21948pt.
+ [251 <./images/example_of_write_skew.png>] [252] [253] [254] [255] [256] [257] [258] [259]
+<images/the_difference_between_an_interactive_transaction_and_a_stored_procedure.png, id=966, 731.73375pt x 436.63126pt>
+File: images/the_difference_between_an_interactive_transaction_and_a_stored_procedure.png Graphic file (type png)
+<use images/the_difference_between_an_interactive_transaction_and_a_stored_procedure.png>
+Package pdftex.def Info: images/the_difference_between_an_interactive_transaction_and_a_stored_procedure.png  used on input line 9450.
+(pdftex.def)             Requested size: 310.4979pt x 185.276pt.
+
+Overfull \hbox (5.63728pt too wide) in paragraph at lines 9464--9466
+\OT1/cmr/m/n/10 a-cle has PL/SQL, SQL Server has T-SQL, Post-greSQL has PL/pgSQL,
+ []
+
+
+Overfull \hbox (4.77832pt too wide) in paragraph at lines 9466--9467
+[]\OT1/cmr/m/n/10 These lan-guages haven't kept up with de-vel-op-ments in general-purpose
+ []
+
+[260 <./images/the_difference_between_an_interactive_transaction_and_a_stored_procedure.png>] [261] [262] [263] [264] [265] [266]
+Overfull \hbox (3.9728pt too wide) in paragraph at lines 9748--9750
+[]\OT1/cmr/m/n/10 This chap-ter has patined a bleak pic-ture of con-cur-rency con-trol in databases 
+ []
+
+[267] [268] [269]
+Overfull \hbox (4.91615pt too wide) in paragraph at lines 9843--9845
+[]\OT1/cmr/m/n/10 When a trans-ac-tion reads from a con-sis-tent snap-shot in an MVCC database,
+ []
+
+<images/detecting_when_a_transaction_reads_outdated_values_from_an_mvcc_snapshot.png, id=999, 731.73375pt x 452.69125pt>
+File: images/detecting_when_a_transaction_reads_outdated_values_from_an_mvcc_snapshot.png Graphic file (type png)
+<use images/detecting_when_a_transaction_reads_outdated_values_from_an_mvcc_snapshot.png>
+Package pdftex.def Info: images/detecting_when_a_transaction_reads_outdated_values_from_an_mvcc_snapshot.png  used on input line 9854.
+(pdftex.def)             Requested size: 276.00105pt x 170.74657pt.
+[270]
+<images/in_serializable_snapshot_isolation_detecting_when_one_transaction_modifies_another_transactions_reads.png, id=1003, 731.73375pt x 462.72874pt>
+File: images/in_serializable_snapshot_isolation_detecting_when_one_transaction_modifies_another_transactions_reads.png Graphic file (type png)
+<use images/in_serializable_snapshot_isolation_detecting_when_one_transaction_modifies_another_transactions_reads.png>
+Package pdftex.def Info: images/in_serializable_snapshot_isolation_detecting_when_one_transaction_modifies_another_transactions_reads.png  used on input line 9891.
+(pdftex.def)             Requested size: 276.00105pt x 174.53252pt.
+ [271 <./images/detecting_when_a_transaction_reads_outdated_values_from_an_mvcc_snapshot.png>] [272 <./images/in_serializable_snapshot_isolation_detecting_when_one_transaction_modifies_another_transactions_reads.png>] [273] [274]
+Overfull \hbox (0.19499pt too wide) in paragraph at lines 9999--10001
+[]\OT1/cmr/m/n/10 This is-sue is most com-monly pre-vented with snap-shot iso-la-tion, which
+ []
+
+
+Overfull \hbox (19.75482pt too wide) in paragraph at lines 10001--10002
+[]\OT1/cmr/m/n/10 It is usu-ally im-ple-mented with \OT1/cmr/m/it/10 multi-version con-cur-rency con-trol \OT1/cmr/m/n/10 (MVCC) 
+ []
+
+
+Overfull \hbox (2.36176pt too wide) in paragraph at lines 10037--10038
+[]\OT1/cmr/m/n/10 Snapshot iso-la-tion pre-vents straight-for-ward phan-tom reads, but phan-
+ []
+
+[275] [276]
+Chapter 8.
+[277
+
+] [278]
+Overfull \hbox (0.36172pt too wide) in paragraph at lines 10179--10181
+\OT1/cmr/m/n/10 fore-cast-ing or molec-u-lar dyan-mics (sim-u-lat-ing the move-ment of atoms
+ []
+
+[279] [280] [281] [282]
+<images/send_a_request_dont_get_a_response.png, id=1044, 611.28375pt x 205.76875pt>
+File: images/send_a_request_dont_get_a_response.png Graphic file (type png)
+<use images/send_a_request_dont_get_a_response.png>
+Package pdftex.def Info: images/send_a_request_dont_get_a_response.png  used on input line 10337.
+(pdftex.def)             Requested size: 276.00105pt x 92.90591pt.
+ [283 <./images/send_a_request_dont_get_a_response.png>] [284] [285] [286] [287]
+<images/if_several_machines_send_network_traffic.png, id=1062, 531.9875pt x 210.7875pt>
+File: images/if_several_machines_send_network_traffic.png Graphic file (type png)
+<use images/if_several_machines_send_network_traffic.png>
+Package pdftex.def Info: images/if_several_machines_send_network_traffic.png  used on input line 10543.
+(pdftex.def)             Requested size: 276.00105pt x 109.36247pt.
+ [288] [289 <./images/if_several_machines_send_network_traffic.png>] [290] [291] [292] [293] [294]
+Overfull \hbox (53.75688pt too wide) in paragraph at lines 10789--10791
+[]\OT1/cmr/m/n/10 For ex-am-ple, [][][][][][][][][][] on $[][]$ and [][][][][]
+ []
+
+[295]
+Overfull \hbox (14.94035pt too wide) in paragraph at lines 10812--10814
+\OT1/cmr/m/n/10 such as a time-out or a ser-vice's re-sponse time: [][][][][]
+ []
+
+[296] [297] [298] [299]
+<images/the_write_by_client_b.png, id=1102, 436.63126pt x 212.795pt>
+File: images/the_write_by_client_b.png Graphic file (type png)
+<use images/the_write_by_client_b.png>
+Package pdftex.def Info: images/the_write_by_client_b.png  used on input line 10982.
+(pdftex.def)             Requested size: 276.00105pt x 134.50963pt.
+ [300 <./images/the_write_by_client_b.png>] [301] [302] [303] [304]
+Overfull \hbox (1.95453pt too wide) in paragraph at lines 11191--11193
+\OT1/cmr/m/n/10 passes be-tween the point that it checks the time ([][][][][]
+ []
+
+[305]
+Overfull \hbox (3.94498pt too wide) in paragraph at lines 11217--11219
+[]\OT1/cmr/m/n/10 Even so-called ``con-cur-rent'' garbage col-lec-tors like the HotSpot JVM's
+ []
+
+[306] [307] [308]
+Overfull \hbox (2.33395pt too wide) in paragraph at lines 11350--11352
+[]\OT1/cmr/m/n/10 Language run-times have some flex-bil-ity around when they sched-ule garbage
+ []
+
+[309] [310] [311] [312]
+<images/incorrect_implementation_of_a_distributed_lock.png, id=1147, 513.92pt x 197.73875pt>
+File: images/incorrect_implementation_of_a_distributed_lock.png Graphic file (type png)
+<use images/incorrect_implementation_of_a_distributed_lock.png>
+Package pdftex.def Info: images/incorrect_implementation_of_a_distributed_lock.png  used on input line 11484.
+(pdftex.def)             Requested size: 276.00105pt x 106.19801pt.
+ [313 <./images/incorrect_implementation_of_a_distributed_lock.png>]
+<images/making_access_to_storage_safe.png, id=1153, 515.9275pt x 199.74625pt>
+File: images/making_access_to_storage_safe.png Graphic file (type png)
+<use images/making_access_to_storage_safe.png>
+Package pdftex.def Info: images/making_access_to_storage_safe.png  used on input line 11508.
+(pdftex.def)             Requested size: 276.00105pt x 106.85861pt.
+ [314 <./images/making_access_to_storage_safe.png>] [315] [316] [317] [318] [319] [320] [321] [322] [323] [324] [325]
+Chapter 9.
+[326
+
+] [327]
+Overfull \hbox (5.91724pt too wide) in paragraph at lines 11999--12001
+[]\OT1/cmr/m/n/10 These in-con-sis-ten-cies oc-cur no mat-ter what repli-ca-tion method the database
+ []
+
+[328] [329]
+<images/this_system_is_not_linearizable.png, id=1205, 515.9275pt x 369.38pt>
+File: images/this_system_is_not_linearizable.png Graphic file (type png)
+<use images/this_system_is_not_linearizable.png>
+Package pdftex.def Info: images/this_system_is_not_linearizable.png  used on input line 12078.
+(pdftex.def)             Requested size: 276.00105pt x 197.60788pt.
+ [330 <./images/this_system_is_not_linearizable.png>]
+<images/if_a_read_request_is_concurrent_with_a_write_request.png, id=1210, 516.93124pt x 160.6pt>
+File: images/if_a_read_request_is_concurrent_with_a_write_request.png Graphic file (type png)
+<use images/if_a_read_request_is_concurrent_with_a_write_request.png>
+Package pdftex.def Info: images/if_a_read_request_is_concurrent_with_a_write_request.png  used on input line 12132.
+(pdftex.def)             Requested size: 276.00105pt x 85.74982pt.
+ [331] [332 <./images/if_a_read_request_is_concurrent_with_a_write_request.png>]
+<images/after_any_one_read_has_returned_the_new_value.png, id=1219, 523.9575pt x 164.615pt>
+File: images/after_any_one_read_has_returned_the_new_value.png Graphic file (type png)
+<use images/after_any_one_read_has_returned_the_new_value.png>
+Package pdftex.def Info: images/after_any_one_read_has_returned_the_new_value.png  used on input line 12195.
+(pdftex.def)             Requested size: 276.00105pt x 86.71553pt.
+ [333 <./images/after_any_one_read_has_returned_the_new_value.png>]
+<images/visualizing_the_points_in_time.png, id=1224, 527.9725pt x 265.99374pt>
+File: images/visualizing_the_points_in_time.png Graphic file (type png)
+<use images/visualizing_the_points_in_time.png>
+Package pdftex.def Info: images/visualizing_the_points_in_time.png  used on input line 12248.
+(pdftex.def)             Requested size: 276.00105pt x 139.04811pt.
+ [334] [335 <./images/visualizing_the_points_in_time.png>] [336] [337] [338] [339]
+<images/the_web_server_and_image_resizer_communicate.png, id=1245, 730.73pt x 248.93pt>
+File: images/the_web_server_and_image_resizer_communicate.png Graphic file (type png)
+<use images/the_web_server_and_image_resizer_communicate.png>
+Package pdftex.def Info: images/the_web_server_and_image_resizer_communicate.png  used on input line 12433.
+(pdftex.def)             Requested size: 276.00105pt x 94.02083pt.
+ [340 <./images/the_web_server_and_image_resizer_communicate.png>] [341] [342]
+<images/a_nonlinearizable_execution.png, id=1256, 732.7375pt x 416.55624pt>
+File: images/a_nonlinearizable_execution.png Graphic file (type png)
+<use images/a_nonlinearizable_execution.png>
+Package pdftex.def Info: images/a_nonlinearizable_execution.png  used on input line 12548.
+(pdftex.def)             Requested size: 276.00105pt x 156.90738pt.
+ [343 <./images/a_nonlinearizable_execution.png>]
+<images/a_network_interruption_forcing_a_choice.png, id=1262, 732.7375pt x 343.2825pt>
+File: images/a_network_interruption_forcing_a_choice.png Graphic file (type png)
+<use images/a_network_interruption_forcing_a_choice.png>
+Package pdftex.def Info: images/a_network_interruption_forcing_a_choice.png  used on input line 12587.
+(pdftex.def)             Requested size: 276.00105pt x 129.3068pt.
+ [344 <./images/a_network_interruption_forcing_a_choice.png>] [345] [346] [347] [348] [349] [350] [351] [352] [353] [354] [355] [356]
+<images/lamport_timestamps.png, id=1306, 732.7375pt x 328.22626pt>
+File: images/lamport_timestamps.png Graphic file (type png)
+<use images/lamport_timestamps.png>
+Package pdftex.def Info: images/lamport_timestamps.png  used on input line 13088.
+(pdftex.def)             Requested size: 276.00105pt x 123.63545pt.
+ [357 <./images/lamport_timestamps.png>] [358] [359] [360] [361] [362] [363] [364] [365] [366] [367] [368]
+<images/a_successful_execution_of_two_phase_commit.png, id=1346, 730.73pt x 268.00125pt>
+File: images/a_successful_execution_of_two_phase_commit.png Graphic file (type png)
+<use images/a_successful_execution_of_two_phase_commit.png>
+Package pdftex.def Info: images/a_successful_execution_of_two_phase_commit.png  used on input line 13505.
+(pdftex.def)             Requested size: 276.00105pt x 101.22403pt.
+ [369 <./images/a_successful_execution_of_two_phase_commit.png>] [370] [371]
+<images/the_coordinator_crashes.png, id=1357, 732.7375pt x 274.02374pt>
+File: images/the_coordinator_crashes.png Graphic file (type png)
+<use images/the_coordinator_crashes.png>
+Package pdftex.def Info: images/the_coordinator_crashes.png  used on input line 13669.
+(pdftex.def)             Requested size: 276.00105pt x 103.21858pt.
+ [372] [373 <./images/the_coordinator_crashes.png>] [374] [375] [376] [377] [378] [379] [380] [381] [382] [383] [384] [385]
+Overfull \hbox (1.1117pt too wide) in paragraph at lines 14169--14171
+[]\OT1/cmr/m/n/10 Sometimes con-sen-sus al-go-rithms are par-tic-u-larly sen-si-tive to net-work prob-
+ []
+
+[386] [387]
+Overfull \hbox (8.19499pt too wide) in paragraph at lines 14256--14257
+[]\OT1/cmr/m/n/10 However, it is the com-bi-na-tion of these fea-tures that makes sys-tems like ZooKeeper
+ []
+
+
+Overfull \hbox (4.58391pt too wide) in paragraph at lines 14268--14270
+[]\OT1/cmr/m/n/10 Another ex-am-ple arises when you have some par-ti-tioned re-source (database,
+ []
+
+[388] [389] [390] [391] [392] [393]
+Chapter 10.
+[394
+
+] [395] [396] [397] [398] [399] [400] [401] [402] [403] [404] [405] [406]
+Overfull \hbox (0.3062pt too wide) in paragraph at lines 14987--14989
+[]\OT1/cmr/m/n/10 In Hadoop's im-ple-men-ta-tion of MapRe-duce, that filesys-tem is called HDFS
+ []
+
+[407] [408] [409]
+<images/a_mapreduce_job_with_three_mappers_and_three_reducers.png, id=1482, 522.95375pt x 352.31625pt>
+File: images/a_mapreduce_job_with_three_mappers_and_three_reducers.png Graphic file (type png)
+<use images/a_mapreduce_job_with_three_mappers_and_three_reducers.png>
+Package pdftex.def Info: images/a_mapreduce_job_with_three_mappers_and_three_reducers.png  used on input line 15115.
+(pdftex.def)             Requested size: 276.00105pt x 185.9472pt.
+ [410 <./images/a_mapreduce_job_with_three_mappers_and_three_reducers.png>] [411] [412] [413]
+<images/a_join_between_a_log_of_user_activity.png, id=1495, 519.9425pt x 232.87pt>
+File: images/a_join_between_a_log_of_user_activity.png Graphic file (type png)
+<use images/a_join_between_a_log_of_user_activity.png>
+Package pdftex.def Info: images/a_join_between_a_log_of_user_activity.png  used on input line 15240.
+(pdftex.def)             Requested size: 276.00105pt x 123.61238pt.
+ [414 <./images/a_join_between_a_log_of_user_activity.png>] [415]
+Overfull \hbox (3.9728pt too wide) in paragraph at lines 15289--15291
+[]\OT1/cmr/m/n/10 Subsequent Map-Reduce jobs could then cal-cu-late the dis-tri-bu-tion of viewer
+ []
+
+[416] [417] [418] [419] [420] [421]
+Overfull \hbox (20.55623pt too wide) in paragraph at lines 15513--15515
+\OT1/cmr/m/n/10 used for an-a-lyt-ics pur-poses (see ``Com-par-ing Hadoop to Dis-tributed Databases''
+ []
+
+[422] [423] [424] [425] [426] [427] [428] [429] [430]
+Overfull \hbox (2.63948pt too wide) in paragraph at lines 15790--15792
+[]\OT1/cmr/m/n/10 This ar-chi-tec-ture al-lows non-production (low-priority) com-put-ing re-sources
+ []
+
+[431] [432] [433] [434] [435] [436] [437] [438] [439] [440] [441] [442] [443] [444] [445] [446]
+Chapter 11.
+[447
+
+]
+Overfull \hbox (1.11168pt too wide) in paragraph at lines 16373--16375
+\OT1/cmr/m/n/10 cord-ing to a time-of-day clock (see ``Mono-tonic Ver-sus Time-of-day Clocks''
+ []
+
+[448]
+Overfull \hbox (2.91727pt too wide) in paragraph at lines 16397--16399
+[]\OT1/cmr/m/n/10 However, when mov-ing twoard con-tin-ual pro-cess-ing with low de-lays, polling
+ []
+
+[449] [450] [451] [452]
+Overfull \hbox (3.52832pt too wide) in paragraph at lines 16548--16550
+[]\OT1/cmr/m/n/10 Databases of-ten sup-port sec-ondary in-dexes and var-i-ous ways of search-
+ []
+
+[453]
+<images/load_balancing_sharing_the_work_of_consuming.png, id=1624, 519.9425pt x 257.96375pt>
+File: images/load_balancing_sharing_the_work_of_consuming.png Graphic file (type png)
+<use images/load_balancing_sharing_the_work_of_consuming.png>
+Package pdftex.def Info: images/load_balancing_sharing_the_work_of_consuming.png  used on input line 16599.
+(pdftex.def)             Requested size: 276.00105pt x 136.93268pt.
+ [454 <./images/load_balancing_sharing_the_work_of_consuming.png>]
+<images/consumer_2_crashes_while_processing_m3.png, id=1628, 522.95375pt x 270.00874pt>
+File: images/consumer_2_crashes_while_processing_m3.png Graphic file (type png)
+<use images/consumer_2_crashes_while_processing_m3.png>
+Package pdftex.def Info: images/consumer_2_crashes_while_processing_m3.png  used on input line 16631.
+(pdftex.def)             Requested size: 276.00105pt x 142.50655pt.
+ [455 <./images/consumer_2_crashes_while_processing_m3.png>] [456]
+<images/producers_send_messages.png, id=1635, 522.95375pt x 285.065pt>
+File: images/producers_send_messages.png Graphic file (type png)
+<use images/producers_send_messages.png>
+Package pdftex.def Info: images/producers_send_messages.png  used on input line 16703.
+(pdftex.def)             Requested size: 276.00105pt x 150.45302pt.
+ [457 <./images/producers_send_messages.png>]
+Overfull \hbox (3.13922pt too wide) in paragraph at lines 16743--16745
+[]\OT1/cmr/m/n/10 Alternatively, you could spread mes-sage pro-ceeeeeeeeeeeeeeeeeeeeeess-
+ []
+
+[458] [459] [460] [461] [462]
+<images/in_the_database_x_is_first_set_to_a.png, id=1655, 520.94624pt x 213.79875pt>
+File: images/in_the_database_x_is_first_set_to_a.png Graphic file (type png)
+<use images/in_the_database_x_is_first_set_to_a.png>
+Package pdftex.def Info: images/in_the_database_x_is_first_set_to_a.png  used on input line 16918.
+(pdftex.def)             Requested size: 276.00105pt x 113.27364pt.
+ [463] [464 <./images/in_the_database_x_is_first_set_to_a.png>]
+<images/taking_data_in_the_order_it_was_written.png, id=1663, 520.94624pt x 228.855pt>
+File: images/taking_data_in_the_order_it_was_written.png Graphic file (type png)
+<use images/taking_data_in_the_order_it_was_written.png>
+Package pdftex.def Info: images/taking_data_in_the_order_it_was_written.png  used on input line 16967.
+(pdftex.def)             Requested size: 276.00105pt x 121.25066pt.
+ [465 <./images/taking_data_in_the_order_it_was_written.png>]
+Overfull \hbox (4.8339pt too wide) in paragraph at lines 16984--16986
+\OT1/cmr/m/n/10 serve all changes to data ta-bles and add cor-re-spond-ing en-tires to a chnagelog
+ []
+
+[466] [467]
+Overfull \hbox (3.05617pt too wide) in paragraph at lines 17080--17081
+[]\OT1/cmr/m/n/10 Similarly to change data cap-ture, event sourc-ing in-volves stor-ing all changes
+ []
+
+[468] [469] [470] [471]
+<images/the_relationship_between_current_application_state_and_an_event_stream.png, id=1686, 518.93875pt x 111.41624pt>
+File: images/the_relationship_between_current_application_state_and_an_event_stream.png Graphic file (type png)
+<use images/the_relationship_between_current_application_state_and_an_event_stream.png>
+Package pdftex.def Info: images/the_relationship_between_current_application_state_and_an_event_stream.png  used on input line 17224.
+(pdftex.def)             Requested size: 276.00105pt x 59.25943pt.
+ [472 <./images/the_relationship_between_current_application_state_and_an_event_stream.png>] [473] [474] [475] [476] [477] [478] [479]
+Overfull \hbox (0.22287pt too wide) in paragraph at lines 17488--17489
+[]\OT1/cmr/m/n/10 Stream an-a-lyt-ics sys-tems some-times use prob-a-blilis-tic al-go-rithms, such as Bloom
+ []
+
+[480]
+Overfull \hbox (0.6672pt too wide) in paragraph at lines 17534--17536
+[]\OT1/cmr/m/n/10 Conventional search en-gines first in-dex the doc-u-ments and then run queries
+ []
+
+[481]
+Overfull \hbox (9.05614pt too wide) in paragraph at lines 17555--17556
+[]\OT1/cmr/m/n/10 Actors can com-mu-ni-cate in ar-bi-trary ways (in-clud-ing cyclic re-quest/response
+ []
+
+[482] [483]
+<images/windowing_by_processing_time.png, id=1725, 727.71875pt x 417.56pt>
+File: images/windowing_by_processing_time.png Graphic file (type png)
+<use images/windowing_by_processing_time.png>
+Package pdftex.def Info: images/windowing_by_processing_time.png  used on input line 17628.
+(pdftex.def)             Requested size: 276.00105pt x 158.3686pt.
+ [484 <./images/windowing_by_processing_time.png>] [485] [486] [487] [488]
+Overfull \hbox (1.27843pt too wide) in paragraph at lines 17818--17820
+[]\OT1/cmr/m/n/10 The database lookup could be im-ple-mented by query-ing a re-mote database;
+ []
+
+[489] [490] [491] [492]
+Overfull \hbox (2.08401pt too wide) in paragraph at lines 17965--17967
+\OT1/cmr/m/n/10 nal mes-sag-ing sys-tems (in-clud-ing email or push no-ti-fi-ca-tions), any database
+ []
+
+[493] [494] [495] [496] [497] [498] [499] [500] [501]
+Chapter 12.
+
+Overfull \hbox (0.74907pt too wide) in paragraph at lines 18291--18293
+\OT1/cmr/m/n/10 ap-pli-ca-tions and sys-tems that are \OT1/cmtt/m/n/10 reliable\OT1/cmr/m/n/10 , \OT1/cmtt/m/n/10 scalable\OT1/cmr/m/n/10 , and \OT1/cmtt/m/n/10 maintainable 
+ []
+
+[502
+
+] [503] [504] [505]
+Overfull \hbox (15.6375pt too wide) in paragraph at lines 18440--18442
+[]\OT1/cmr/m/n/10 When ap-pli-ca-tions are de-ployed as \OT1/cmr/m/it/10 mi-croser-vices \OT1/cmr/m/n/10 (see ``Dataflow Through
+ []
+
+[506]
+Overfull \hbox (3.05614pt too wide) in paragraph at lines 18459--18461
+[]\OT1/cmr/m/n/10 Most con-sen-sus al-go-rithms are de-signed for sit-u-a-tions in which the through-
+ []
+
+[507] [508] [509] [510] [511] [512] [513] [514]
+Overfull \hbox (1.58383pt too wide) in paragraph at lines 18766--18767
+[]\OT1/cmr/m/n/10 It seems that there are par-al-lels be-tween the fea-tures that are built into databases
+ []
+
+[515] [516]
+Overfull \hbox (3.27837pt too wide) in paragraph at lines 18841--18843
+[]\OT1/cmr/m/n/10 The tra-di-tional ap-proach to syn-chro-niz-ing writes re-quires dis-tributed trans-
+ []
+
+[517] [518]
+Overfull \hbox (7.33424pt too wide) in paragraph at lines 18912--18914
+[]\OT1/cmr/m/n/10 for ex-am-ple, I would love it if we could sim-ply de-clare [][][][][][][][][]
+ []
+
+[519] [520] [521] [522] [523] [524] [525]
+<images/in_a_search_index_writes.png, id=1861, 611.28375pt x 244.66406pt>
+File: images/in_a_search_index_writes.png Graphic file (type png)
+<use images/in_a_search_index_writes.png>
+Package pdftex.def Info: images/in_a_search_index_writes.png  used on input line 19162.
+(pdftex.def)             Requested size: 276.00105pt x 110.46739pt.
+ [526 <./images/in_a_search_index_writes.png>] [527] [528] [529] [530]
+Overfull \hbox (9.22273pt too wide) in paragraph at lines 19314--19316
+[]\OT1/cmr/m/n/10 The chal-lenge is that the as-sump-tion of state-less clients and re-quest/response
+ []
+
+[531] [532] [533]
+Overfull \hbox (2.25061pt too wide) in paragraph at lines 19407--19409
+\OT1/cmr/m/n/10 with mod-els that of-fer bet-ter per-for-mance and scal-a-bil-ity, but much messier
+ []
+
+[534] [535] [536] [537] [538] [539] [540] [541] [542] [543] [544] [545]
+Overfull \hbox (5.86172pt too wide) in paragraph at lines 19843--19845
+[]\OT1/cmr/m/n/10 If in-tegrity is vi-o-lated, the in-con-sis-tently is per-ma-nent: wait-ing andtry-
+ []
+
+
+Overfull \hbox (7.58398pt too wide) in paragraph at lines 19847--19849
+\OT1/cmr/m/n/10 page 223), con-sis-tency is usu-ally un-der-stood as ome kind of application-
+ []
+
+[546]
+Overfull \hbox (2.52838pt too wide) in paragraph at lines 19890--19891
+[]\OT1/cmr/m/n/10 Thus, fault-tolerant mes-sage de-liv-ery and du-pli-cate sup-pres-sion (e.g., idem-
+ []
+
+[547] [548] [549]
+Overfull \hbox (0.66731pt too wide) in paragraph at lines 20016--20018
+[]\OT1/cmr/m/n/10 The ques-tion is whether vi-o-la-tions of our as-sump-tions hap-pen of-ten enough
+ []
+
+[550] [551] [552] [553] [554] [555]
+Overfull \hbox (0.9174pt too wide) in paragraph at lines 20207--20209
+[]\OT1/cmr/m/n/10 By mak-ing these deriva-tions and trans-for-ma-tions asyn-chronous and loosely
+ []
+
+[556]
+Overfull \hbox (2.19511pt too wide) in paragraph at lines 20229--20231
+[]\OT1/cmr/m/n/10 By struc-tur-ing ap-pli-ca-tions around dataflow and check-ing con-straints asyn-
+ []
+
+[557] (.aux/designing_data_intensive_applications.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+ ***********
+ ) 
+Here is how much of TeX's memory you used:
+ 26153 strings out of 467533
+ 635275 string characters out of 5422139
+ 1155657 words of memory out of 5000000
+ 54719 multiletter control sequences out of 15000+600000
+ 632916 words of font info for 58 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 116i,11n,121p,734b,1699s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
+Output written on .aux/designing_data_intensive_applications.pdf (557 pages, 11700354 bytes).
+PDF statistics:
+ 2049 PDF objects out of 2073 (max. 8388607)
+ 1278 compressed objects within 13 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 458 words of extra memory for PDF output out of 10000 (max. 10000000)
+
