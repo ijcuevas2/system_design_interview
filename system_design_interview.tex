@@ -117,6 +117,63 @@ Business owners can add, delete, or update a business but this information doesn
 Customers can view detailed information about a business
 \end{itemize}
 
+\subsection{Non-functional requirements}
+
+From the business requirements, we can infer a list of non-functional requirements. You should also check these with the interviewer.
+
+\begin{itemize}
+\item 
+Low latency: Users should be able to see nearby businesses quickly
+\item
+Data privacy: Location info is sensitive data
+
+\begin{itemize}
+\item 
+When we design a location-based service (LBS), we should always take user privary into consideration
+\item
+We need to compy with data privacy laws like General Data Protection Regulation (GDPR) [4] and California Consumer Pirvacy Act (CCPA) [5], etc.
+\item
+High availability and scalability requirements: We should ensure our system can handle the spike in traffic during peak hours in densely populated areas
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Back-of-the-envelope-estimation}
+
+Let's take a look at some back-of-the-envelope-estimation
+
+\begin{itemize}
+\item 
+Let's take look at some back-of-the-envolpe calculations to determine the potential scale and challegnes our solution will need to address
+\item
+Assume we have 100 million daily active users and 200 million businesses
+\end{itemize}
+
+\begin{defbox}{Calculate QPS}
+\begin{itemize}
+\item 
+Seconds in a day = $24 \times 60 \times 60 \times = 86400$ seconds. We can round it up to \( 10^5 \) for easier calculation
+\item
+\(10^5\) is used in this book for easier calculation and is used through out this book to represent seconds in a day
+\item
+Assume a user makes 5 search queries per day
+\item
+Search QPS = \(\frac{100 \text{ million} \times 5}{10^5} = 5000 \)
+\end{itemize}
+\end{defbox}
+
+
+
+% \begin{table}[htpb]
+%   \centering
+%   \caption{caption}
+%   \label{tab:label}
+%
+%   \begin{tabular}{c|c|c}
+%
+%   \end{tabular}
+% \end{table}
+
 
 \end{document}
 
