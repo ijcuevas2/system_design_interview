@@ -64,7 +64,7 @@
 In this chapter we design a proximity service.
 
 \begin{itemize}
-\item 
+\item
 A proximity service is used to discover nearby places such as restaurants, hotels, theaters, museums, etc., and is a core component that powers features like finding the best restaurants nearby on Yelp or finding k-nearest gas stations on Google Maps.
 \item
 Figure 1.1. shows the user interface via which you can search for nearby restaurans on Yelp [1]
@@ -83,10 +83,10 @@ Note the map tiles used in this book are from Stamen Design [2] anbd data are fr
 
 Yelp supports many features and it is not feasible to design all of them in an interview seesion, so it's important to narrow down the scope by asking questions
 
-The interactions between the candidate and interviewer could look like this: 
+The interactions between the candidate and interviewer could look like this:
 
 \begin{itemize}
-\item 
+\item
 Candidate: Can a user specify the search radius? If there are not enough businesses within the search raidus, does the system expand the search?
 \item
 Interviewer: That's a great question. Let's assume we only care about businesses within a specified radius. If time allows, we can then discuss how to expand the search if there are not enough binesses within the radius
@@ -102,14 +102,14 @@ Interviewer: Business owners can add, delete or update a business. Assume we hav
 Candidate: A user might be moving while using the app/website, so the search results could be slightly different after a while. Do we need to refresh the page to keep the results up to date?
 \item
 Interviewer: Let's assume a user's moving speed is slow and we don't need to constantly refresh the page
-\end{itemize} 
+\end{itemize}
 
 \subsection{Functional requirements}
 
 Based on this conversation, we focus on 3 key features:
 
 \begin{itemize}
-\item 
+\item
 Return all businesses based on a user's location (latitidue and longitude pair) and radius
 \item
 Business owners can add, delete, or update a business but this information doesn't need to be reflected in real time
@@ -122,13 +122,13 @@ Customers can view detailed information about a business
 From the business requirements, we can infer a list of non-functional requirements. You should also check these with the interviewer.
 
 \begin{itemize}
-\item 
+\item
 Low latency: Users should be able to see nearby businesses quickly
 \item
 Data privacy: Location info is sensitive data
 
 \begin{itemize}
-\item 
+\item
 When we design a location-based service (LBS), we should always take user privary into consideration
 \item
 We need to compy with data privacy laws like General Data Protection Regulation (GDPR) [4] and California Consumer Pirvacy Act (CCPA) [5], etc.
@@ -143,7 +143,7 @@ High availability and scalability requirements: We should ensure our system can 
 Let's take a look at some back-of-the-envelope-estimation
 
 \begin{itemize}
-\item 
+\item
 Let's take look at some back-of-the-envolpe calculations to determine the potential scale and challegnes our solution will need to address
 \item
 Assume we have 100 million daily active users and 200 million businesses
@@ -151,7 +151,7 @@ Assume we have 100 million daily active users and 200 million businesses
 
 \begin{defbox}{Calculate QPS}
 \begin{itemize}
-\item 
+\item
 Seconds in a day = $24 \times 60 \times 60 \times = 86400$ seconds. We can round it up to \( 10^5 \) for easier calculation
 \item
 \(10^5\) is used in this book for easier calculation and is used through out this book to represent seconds in a day
@@ -162,18 +162,58 @@ Search QPS = \(\frac{100 \text{ million} \times 5}{10^5} = 5000 \)
 \end{itemize}
 \end{defbox}
 
+\begin{table}[htpb]
+\centering
+\caption{Table 1.1: Request Parameters}
+\label{tab:label}
+\begin{tabular}{|c|c|c|}
+\hline
+Field        & Description                      & Type \\
+\hline
+Latitude     & Latitude of a given location     & decimal \\
+\hline
+Longitude    & Longitude of a given location    & decimal \\
+\hline
+Radius       & Optional. Default is 5000 meters & int     \\
+\hline
+\end{tabular}
+\end{table}
 
+\begin{lstlisting}
+  {
+    "total": 18,
+    "businesses": [{business object}]
+  }
+\end{lstlisting}
 
-% \begin{table}[htpb]
-%   \centering
-%   \caption{caption}
-%   \label{tab:label}
-%
-%   \begin{tabular}{c|c|c}
-%
-%   \end{tabular}
-% \end{table}
+The business object contains everything needed to render the search result page, but we may still need additional attributes such as pictures, reviews, star rating, etc., to render the business detail page.
+
+Therefore, when a user cliks on the business detail page, a new endpoint call to fetch the detailed information of a business is usually required.
+
+\subsection{APIs for business}
+
+The APIs related to a business object are shown in table below.
+
+\begin{table}[htpb]
+\caption{Table 1.2: APIs for a business}
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{API} & \textbf{Detail} \\
+\hline
+GET /v1/businesses:id   & Return detailed information about a business \\
+\hline
+POST /v1/businesses     & Add a business \\
+\hline
+PUT /v1/businesses/:id  & Update details of a business \\
+\hline
+DELETE /v1/businesses/:id  & DELETE a business \\
+\hline
+\end{tabular}
+\end{table}
+
+If you are interested in real-world for place/business search, two examples are Google Places API [7] and Yelp business endpoints [8]
+
 
 
 \end{document}
-
