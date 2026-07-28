@@ -272,5 +272,22 @@ A geo index table is used for the efficient processing of spatial operation. Sin
 
 The high level design diagram is shown in Figure 1.2. The system comprises two parts: location-based service (LBS) and business-related service. Let's take a look at each component of the system.
 
+\subsection{Location-based service (LBS)}
+
+The LBS service is the core part of the system which finds nearby buisnesses for a given radius and location.
+
+The LBS has the following characteristics:
+
+\begin{itemize}
+\item
+It is a read-heavy service with no write requests
+\item
+QPS is high, espcially during peak hours in dense areas
+\item
+This service is stateless so it's easy to scale horizontally
+\end{itemize}
+
+
+
 
 \end{document}
