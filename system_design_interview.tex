@@ -366,11 +366,56 @@ The problem is that we have two-dimensional data and the dataset returned from e
 \item
 For example, as shown in Figure 1.4, we can retrieve dataset 1 and dataset 2, thanks to indexes on longitude and latitude columns
 \item
-But to fetch businesses within the raidus, we need to perform an intersect operation on those two datasets
+But to fetch businesses within the radius, we need to perform an intersect operation on those two datasets
 \item
 This is not efficient because each dataset contains lots of data
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{intersect_two_datasets}
+    \caption{Figure 1.4: Intersect Two Datasets}
+  \end{center}
+\end{figure}
+
+The problem with the previous approach is that the database index can only improve search speed in one dimension
+
+\begin{itemize}
+\item
+So naturally, the follow-up question is, can we map two-dimensional data to one dimension?
+\item
+The answer is yes
+\item
+Before we dive into the answers, let's take a look at different types of indexing methods
+\item
+In a broad sense, there are two types of geospatial indexing approaches, as shown in Figure 1.5
+\item
+The highlighted ones are the algorithms we discuss indetail because they are commonly used in the industry
+\end{itemize}
+
+\begin{itemize}
+\item
+Hash: even grid, geohash, cartesian tiers [12], etc.
+\item
+Tree: quadtree, Google S2, RTree [13], etc
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{different_types_of_geospatial_indexes}
+    \caption{Figure 1.5: Different types of geospatial indexes}
+  \end{center}
+\end{figure}
+
+Even though, the udnelying implmentations of those approaches are different, the high level idea is the same, that is to divide the map into smaller areas a build indexes for fast search.
+
+Among those, geohash, quadtree, and Google G2 are most widely used in real-world applications
+
+Let's take a look at them one by one.
+
+\subsection{Option 2: Evenly Divided Grid}
+
+One simpple approach is to evenly divide the world into small grids (Figure 1.6) This way one grid could have multiple businesses, and each business on the map belongs to one grid.
 
 
 \end{document}
