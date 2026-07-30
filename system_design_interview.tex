@@ -811,6 +811,107 @@ Geofencing allows us to define parameters that surround the areas of interest an
 This can provide richer functionalities than just returning nearby businesses
 \end{itemize}
 
+\item
+
+\begin{itemize}
+\item
+Another advantage of S2 is its Region Cover algorithm [26]
+\item
+Instead of having a fixed level (precision) as in geohash, we can specify min level, max level, and max cells in S2
+\item
+The result returned by S2 is more granular because the cell sizes are flexible
+\item
+If you want to learn more take a look at the S2 tool [26]
+\end{itemize}
+
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{geofence}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Recommendation}
+
+To find nearby businesses efficeintly, we have discussed a few options: geohash, quadtree, and S2
+
+As you can see from Table 1.8, different companies or technologies adpot different options.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+Geo Index & Companies \\
+\hline
+geohash & Bing map [27], Redis [10], MongoDB [28], Lyft [29] \\
+\hline
+quadtree & Yext [21] \\
+\hline
+Both geohash and quadtree & Elasticsearch [30] \\
+\hline
+S2 & Google Maps, Tinder [31] \\
+\hline
+\end{tabular}
+
+During an interview, we suggest choosing \textbf{geohash} or \textbf{quadtree} because S2 is more complicated to explain during an interview.
+
+\subsection{Geohash vs quadtree}
+
+Before we conclude this section, let's do a quick comparison between geohash and quadtree
+
+\subsubsection{Geohash}
+
+\begin{itemize}
+\item
+Easy to use and implement. No need to build a tree
+\item
+Supports returning businesses within a specified radius
+\item
+When the precision (level) of geohash is fixed, the size of the grid is fixed as well. It cannot dynamically adjust the grid size, based on population density
+\item
+More complex logic is needed to suppport this
+\item
+Updating the index is easy. For example, to remove a business from the index we jsut ened to remove it from the corresponding row with the same \lstinline|geohash| and \lstinline|business_id|. See Figure 1.18 for a concrete example.
+\end{itemize}
+
+\subsection{Quadtree}
+
+\begin{itemize}
+\item
+Slightly harder to implement because it eneds to build a tree
+\item
+
+\begin{itemize}
+\item
+Supports fetching k-nearest businesses and don't care if businesses are within a specified radius
+\item
+For example, when you are traveling and your car is low on gas, you just want to find the nearest \lstinline|k| gas stations
+\item
+These gas stations may not be near you, but the app needs to return the nearest \lstinline|k| results
+\item
+For this type of query, a quadtree is a good fit because its subdividing process is based on the number \lstinline|k| and it can automatically adjust the query range until it returns \lstinline|k| results
+\item
+It can dynamically adjust the grid size based on population desnity (see the Denver example in Figure 1.15)
+\item
+\begin{itemize}
+\item
+Updating the index is more complicated than geohash
+\item
+A quadtree is a tree stucture
+\item
+If a business is removed, we need to traverse from the root to the leaf node, to remove the business
+\item
+For example, if we want to remove the business with \lstinline|ID = 2|, we have to travel from the root all the way down to the leaf node, as shown in Figure 1.19
+\item
+Updating the index takes \lstinline|O(log n)|, but the implementaiton is complicated if the sdata structure is accessed by a multi-threaded program, as locking is required
+\item
+Also, reblaancing the tree can be complicated
+\item
+Rebalacning is necessary if, for exmaple, a leaf node has no room for a new addition
+\item
+A possible fix is to over-allocate the ranges
+\end{itemize}
+\end{itemize}
 
 \end{itemize}
 
