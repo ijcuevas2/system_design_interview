@@ -6,7 +6,7 @@
    (TeX-add-to-alist 'LaTeX-provided-class-options
                      '(("report" "")))
    (TeX-add-to-alist 'LaTeX-provided-package-options
-                     '(("listings" "") ("amsthm" "") ("amsmath" "") ("tcolorbox" "") ("calligra" "") ("siunitx" "") ("url" "") ("float" "") ("caption" "labelformat=empty") ("tikz" "") ("graphicx" "") ("parskip" "")))
+                     '(("listings" "") ("amsthm" "") ("amsmath" "") ("tcolorbox" "") ("calligra" "") ("siunitx" "") ("url" "") ("float" "") ("caption" "labelformat=empty") ("varwidth" "") ("tikz" "") ("graphicx" "") ("parskip" "")))
    (add-to-list 'LaTeX-verbatim-environments-local "lstlisting")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "lstinline")
    (add-to-list 'LaTeX-verbatim-macros-with-braces-local "path")
@@ -27,6 +27,7 @@
     "url"
     "float"
     "caption"
+    "varwidth"
     "tikz"
     "graphicx"
     "parskip")
@@ -39,6 +40,8 @@
    (LaTeX-add-labels
     "tab:label")
    (LaTeX-add-environments
-    '("defbox" 1)))
+    '("defbox" 1))
+   (LaTeX-add-array-newcolumntypes
+    "M"))
  :latex)
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 JUL 2026 02:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 JUL 2026 09:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -577,6 +577,15 @@ Package caption Info: Standard document class detected.
 Package caption Info: float package is loaded.
 Package caption Info: listings package is loaded.
 )
+(/usr/share/texlive/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box89
+\sift@deathcycles=\count346
+\@vwid@loff=\dimen286
+\@vwid@roff=\dimen287
+)
+==> First Aid for varwidth.sty applied!
+
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
 zlibrarypositioning.code.tex
 File: tikzlibrarypositioning.code.tex 2025-08-29 v3.1.11a (3.1.11a)
@@ -628,26 +637,26 @@ File: tikzlibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/shapes/pgflibraryshape
 s.multipart.code.tex
 File: pgflibraryshapes.multipart.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\pgfnodepartlowerbox=\box89
-\pgfnodeparttwobox=\box90
-\pgfnodepartthreebox=\box91
-\pgfnodepartfourbox=\box92
-\pgfnodeparttwentybox=\box93
-\pgfnodepartnineteenbox=\box94
-\pgfnodeparteighteenbox=\box95
-\pgfnodepartseventeenbox=\box96
-\pgfnodepartsixteenbox=\box97
-\pgfnodepartfifteenbox=\box98
-\pgfnodepartfourteenbox=\box99
-\pgfnodepartthirteenbox=\box100
-\pgfnodeparttwelvebox=\box101
-\pgfnodepartelevenbox=\box102
-\pgfnodeparttenbox=\box103
-\pgfnodepartninebox=\box104
-\pgfnodeparteightbox=\box105
-\pgfnodepartsevenbox=\box106
-\pgfnodepartsixbox=\box107
-\pgfnodepartfivebox=\box108
+\pgfnodepartlowerbox=\box90
+\pgfnodeparttwobox=\box91
+\pgfnodepartthreebox=\box92
+\pgfnodepartfourbox=\box93
+\pgfnodeparttwentybox=\box94
+\pgfnodepartnineteenbox=\box95
+\pgfnodeparteighteenbox=\box96
+\pgfnodepartseventeenbox=\box97
+\pgfnodepartsixteenbox=\box98
+\pgfnodepartfifteenbox=\box99
+\pgfnodepartfourteenbox=\box100
+\pgfnodepartthirteenbox=\box101
+\pgfnodeparttwelvebox=\box102
+\pgfnodepartelevenbox=\box103
+\pgfnodeparttenbox=\box104
+\pgfnodepartninebox=\box105
+\pgfnodeparteightbox=\box106
+\pgfnodepartsevenbox=\box107
+\pgfnodepartsixbox=\box108
+\pgfnodepartfivebox=\box109
 )))
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
 zlibraryarrows.code.tex
@@ -656,7 +665,7 @@ File: tikzlibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/libraries/pgflibraryarrows.code.
 tex
 File: pgflibraryarrows.code.tex 2025-08-29 v3.1.11a (3.1.11a)
-\arrowsize=\dimen286
+\arrowsize=\dimen288
 ))
 (/usr/share/texlive/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tik
 zlibraryfit.code.tex
@@ -676,43 +685,43 @@ Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 )))
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 60.
+h' as default language. on input line 61.
 
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count346
+\l__color_backend_stack_int=\count347
 )
 (./system_design_interview.aux)
 \openout1 = `system_design_interview.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 60.
-LaTeX Font Info:    ... okay on input line 60.
-\c@lstlisting=\count347
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 61.
+LaTeX Font Info:    ... okay on input line 61.
+\c@lstlisting=\count348
 
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count348
-\scratchdimen=\dimen287
-\scratchbox=\box109
-\nofMPsegments=\count349
-\nofMParguments=\count350
+\scratchcounter=\count349
+\scratchdimen=\dimen289
+\scratchbox=\box110
+\nofMPsegments=\count350
+\nofMParguments=\count351
 \everyMPshowfont=\toks47
-\MPscratchCnt=\count351
-\MPscratchDim=\dimen288
-\MPnumerator=\count352
-\makeMPintoPDFobject=\count353
+\MPscratchCnt=\count352
+\MPscratchDim=\dimen290
+\MPnumerator=\count353
+\makeMPintoPDFobject=\count354
 \everyMPtoPDFconversion=\toks48
 ) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -729,7 +738,7 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 60.
+or `english'. on input line 61.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 
@@ -738,7 +747,7 @@ Chapter 1.
 File: images/nearby_search_on_yelp.jpg Graphic file (type jpg)
 <use images/nearby_search_on_yelp.jpg>
 Package pdftex.def Info: images/nearby_search_on_yelp.jpg  used on input line 7
-7.
+9.
 (pdftex.def)             Requested size: 276.00105pt x 155.23962pt.
 [1
 
@@ -746,7 +755,7 @@ Package pdftex.def Info: images/nearby_search_on_yelp.jpg  used on input line 7
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texmf/fonts/enc/
 dvips/cm-super/cm-super-ts1.enc} <./images/nearby_search_on_yelp.jpg>]
 [2]
-Overfull \hbox (4.25623pt too wide) in paragraph at lines 200--213
+Overfull \hbox (4.25623pt too wide) in paragraph at lines 202--215
  [][] 
  []
 
@@ -755,14 +764,14 @@ Overfull \hbox (4.25623pt too wide) in paragraph at lines 200--213
 File: images/two_dimensional_search.jpg Graphic file (type jpg)
 <use images/two_dimensional_search.jpg>
 Package pdftex.def Info: images/two_dimensional_search.jpg  used on input line 
-341.
+343.
 (pdftex.def)             Requested size: 276.00105pt x 184.00171pt.
  [6]
 <images/intersect_two_datasets.jpg, id=35, 1447.05188pt x 964.70126pt>
 File: images/intersect_two_datasets.jpg Graphic file (type jpg)
 <use images/intersect_two_datasets.jpg>
 Package pdftex.def Info: images/intersect_two_datasets.jpg  used on input line 
-376.
+378.
 (pdftex.def)             Requested size: 276.00105pt x 184.00171pt.
  [7 <./images/two_dimensional_search.JPG>]
 <images/different_types_of_geospatial_indexes.jpg, id=40, 1447.05188pt x 964.70
@@ -770,19 +779,19 @@ Package pdftex.def Info: images/intersect_two_datasets.jpg  used on input line
 File: images/different_types_of_geospatial_indexes.jpg Graphic file (type jpg)
 <use images/different_types_of_geospatial_indexes.jpg>
 Package pdftex.def Info: images/different_types_of_geospatial_indexes.jpg  used
- on input line 405.
+ on input line 407.
 (pdftex.def)             Requested size: 276.00105pt x 184.00171pt.
  [8 <./images/intersect_two_datasets.JPG>]
 <images/global_map.jpg, id=44, 1447.05188pt x 964.70126pt>
 File: images/global_map.jpg Graphic file (type jpg)
 <use images/global_map.jpg>
-Package pdftex.def Info: images/global_map.jpg  used on input line 422.
+Package pdftex.def Info: images/global_map.jpg  used on input line 424.
 (pdftex.def)             Requested size: 276.00105pt x 184.00171pt.
  [9 <./images/different_types_of_geospatial_indexes.JPG>]
 <images/divide_grid.jpg, id=48, 3854.4pt x 2168.1pt>
 File: images/divide_grid.jpg Graphic file (type jpg)
 <use images/divide_grid.jpg>
-Package pdftex.def Info: images/divide_grid.jpg  used on input line 440.
+Package pdftex.def Info: images/divide_grid.jpg  used on input line 442.
 (pdftex.def)             Requested size: 276.00105pt x 155.22308pt.
 
 [10 <./images/global_map.JPG> <./images/divide_grid.jpg>]
@@ -791,59 +800,92 @@ Package pdftex.def Info: images/divide_grid.jpg  used on input line 440.
 File: images/geohash_length_to_grid_size_mapping.jpg Graphic file (type jpg)
 <use images/geohash_length_to_grid_size_mapping.jpg>
 Package pdftex.def Info: images/geohash_length_to_grid_size_mapping.jpg  used o
-n input line 475.
+n input line 477.
 (pdftex.def)             Requested size: 276.00105pt x 178.75447pt.
 <images/radius_to_geohash_mapping.jpg, id=53, 3854.4pt x 2168.1pt>
 File: images/radius_to_geohash_mapping.jpg Graphic file (type jpg)
 <use images/radius_to_geohash_mapping.jpg>
 Package pdftex.def Info: images/radius_to_geohash_mapping.jpg  used on input li
-ne 493.
+ne 495.
 (pdftex.def)             Requested size: 276.00105pt x 155.22308pt.
  [11 <./images/geohash_length_to_grid_size_mapping.jpg>]
 <images/shared_prefix.jpg, id=57, 1574.88374pt x 1134.48843pt>
 File: images/shared_prefix.jpg Graphic file (type jpg)
 <use images/shared_prefix.jpg>
-Package pdftex.def Info: images/shared_prefix.jpg  used on input line 509.
+Package pdftex.def Info: images/shared_prefix.jpg  used on input line 511.
 (pdftex.def)             Requested size: 276.00105pt x 198.81541pt.
  [12 <./images/radius_to_geohash_mapping.jpg> <./images/shared_prefix.jpg>]
 <images/no_shared_prefix.jpg, id=61, 980.91469pt x 1144.275pt>
 File: images/no_shared_prefix.jpg Graphic file (type jpg)
 <use images/no_shared_prefix.jpg>
-Package pdftex.def Info: images/no_shared_prefix.jpg  used on input line 528.
+Package pdftex.def Info: images/no_shared_prefix.jpg  used on input line 530.
 (pdftex.def)             Requested size: 276.00105pt x 321.96623pt.
 <images/boundary_issue.jpg, id=62, 1493.58pt x 1022.31938pt>
 File: images/boundary_issue.jpg Graphic file (type jpg)
 <use images/boundary_issue.jpg>
-Package pdftex.def Info: images/boundary_issue.jpg  used on input line 545.
+Package pdftex.def Info: images/boundary_issue.jpg  used on input line 547.
 (pdftex.def)             Requested size: 276.00105pt x 188.90773pt.
- [13 <./images/no_shared_prefix.jpg>] [14 <./images/boundary_issue.jpg>] [15] (
-./system_design_interview.aux)
+ [13 <./images/no_shared_prefix.jpg>] [14 <./images/boundary_issue.jpg>]
+<images/quadtree.jpg, id=70, 2543.75343pt x 861.2175pt>
+File: images/quadtree.jpg Graphic file (type jpg)
+<use images/quadtree.jpg>
+Package pdftex.def Info: images/quadtree.jpg  used on input line 601.
+(pdftex.def)             Requested size: 276.00105pt x 93.43324pt.
+<images/build_quadtree.jpg, id=71, 3854.4pt x 2168.1pt>
+File: images/build_quadtree.jpg Graphic file (type jpg)
+<use images/build_quadtree.jpg>
+Package pdftex.def Info: images/build_quadtree.jpg  used on input line 617.
+(pdftex.def)             Requested size: 276.00105pt x 155.22308pt.
+ [15 <./images/quadtree.jpg>]
+Overfull \hbox (5.62222pt too wide) in paragraph at lines 635--635
+[]\OT1/cmr/bx/n/12 How much mem-ory does it need to store the whole quadtree? 
+ []
+
+
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 639--651
+[] 
+ []
+
+
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 652--664
+[] 
+ []
+
+[16 <./images/build_quadtree.jpg>]
+Overfull \hbox (15.75069pt too wide) in paragraph at lines 678--679
+[]\OT1/cmr/m/n/10 Total mem-ory re-quire-ment = $2[] \OMS/cmsy/m/n/10 ^^B \OT1/
+cmr/m/n/10 832[] + 0\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 67[] \OMS/cmsy/m/n/10 ^^B
+ \OT1/cmr/m/n/10 64[] =\OMS/cmsy/m/n/10 ^^X
+ []
+
+[17] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 25174 strings out of 467533
- 575384 string characters out of 5422138
- 980653 words of memory out of 5000000
- 53744 multiletter control sequences out of 15000+600000
+ 25258 strings out of 467533
+ 577112 string characters out of 5422138
+ 980502 words of memory out of 5000000
+ 53824 multiletter control sequences out of 15000+600000
  630970 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,9n,121p,516b,1120s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
-e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm100
-0.pfb>
-Output written on system_design_interview.pdf (15 pages, 54761260 bytes).
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on system_design_interview.pdf (17 pages, 56838677 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 66 compressed objects within 1 object stream
+ 131 PDF objects out of 1000 (max. 8388607)
+ 76 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 68 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 78 words of extra memory for PDF output out of 10000 (max. 10000000)
 
