@@ -921,6 +921,153 @@ A possible fix is to over-allocate the ranges
   \end{center}
 \end{figure}
 
+\subsection{Step 3: Design Deep Dive}
+
+By now you should have a good picture of what the overall system looks like. Now let's dive deeper into a few areas:
+
+\begin{itemize}
+\item
+Scale the database
+\item
+Caching
+\item
+Region and availability zones
+\item
+Filter results by time or business type
+\item
+Final architecture diagram
+\end{itemize}
+
+\subsection{Scale the database}
+
+We will discuss how to scale two of the most importatn tables: the business table and the geospatial index table.
+
+\subsection{Business table}
+
+The data for the business table may not all fit in one server, so it is a good candidate for sharding.
+
+\begin{itemize}
+\item
+The easiest approach is to shared everything by busness ID
+\item
+This sharding scheme ensures that load is evenly distributed among all the shareds, and operationally it is easy to maintain
+\end{itemize}
+
+\subsection{Geospatial index table}
+
+\begin{itemize}
+\item
+Both geohash and quadtree are widely used
+\item
+Due to geohas's simplicity, we use it asn an example
+\item
+There are two wasy to structure the table
+\item
+\end{itemize}
+
+Option 1: for each geohash key, there is a JSON array of business IDs in a single row
+
+\begin{tabular}{|p{6cm}|}
+\hline
+\lstinline|geospatial_index| \\
+\hline
+\lstinline|geohash| \\
+\lstinline|list_of_business_ids| \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+\centerline{Table 1.9: \lstinline|list_of_business_ids| is a JSON array}
+
+Option 2: If there are multiple businesses in the same geohash, there will be multiple rows, one for each business.
+
+\begin{tabular}{|p{6cm}|}
+\hline
+\lstinline|geospatial_index| \\
+\hline
+\lstinline|geohash| \\
+\lstinline|business_id| \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+\centerline{Table 1.10: \lstinline|business_id| is a single ID}
+
+Here are some sample rows for option 2:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|geohash| & \lstinline|business_id| \\
+\hline
+\lstinline|32feac| & \lstinline|343| \\
+\lstinline|32feac| & \lstinline|347| \\
+\lstinline|f31cad| & \lstinline|112| \\
+\lstinline|f31cad| & \lstinline|113| \\
+\hline
+\end{tabular}
+
+
+\vspace{10pt}
+\centerline{Table 1.10: \lstinline|business_id| is a single ID}
+
+\textbf{Recommendation}: we recommend option 2 because of the following reasons:
+
+For option 1:
+
+\begin{itemize}
+\item
+To update a business, we need to fetch the array of \lstinline|business_ids| and scan the whole array to find the business to update
+\item
+When inserting a enw business, we have to scan the entire array to make sure there is no duplicate
+\item
+We also need to lock the row to prevent concurrent updates
+\item
+There are a lot of edge cases to handle
+\end{itemize}
+
+For option 2:
+
+\begin{itemize}
+\item
+If we have two columns with a compound key of \lstinline|(geohash, business_id)|, the addition and removal of a business are very simple
+\item
+There would be no need to lock anything
+\end{itemize}
+
+\subsection{Scale the geospatial index}
+
+One common mistake about scaling the geosptail index is to quickly jump to a sharding scheme without considering the actual data size of the table.
+
+\begin{itemize}
+\item
+In our case, the full dataset for the geospatial index table is not large (quadtree index only takes 1.71G memory and storage requirement for geohash index is similar)
+\item
+The whole geospatial index can easily fit in the working set of a modern database server.
+\item
+HOwever, depending on the read volume, a single database server mgiht not have enough CPU or network badnwidth to hanlde all read requests
+\item
+If that is the case, it is necessary to spread the read load among multiple database servers
+\item
+There are two general approaches for spreading the load of a relational database server
+\item
+We can add read replicas, or shared the database
+\item
+Many engineers like to talk about sharding during interviews
+\item
+However, it might not be a good fit fo rthe geohasht able as sharding is complicated
+\item
+For instance, the sharding logic has to be added to the application layer
+\item
+Sometimes, sharding is only option
+\item
+In this case,t hough, everything can fit in the working set of a database server, so there is no strong technical reason to shard the data among multiple servers
+\item
+A better approach, in this case, is to have a series of read replicas to help with the read load
+\item
+This method is much simpler to develop and maintain
+\item
+For this reason, scaling the geospatial index table through replicas is recommended
+\end{itemize}
 
 
 \end{document}
