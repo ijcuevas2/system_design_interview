@@ -715,6 +715,104 @@ If that leaf node has 100 businesses, return the node
 Otherwise, add businesses from its neighbors until enough businesses are returned
 \end{itemize}
 
+\subsection{Operational considerations for quadtree}
+
+As mentioned above, it may take a few minutes to build a quadtree with 300 million businesses at the server start0up time.
+
+\begin{itemize}
+\item
+It is important to consider the operational implications of such a long server start-up time
+\item
+While the quadtree is being built, the server cannot serve traffic
+\item
+Therefore, we should roll out a new release of the server incrementally to a small subset of servers at a time
+\item
+This avoids taking a large swath of the server cluster offline and causes service brownout
+\item
+Blue/green deployment [20] can also be used, but an entire cluster of new servers fetching 200 million businesses at the same time from the
+database service can put a lot of strain on the system
+\item
+This can be done, but it may complicate the design and you should mention that in the interview
+\item
+Another operational consideration is how to update the quadtree as businesses are added and removed over time
+\item
+The easiest approach would be to incrementally reuilb d the quadtree, a small subset of servers at a time, across the entire cluster,
+\item
+But this would mena some servers would return stale data for a short period of time
+\item
+However, this is generally an acceptable compromise based on the requirements
+\item
+This can be further mitigated by setting up a business agreement that newly added / updates businesses will only be effective the next day
+\item
+This means we can update the cache using a nightly job
+\item
+One potential problem with this approach is that tons of keys will be invalidated at the same time, causing heavly load on cache servers
+\item
+It's also possible to update the quadtree o9n the fly as businesses are dadded and removed
+\item
+This certainly complicates the design, especially if the quadtree data structure could be accesssed by multiple threads
+\item
+This will require some locking mechanism which could dramatically complicate the quadtree implementation
+\end{itemize}
+
+\subsection{Real-world quadtree example}
+
+Yext [21] provided an image (Figure 1.15) that shows a constructured quadtree near Denver [21]. We want smaller,  more granular grids for
+dense areas and larger grids for sparse areas.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{real_world_example_of_a_quadtree}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Option 5: Google S2}
+
+Google S@ geometry library [22] is another big player in this field.
+
+\begin{itemize}
+\item
+Similar to Quadtree, it is an in-memory solution
+\item
+It maps a sphere to a 1D index based on the Hilbert curve (a space-filling curve) [23]
+\item
+The Hilbert curve has a very importatn property: two poitns that are close to each other on the Hilbert curve are close in 1D space (Figure 1.16)
+\item
+Search on 1D space is much more efficient than on 2D
+\item
+Interested readers can play with an online tool [24] for the Hilbert curve
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{hilbert_curve}
+    \caption{}
+  \end{center}
+\end{figure}
+
+S2 is a complicated library and you are not expected to explain its internals during an interview.
+
+But because it's widley used in companeis such as Google, Tinder, etc., we will briefly cover its advantages.
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+S2 is great fro geofencing because it can cover arbitrary areas with varying levels (Figure 1.17)
+\item
+According to Wikipedia, ``A geofence is a vritual perimeter for a real-world geographic area''
+\item
+``A geo-fence could be dynamically generated - as in a raidus around a point location, or a geo-fence can be a predefined set of boundaries (such as school zones or neighborhood boundaries'' (25)
+\item
+Geofencing allows us to define parameters that surround the areas of interest and to send notifications to users who are out of the areas.
+\item
+This can provide richer functionalities than just returning nearby businesses
+\end{itemize}
+
+
+\end{itemize}
 
 
 \end{document}
