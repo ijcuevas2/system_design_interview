@@ -435,5 +435,142 @@ By dividing the world into even grids, for dense areas and large grids in sparse
 Another potential challnege is to find neighboring grids of a fixed grid
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{divide_grid}
+    \caption{Figure 1.8: Divide grid}
+  \end{center}
+\end{figure}
+
+Repeat this subdivision until the grid size is within the precision desired. Geohash usually uses base32 representation [15]
+
+Let's look at two examples: 9q8qzn.
+
+
+
+\begin{itemize}
+\item
+geo has of the Google headquarter (length = 6): \\
+\lstinline|1001 10110 01001 10000 11011 11010| (base 32 in binary) $\rightarrow$ \\
+\textbf{9q9hvu} (base 32)
+\item
+geohash of the Facebook headquarter (length = 6): \\
+\lstinline|1001 10110 01001 10001 10000 10111| (base 32 in binary) $\rightarrow$ \\
+\textbf{9q9jhr} (base 32)
+\end{itemize}
+
+Geohash has 12 precisions (also called levels as shown in Table 1.4.
+
+\begin{itemize}
+\item
+The precision factor determines the size of the grid
+\item
+We are only interested in geohashes with lengths between 4 and 6
+\item
+This is because when it's longer than 5, the grid size is too small, while if it is smaller than 4, the grid size is too large (see Table 1.4)
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{geohash_length_to_grid_size_mapping}
+    \caption{Table 1.4: Geohash length to grid size mapping (source: [16])}
+  \end{center}
+\end{figure}
+
+How do we choose the right precision?
+
+\begin{itemize}
+\item
+How do we choose the right precision?
+\item
+We want to find the minimal geogash length that covers the whole cricle drawn by the user0defined raidus
+\item
+The corresponding relationship between the radius and the legnth
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{radius_to_geohash_mapping}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This approach works great most of the time, but there are some edge cases with how the geohas boundary is
+hanlded that we should discuss with the geohash boundary is handled that we should discuss with the interviewer.
+
+\subsection{Boundary issues}
+
+Geohasing guarantees that the longer a shared prefix is between two geohashes the closer they  are
+
+As shown in Figure 1.9, all the grid have a shared prefix:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{shared_prefix}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Boundary issue 1
+
+\begin{itemize}
+\item
+However, the reverse is not true: two locations can be very close but have no shared prefix at all
+\item
+This is because two close locations on either side of the equator or prime meridian belong to different ``halves'' of the world
+\item
+For example, in France, La Roche-Chalais (geohash: u000) is just 30km from Pomerol (geohash: 0zzz) but their geohashes have no shared prefix at all [17]
+\end{itemize}
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{no_shared_prefix}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Because of this boundary issue, a simple prefix SQL query below would fail to fetch all nearby businesses
+
+\begin{lstlisting}
+SELECT * FROM geohash_index WHERE geohash LIKE '9q8zn%'
+\end{lstlisting}
+
+\subsection{Boundary issue 2}
+
+Another boundary issue is that two positions have can have a long shared prefix, but they belong to different geo hashes as shown in Figure 1.11
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{boundary_issue}
+    \caption{Figure 1.11: Boundary issue}
+  \end{center}
+\end{figure}
+
+A common solution is to fetch all businesses not only within the current grid but also from its neighbors.
+
+The geohashes of neighbors can be calculated in constant time and more details about this can be found here [17]
+
+\subsection{Not enough businesses}
+
+Now let's tackle the bonus question
+
+\begin{itemize}
+\item
+What should we do if there are not enough businesses returned from the current grid and all the neighbors combind?
+\item
+Option 1: only return businesses within the radius. This option is easy to implement, but the drawback is obvious. It doesn't return enough results to satisfy a user's needs
+\item
+Option 2: increase the search raidus
+\item
+We can remove the last digit of the geohash and use the new geohash to fetch nearby businesses
+\item
+If there are not enough bisnesses, we continue to expand the scope by removing another digit
+\item
+This way, the grid size is gradually expanded until the result is greater than the desired number of results
+\item
+Figure 1.12 shows the conceptual diagram of the expanding search process
+\end{itemize}
+
 
 \end{document}
