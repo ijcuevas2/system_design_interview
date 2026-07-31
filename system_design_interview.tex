@@ -1054,7 +1054,7 @@ We can add read replicas, or shared the database
 \item
 Many engineers like to talk about sharding during interviews
 \item
-However, it might not be a good fit fo rthe geohasht able as sharding is complicated
+However, it might not be a good fit fo rthe geohash table as sharding is complicated
 \item
 For instance, the sharding logic has to be added to the application layer
 \item
@@ -1068,6 +1068,59 @@ This method is much simpler to develop and maintain
 \item
 For this reason, scaling the geospatial index table through replicas is recommended
 \end{itemize}
+
+\subsection{Caching}
+
+Before introducing a cache layer we ahve to ask ourselves, do we really need a cache layer?
+
+It is not immediately obvious that caching is a solid win:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The workload is read-heavy, and the dataset is relatively small
+\item
+The data could fit in the working set of any modern database server
+\item
+Therefore, the queries are not I/O bound and they should run almost as fast as an in-memory cache
+\end{itemize}
+
+\item
+If read performance is a bottleneck, we can add database read replicas to improve the read throughput
+\end{itemize}
+
+Be mindful when discussing caching with the interviewer as it will require careful bench marking and cost analysis. If you find out
+caching does fit the business requirements then you can proceed with discussions about caching strategy.
+
+\subsection{Cache key}
+
+The most straightforward cache key choic is the location coordinates (latitude and longitude) of the user.
+
+However, this choice has a few issues:
+
+\begin{itemize}
+\item
+\begin{itemize}
+\item
+Location coordinates returned from mobile phones are not accurate as they are just the best estimation [32]
+\item
+Even if you don't move, the results might be slightly different each time you fetch coordinates on your phone
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+A user can move from one location to another, causing location coordinates to change slightly
+\item
+For most applications, this change is not meaningful
+\end{itemize}
+\end{itemize}
+
+Therefore, location coordinates are not a good cache key. Ideally, small changes in location should still map to the same cache key.
+
+The geohash/quadtree solution mentioned earlier handles this problem well because all businesses within a grid map to the same geohash.
 
 
 \end{document}
