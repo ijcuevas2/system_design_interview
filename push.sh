@@ -1,1 +1,1 @@
-git add * && git commit -am "updating changes" && git push
+git add *; git commit -am "updating changes" && git push

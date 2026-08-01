@@ -2053,5 +2053,116 @@ The bottleneck of Redis Pub/Sub server is the CPU usage, not the memory usage
 To support our scale, we need a distributed Redis Pub/Sub cluster
 \end{itemize}
 
+\subsection{Distributed Redis Pub/Sub server cluster}
+
+How do we distribute the channels to hundres of Redis servers?
+
+\begin{itemize}
+\item
+The good news is that the channels are independent of each other
+\item
+This makes it releatively easy to spread the channels among multiple Pub/Sub servers by sharding, based on the publisher's user ID
+\item
+Practically speaking though, with hundreds of Pub/Sub servers, we should go into a bit more detail on how this is done so that operationally it is somehwat manageable, as servers inevitably go down from the time to time
+\item
+Here, we introducer a service discovery component to our design
+\item
+There are many service discovery packages available, with etcd [4] and ZooKeeper [5] among the most popular ones
+\end{itemize}
+
+Our need for the service discover component is very basic
+
+We need these two features:
+
+\begin{enumerate}
+\item
+
+The ability to keep a list of servers in the service discover component, and a simple UI or API to update it. Fundamentally, service discovery is a small key-value store for holding configuration data. Using Figure 2.9 as an example, the key and value for the hash ring could look like this
+
+\begin{lstlisting}
+Key: /config/pub_sub_ring
+Value: ["p_1", "p_2", "p_3", "p_4"]
+\end{lstlisting}
+
+\item
+The ability for clients (in this case, the WebSocket servers) to subscribe to any updates to the ``Value'' (Redis Pub/Sub servers)
+\end{enumerate}
+
+Under the ``Key'' mentioned in point 1, we store  ahash ring of all the active Redis Pub/Sub servers in the service discovery component (see the consistent hashing chapter in Volume 1 of the System Design Interview book or [6] on details of a hash ring)
+
+The hash ring is used by publishers and subscribers of the Redis Pub/Sub servers to determine the Pub/Sub server to talk to for each channel.
+
+For example, channel 2 lives in redis Pub/Suv server 1 in Figure 2.9.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{consistent_hashing}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Figure 2.10 shows what happens when a WebSocket server publishes a location update to a user's channel.
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+The WebSocket server conults the hash ring to determine the Redis Pub/Sub server to write to
+\item
+The source of truth is stored in service discover, but for efficiency, a copy of the hash ring could be cached on each WebSocket server
+\item
+The WebSocket server subscribes to any updates on the hash ring to keep its local in memory copy up to date
+\end{itemize}
+
+\item
+WebSocket server publishes the location update to the user's channel on that Redis Pub/Sub server.
+\end{enumerate}
+
+Subscribing to a channel for location updates users the same mechanism.
+
+\subsection{Scaling considerations for redis Pub/Sub servers}
+
+How should we scale the Redis Pub/Sub server cluster?
+
+\begin{itemize}
+\item
+Should we scale it up and down daily, based on traffic patterns?
+\item
+This  is a very common practice for stateless servers because it is low risk and saves costs
+\item
+To answer these questions, let's examine some of the properties of the Redis Pub/Sub server cluster
+\end{itemize}
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+The messages sent on a Pub/Sub channel are not persisted in memory or on disk
+\item
+They are not sent to all subscribes of the channel and removed immediately after
+\item
+If there are no subscribers, the messages are just dropped
+\item
+In this sense, the data going through the Pub/Sub channel is stateless
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+However, there are indeed states stored in the Pub/Sub servers for the channels
+\item
+Specifically, the subscriber list for each channel is a key piece fo the states tracked by the Pub/Sub servers
+\item
+If a channel is moved, which ould happen when the channel's Pub/Sub server is replaced, or if a new server is added or an old server removed on the hash ring, then every subscriber to the moved channel must known about it, so they could unsubscribe from the channel on the old server and resubscribe to the replacement channel on the new server
+\item
+In this sense, a Pub/Sub server is stateful, and coordination with all subscribers to the server mus be orchestrated to mimimize service interruptions
+\end{itemize}
+
+
+\end{enumerate}
+
 
 \end{document}
