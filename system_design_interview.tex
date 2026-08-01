@@ -2225,6 +2225,26 @@ New: \lstinline|["p_1", "p_2", "p_3", "p_4", "p_5", "p_6"]| \\
 
 \subsection{Operational condierstaions for Redis Pub/Sub servers}
 
-The operational
+The operational ris of replacing an existing Reid Pub/Sub server is much, much lower.
+
+It does not cause a large number of channels to be moved.
+
+\begin{itemize}
+\item
+Only the channels on the server being replaced will need to be hanlded
+\item
+This is good because servers inevitably go down and need to be replaced regularly
+\item
+When a Pub/Sub server goes down, the mointoring software should alert the on-call operator
+\item
+Precisely how the monitoring software monitors the health of a Pub/Sub server is bound the scope of this chapter, so it is not covered
+\item
+The on -call operator updates the hash ring key in service discover to replace the dead node with a fresh standby node
+\item
+The WebSocket servers are notified about the update and each one then notififes its connection handlers to re-subscribe to the channels on the new Pub/Sub server
+\item
+Each WebSocket handler keeps a list of all channels it ahs subscribved to and upong receign the notification from ther server, it checks each channel against the hash ring to determine if a channel need to be re-subscribed on a new server
+\end{itemize}
+
 
 \end{document}
