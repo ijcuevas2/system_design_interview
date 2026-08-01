@@ -1541,5 +1541,407 @@ For each location update, find all the active friends who should receive it and 
 If the distance between two users is over a certain threshold, do not forward it to the recipient's device
 \end{itemize}
 
+This sounds pretty simple. What is the issue? Well, to do this at scale is not easy.
+
+\begin{itemize}
+\item
+We have 10 million active users
+\item
+With each user updating the location information every 30 seconds, there are 334k updates per seoncd
+\item
+If on average each user has 100 friends, and we fruther assume that roughly $10\%$ of those friends are online, and nearby, every second
+the backend forwards $334K \times 400 \times 10\% = 14$ location updates per second.
+\item
+That is a lot of updates to forward
+\end{itemize}
+
+\subsection{Proposed design}
+
+We will first come up with a high-level design for the backend at a lower scale.
+
+Later in the deep dive section, we will optimize the design for scale.
+
+Figure 3.4 shows the basic design that should satisfy the functional requirements.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{high_level_design}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Load balancer}
+
+The load balancer sits in front of the RESTful API servers and the stateful, bi-directional WebSocket servers. It distributes
+traffic across those servers to spread out load evenly.
+
+\subsection{RESTful API Servers}
+
+\begin{itemize}
+\item
+This is a cluster of stateless HTTP servers that handles the typical request response traffic
+\item
+The API request flow is high lighted in Figure 2.5:
+\item
+This API layer handles auxiliary tasks like adding removing friends, updateing user profiles, etc
+\item
+These are very common and we will not go into more detail.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{restful_api_request_flow}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+\subsection{Websocket servers}
+
+This is a cluster of stateful servers tha handles the near real-time update of friends locations.
+
+\begin{itemize}
+\item
+Each client maintains one persistent WebSocket connection to one of these servers
+\item
+when there is a location update from a friend who is within the search radius the update is sent on this connection to the client
+\item
+Another major responsibility of tht WebSocket servers is to handle client initialization for the ``nearby friends'' feature
+\item
+It seeds the mobile client with the locations of all nearby online friends
+\item
+We will discuss how this is done in more detail later
+\item
+Note ``WebSocket connection'' and ``WebSocket connection handler'' are interchangeable in this chapter
+\end{itemize}
+
+\subsection{Redis location cache}
+
+Redis isused to store the most recent location data for each active user.
+
+\begin{itemize}
+\item
+There is a Time to Live (TTL) set on each entry in the cache
+\item
+When the TTL expires, the user is no longer active and the location data is expunged from the cache
+\item
+Every update refreshes the TTL Other KV stores that support TTL could also be used
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{redis_pub_sub}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this design, location  updates received via the WebSocket server are published to the user's own channel in the Redis pub/sub server.
+
+\begin{itemize}
+\item
+A dedeicated WebSocket connection handler for each active friend subscribes to the channel
+\item
+When there is a location update the WebSocket handler function gets invoked, and for each active friend, the function recomputes the distance
+\item
+If the new distance is within the search raidus, the new location and timestamp are sent via the WebSocket connection to the friend's client
+\item
+Other message buses with lightweight channels could also be used
+\item
+Now that we understand what each component does, let's examine what happens when a user's location changes form the system's perspective
+\end{itemize}
+
+\subsection{Periodic location update}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{periodic_location_update}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+The mobile client sends periodic location updates over the persistent WebSocket connection. The flown is shown in Figure 2.7.
+
+\begin{enumerate}
+\item
+The mobile client sends a location update to the load balancer
+\item
+The load balancer forwards the location update to the persistent connection on the WebSocket server for that client
+\item
+The WebSocket server saves the location data to the locatio nhistory database
+\item
+
+\begin{itemize}
+\item
+The WebSocket server update the new location in the location cache
+\item
+The update refreshes the TTL
+\item
+The WebSocket server also saves the new location in a variable is the user's WebSocket connection hanlder for subsequent distance
+calculations
+\end{itemize}
+\item
+The WebSocket server publishes the new location to the user's channel in the Redis Pub/Sub server. Steps 3 to 5 can be executed in parallel.
+\item
+
+\begin{itemize}
+\item
+When Redis Pub/Sub receives a location update on a channel, it broadcasts the update to all the subscribes (WebSocket connection handlers)
+\item
+In this case, the subscribers are all the online friends of the user sending the update
+\item
+For each subscriber (i.e., for each of th euser's friends), its WebSocket connection handler would receive the user location update
+\item
+On receiving the message, the WebSocket server, on which connection hanlder lives, computes the distance between the user sending the new location (the location data is in the message) and the subscriber (the location data is stored in a variable within the WebSocket
+connection handler for the subscriber)
+\end{itemize}
+\item
+This step is not drawn on the diagram. If the sdistance does not execced the search radius, the new location and the last updated timestamp are sent to the subscriber's client. Otherwise, the update is dropped.
+\end{enumerate}
+
+Since understanind this flow is extremely important,  let's examine it again with a concrete example, as shown in Figure 2.8. Before we start, let's make a few assumptions.
+
+\begin{itemize}
+\item
+User 1's friends: User 2, User 3, and User 4
+\item
+User 5's friends: User 4 and User 6
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{send_location_update_to_friends}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+When User 1's location changes, their location update is sent to the WebSocker server which holds User 1's connection
+\item
+The location is published to User 1's channel in Redis Pub/Sub server
+\item
+Redis Pub/Sub server brodcast the location update too all subscribers. In this case, subscribers are WebSocket connection handlers (User 1's friends)
+\item
+If the distance between the user sending the location (User 1) and the subscriber (User 2) doesn't exceed the search radius, the new location is sent to the client (User 2)
+\end{itemize}
+
+This compuation is repeated for every subscriber to the channel.
+
+Since there are 100 friends on average, and we sassume that $10\%$ of those friends are online and nearby, there are about 40 location
+updates to forward fo reach user's location update.
+
+\subsection{API design}
+
+Now that we have created a high-level design, let's list APIs needed.
+
+\textbf{Websocket}: Users send and receive location updates through the WebSocket protocol. At the minimum, we need the follow APIs.
+
+\begin{enumerate}
+\item
+\textbf{Periodic location update}
+
+Request: Client sends latitude, longitude, and timestamp
+
+Response: Nothing
+
+\item
+\textbf{Client receives location updates}
+
+Data sent: Friend location data and timestamp
+
+\item
+\textbf{WebSocket initialization}
+
+Request: Client sends latitude, longitude, and timestamp
+
+Response: Client receives friends' location data
+\item
+\textbf{Subscribe to a new friend}
+
+Request: WebSocket server sends friend ID
+
+Response: Friend's latest latidtude, longitidue, and timestamp
+\item
+\textbf{Unsubscribe a friend}
+
+Request: WebSocket server sends friend ID
+
+Response: Nothing
+\end{enumerate}
+
+\textbf{HTTP requests}: the API servers handle tasks like add/removing friends, updating user profiles, etc. There are very common and we will not go into detail here.
+
+\subsection{Data model}
+
+Another important element to discuss is the data model. We already talked about the User DB in the high-level dsignm, so let's focus on the location cache and location history database.
+
+\subsection{Location cache}
+
+The location cache stores the latest locations of all active users who have had the nearby friends feature turned on. We use Redis for
+this cache. The key/value of the cache is shown in Table 2.1.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+key1 & value \\
+\hline
+\lstinline|user_id| & (latitude, longitude, timestamp) \\
+\hline
+\end{tabular}
+
+\subsection{Why don't we use a database to store location data?}
+
+The ``Nearby friends'' feature only cares about the \textbf{current} location of a user.
+
+Therefore, we only need to store one location per user.
+
+\begin{itemize}
+\item
+Redis is an excellent choice because it provides super-fast read and write operations.
+\item
+It supports TTL, which we use to auto-purge users from the cache who are no longer active.
+\item
+The current locations do not need to be durably stored
+\item
+If the Redis instance goes down, we could replace it with an empty new instance and let the cache be filled as new location updates stream in
+\item
+The active users could miss location updates from friends for an update cycle or two while the new cache warms
+\item
+It is an acceptable tradeoff
+\item
+In the deep dive section, we will dicuss ways to lessen the impact on users when the cache gets replaced
+\end{itemize}
+
+\subsection{Location history database}
+
+The location history database stores users' histoical location data and the schema looks like this:
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\lstinline|user_id| & \lstinline|latitude| & \lstinline|longitude| & \lstinline|timestamp| \\
+\hline
+\end{tabular}
+
+We need a database that handles the heavy-write workload well and can be horizontally scaled.
+
+\begin{itemize}
+\item
+We need a database that handles the heavy-write workload well and can be horizontally scaled.
+\item
+Cassandra is a good candidate
+\item
+We could also use a relational database
+\item
+However, with a relational database, the historical  data owuld not fit in a single instance so we need to shard that data
+\item
+The most basic approach is to shard by user ID
+\item
+This sharding scheme ensures that load is evenly distributed among all the shards, and operationally, it is easy to maintain
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+The high-level design we created in the previous section works in most cases, but it will likely break at our scale.
+
+In this section, we work together to uncover the bottlenecks as we increase the scale, and along the way work on solutions to
+eliminate those bottlenecks.
+
+\subsection{How well does each component scale?}
+
+\subsubsection{API servers}
+
+The methods to scale the RESTful API tiers are well understood. These are statless servers, and there are many ways to auto-scale the
+clusters based on CPU usage, load, or I/O. We will not go into detail here.
+
+\subsubsection{WebSocket servers}
+
+For the WebSocket cluster, it is not difficult to auto-scale based on usage.
+
+\begin{itemize}
+\item
+However, the WebSocket servers are stateful, so care must be taken when removing existing nodes
+\item
+Before a node can be removed, all existing connections should be allowed to drain
+\item
+To achieve that, we can mark a node as ``draining'' at the load balancer so that no new WebSocket connections will be routed to the draining server
+\item
+Once all the existing connections are closeed (or after a reasonably long wait), the server is then removed
+\end{itemize}
+
+Release a new version of the application software on a WebSocket server requires the same level of care.
+
+It is worth nothing that effective auto-scaling of stateful servers is the job of a good load balancer.
+
+Most cloud loud balancers handle this job very well.
+
+\subsubsection{Client initialization}
+
+The mobile client on start up establishes a persisten WebSocket connection with one of the WebSocket server instances.
+\begin{itemize}
+\item
+Each connection is long running.
+\item
+Most modern languages are capable of maintaining many long-running connections with a reasonably small memory footprint
+\item
+When a WebSocket connection is initialized the client sends the initial location of the user, and the server performs the following tasks in the WebSocket conenction handler.
+\end{itemize}
+
+\begin{enumerate}
+\item
+It updates the users's location in the location cache
+\item
+It saves the location in a variable of the connection handler for subsequent calculations
+\item
+It loads all the user's friends from the user database
+\item
+
+\begin{itemize}
+\item
+It makes a batched request to the location cache to fetch the locations for all the friends
+\item
+Note that because we set a TTL on each entry in the location cache to match out inactivity timeout period, if a friend is inactive then their location will not be in the location cache
+\end{itemize}
+\item
+\begin{itemize}
+\item
+For each location returned by the cache, the server computes the distance between the user and the friend at that location
+\item
+If the distance is within the search radius, the friend's profile, location, and last updated timestamp are truend over the WebSocket
+connection to the client
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+For each friend, the server subscribes to the frien's channel in the Redis Pub/Sub server
+\item
+We will explain our use of Redis Pub/Sub shortly
+\item
+Since creating a new channel is cheap, the user subscribes to all active and inactive friends
+\item
+The inactive friends will take up a small amount of memory on the Redis Pub/Sub server, but they will not consume any CPU or I/O (since they do not publish updates) until they come online
+\end{itemize}
+\item
+It sends the user's current location ot the user's channel in the Redis Pub/Sub server
+\end{enumerate}
+
+\subsection{User database}
+
+The user database holds two distinct sets of data: user profiles (user ID, username, profile URL, etc.) and friendships.
+
+\begin{itemize}
+\item
+These datasets at our design scale will likely not fit in a single relational database instance: The good news is that the data is horizintally scalable by sharding based on user ID
+\item
+Relational database sharding is a very common technique
+\item
+As a side note, at the scale we are designing for, the user and friendhsip datasets will likely be managed by a dedicated team and be
+available via an internal API.
+\item
+In this scenario the WebSocket servers will use the internal API instead of querying the database directly to fetch user and friendship-related data
+\item
+Whether accessing via API or direct database queries, it does not make much difference in terms of functionality or performance
+\end{itemize}
+
 
 \end{document}
