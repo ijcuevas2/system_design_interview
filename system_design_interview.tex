@@ -1943,5 +1943,115 @@ In this scenario the WebSocket servers will use the internal API instead of quer
 Whether accessing via API or direct database queries, it does not make much difference in terms of functionality or performance
 \end{itemize}
 
+\subsection{Location cache}
+
+We chooose Redis to cache the most recent locations of all active users.
+
+\begin{itemize}
+\item
+As mentioned earlier, we also set a TTL on each key.
+\item
+The TTL is renewed upon every location update
+\item
+This puts a cap on the maximum amount of memory used
+\item
+With 10 million active users at peak, and with each location taking no more than 100 bytes, a single modern Redis server with many GBs
+of memory should be able to easily hold the location information for all users.
+\item
+However, with 10 million active users roughly updateing every 30 seconds, the Redis server will have to handle 334k updates per second
+\item
+That is likely a little too high, even for a modern high-end server
+\item
+Lucily, this cache data is easy to shared
+\item
+The location data for each user is independent, and we can evenly spread the laod among several Redis servers by sharding the location data based on user ID
+\item
+To improve availability, we could replicate the location data on each shared to a standby node
+\item
+If the primary node goes down, the standby could be quickly promoted to minimize downtime
+\end{itemize}
+
+\subsection{Redis Pub/Sub server}
+
+The Pub/Sub server is used as a routing layer to direct messages (location updates) from one user to all the online friends.
+
+\begin{itemize}
+\item
+As mentioned earlier, we choose Redis Pub/Sub ecause it is very lightweight to create new channels.
+\item
+A new channel is created when someone subscribes to it
+\item
+If a message is published to a channel that has no subscribes, the message is dropped, placing very little load on the server
+\item
+When a channel is created, Redis uses a small amount of memory to maintain a hash table and a linked list [3] to track the subscribers
+\item
+If there is no update on a channel when a user is offline, no CPU cycles are used after a channel is created
+\end{itemize}
+
+We take advantage of this oin our design in the following ways:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+We assign a unique channel to every user who uses the ``nearby friends'' feature
+\item
+A user would, upon app initialization, subscribe to each friend's channel, whether the friend is online or not
+\item
+This simplifies the design since the backend does not need to handle subscribing to a frien's channel when the friend becomes active, or handling, unsubscribing when the friend becomes inactive
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+The tradoff is that the design would use more mmory
+\item
+As we will see later, memory use is unlikely to be the bottleneck
+\item
+Trading higher memory use for a simpler architecture is worth it in this case
+\end{itemize}
+\end{enumerate}
+
+\subsection{How many Redis Pub/Sub servers do we need?}
+
+Let's do some math on memory and CPU usage.
+
+\subsubsection{Memory usage}
+
+Assuming a channel is allocated for each user who uses the nearby firneds feature, we need 100 million channels ($1 \text{ billion} \times 10\%$)
+
+\begin{itemize}
+\item
+Assuming that on average a user has 100 active friends using this feature (this includes friends who are bnearyby, or not), and it takes about 20 bytes of pointers in the internal hash table and linked list to track across each subscriber, it will need about 200GB ($100 \text{ million} \times 20 \text{ bytes} \times 100 \text{ friends} / 10^{9} = 200 \text{ GB}$) to hold all the channels
+\end{itemize}
+
+\subsection{CPU usage}
+
+As previously calculated, the Pub/Sub server pushes about 14 million updates per second to subscribers.
+
+\begin{itemize}
+\item
+Even though it is not easy to esimate with any accuracy how many messages a modern Redis server could push a second without actual benchmarking, it is safe to assume that a single Redis server will not be able to handle that load
+\item
+Let's pick a conservative number and assume that a modern server with a gigabit netowrk could handle about 100000 subscriber pushes per second
+\item
+Given how small our location update messages are, this number is likely to be conservative
+\item
+Using this conservative estimate, we will need to distribute the load among 14 million / 100000 = 140 Redis servers.
+\item
+Again, this number is liekly too conservative, and the actual number of servers could be much lower
+\end{itemize}
+
+From the math, we conclude that:
+
+\begin{itemize}
+\item
+The bottleneck of Redis Pub/Sub server is the CPU usage, not the memory usage
+\item
+To support our scale, we need a dsitrubted Redis Pub/Sub cluster
+\end{itemize}
+
 
 \end{document}
