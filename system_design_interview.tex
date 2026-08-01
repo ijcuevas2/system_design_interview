@@ -2103,6 +2103,14 @@ For example, channel 2 lives in redis Pub/Suv server 1 in Figure 2.9.
 
 Figure 2.10 shows what happens when a WebSocket server publishes a location update to a user's channel.
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_out_the_correct_redis_server}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
 \begin{enumerate}
 \item
 
@@ -2160,9 +2168,63 @@ If a channel is moved, which ould happen when the channel's Pub/Sub server is re
 \item
 In this sense, a Pub/Sub server is stateful, and coordination with all subscribers to the server mus be orchestrated to mimimize service interruptions
 \end{itemize}
-
-
 \end{enumerate}
 
+For these reasons, we should treat the Redis Pub/Sub cluster more like a stateful cluster, similar to how we would handle a storage cluster.
+
+\begin{itemize}
+\item
+With stateful clusters, scaling up or down has some operational overhead and risks, so it should be done with careful planning
+\item
+The cluster is normally over-provisioned to make sure it can handle daily peak traffic with some comfortable headroom to avoid unnecessary resizing of the cluster
+\end{itemize}
+
+When we inevitably have to scale, be mindful of these potential issues:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+When we resize a cluster, many channels wil be moved to different servers on the hash ring
+\item
+Whe the service discovery component notifies all the WebSocket servers of the hash ring update, there will be a ton of resubscription requests
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+During these mass resubscription events, some location updates might be missed by the clients
+\item
+Although occasional misses are acceptable for our design, we should minimized the occurences
+\end{itemize}
+\item
+Because of the potential interruptions, resizing should be done when usage is at it slowest in the day
+\end{itemize}
+
+How is resizing actually done? It is quit simple. Follow these steps:
+\begin{itemize}
+\item
+Determine the new ring size, and if scaling up, provision enough new servers
+\item
+Update the keys of the hash ring with the new content
+\item
+Monitor your dashboard. There should be some spike in CPU usage in the WebSocket cluster.
+\end{itemize}
+
+Using the hash ring from Figure 2.9 above, if we were to add 2 new nodes, say, \lstinline|p_5|, and \lstinline|p_6|, the hash
+ring would be updated like this:
+
+\begin{tabular}{|p{8cm}|}
+\hline
+Old: \lstinline|["p_1", "p_2", "p_3", "p_4"]| \\
+New: \lstinline|["p_1", "p_2", "p_3", "p_4", "p_5", "p_6"]| \\
+\hline
+\end{tabular}
+
+\subsection{Operational condierstaions for Redis Pub/Sub servers}
+
+The operational
 
 \end{document}
