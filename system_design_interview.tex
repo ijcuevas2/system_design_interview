@@ -1122,5 +1122,267 @@ Therefore, location coordinates are not a good cache key. Ideally, small changes
 
 The geohash/quadtree solution mentioned earlier handles this problem well because all businesses within a grid map to the same geohash.
 
+\subsection{Types of data to cache}
+
+As shown in Table 1.12, there are two types of data that can be cached to improve the overall performance of the system.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+Key & Value \\
+\hline
+geohash & List of business IDs in the grid \\
+\hline
+\lstinline|business_ids| & Business object \\
+\hline
+\end{tabular}
+
+\subsection{List of business IDs in a grid}
+
+Since business data is relatively stable, we precompute the list of buisness Ids for a given geohash and store it in a key-value store such as Redis.
+
+Let's take a look at a concrete example of getting nearby businesses with caching enabled.
+
+\begin{enumerate}
+\item
+Get the list of business IDs for a given geohash.
+
+\begin{lstlisting}
+SELECT business_id FROM geohash_index WHERE geohash LIKE `{:geohash}%`
+\end{lstlisting}
+
+\item
+
+\begin{lstlisting}
+public List<String> getNearbyBusinessIds(String geohash) {
+  String cacheKey = hash(geohash);
+  List<string> listOfBusinessIds = Redis.get(cacheKey);
+  if (listOfBusinessIds == null) {
+    listOfBusinessIds = Run the select SQL query above;
+    Cache.set(cacheKey, ListOfBsuinessIds, "Id");
+  }
+}
+\end{lstlisting}
+\end{enumerate}
+
+When a new business is added, edited, or deleted, the database is updated and the cache invalidated.
+
+\begin{itemize}
+\item
+Since the volume of those operations is relatively small and no locking mechanism is needed for the geohash approach, update operations
+are easy to deal with.
+\item
+According to the requirements, a user can choose the following 4 radii on the client: 500m, 1km, 2km, and 5km.
+\item
+Those radii are mapped to geohash lengths of 4, 5, 5, and 6 respectively
+\item
+To quickly fetch nearby businesses for different radii, we cache data in Redis on all three precision (\lstinline|geohash_4|, \lstinline|geohash_5| and \lstinline|geohash_6|)
+\end{itemize}
+
+As mentioned earlier, we have 200 million businesses and each business belongs to 1 grid in a given precision.
+
+Therefor the total memory required is:
+
+\begin{itemize}
+\item
+Storage for Redis values: $8 \text{ bytes} \times 200 \text{ million} \times 3 \text{ precisions} = \sim 5 \text{ GB }$
+\item
+Storage for Redis keys: negligible
+\item
+Total memory required: $\sim 5 \text{ GB } $
+\item
+We can get away with one modern Redis server from the memory usage perspective but to ensure high availability and reduce cross continent latency, we deploy the Redis cluster across the globe.
+\item
+Given the estimated data size, we can have the same copy of cache data deployed globally. We call this
+\item
+We call this Redis cache ``Geohash'' in our final architecture deployment (Figure 1.21)
+\end{itemize}
+
+\subsection{Business data needed to render pages on the client}
+
+This type of data is quiet straightforward to cache.
+
+\begin{itemize}
+\item
+The key is the \lstinline|business_id| and the value is the business object which contains the business name, address, image URLs, etc
+\item
+We call this Redis cache ``Business info'' in our final architecture diagram (Figure 1.21)
+\end{itemize}
+
+\subsection{Region and availability zones}
+
+We deploy a location-based service to multiple regions and availability zones as shown in Figure 1.20.
+
+This has a few advantages:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+Makes users phyysically ``closer'' to the system
+\item
+Users from the US West are connected to the data centers in that region, and users from Europe are connected with data centers in Europe
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+Gives us the flexibility to spread the traffic evenly across the population
+\item
+Some regions such as Japan and Korea have high population densities
+\item
+It might be wise to put them in separate regions, or even deploy location-based services in multiple availability zones to spread the load
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Privacy laws: Some countries may require user data to be used and stored locally in this case, we could set up a region in that country and employ DNS routing to restrict all requests from the country to only that region.
+\end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{deploy_lbs_closer_to_the_user}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+\subsection{Follow-up question: filter results by time or business type}
+
+The interviewer might ask a follow-up question: how to return buisiness that are open now, or only return businesses that are restaurants?
+
+\begin{itemize}
+\item
+\textbf{Candidate}:
+
+\begin{itemize}
+\item
+When the world is divided into small grids with geohash or quadtree, the number of businesses returned from the search result is relatively small
+\item
+Therefore, it is acceptable to return business IDs first, hydrate business object, and filter them based on opening time or business type
+\item
+This solution assuems opening time and business type are stored in the business table
+\end{itemize}
+\end{itemize}
+
+\subsection{Final design diagram}
+
+Putting everything together, we come up with the following diagram.
+
+\subsection{Get nearby businesses}
+
+\begin{enumerate}
+\item
+\begin{itemize}
+\item
+You try to find restaurants within 5000 meters on Yelp
+\item
+The client sends the user location (latitude = 37.776720, longitude = -122.419730) and radius (500m) to the load balancer
+\end{itemize}
+\item
+The load balancer forward the request to the LBS
+\item
+Based on the user location and radius info, the LBS find the geohash length that matches the search. By checkint Table 1.5, 500m map to geohash length = 6
+\item
+LBS calculate neighroing geohashes and adds them to the list. The result looks like this
+
+\begin{lstlisting}
+list_of_geohashes = [my_geohash, neighbor1_geohash, neighbor2_geohash, .... , neighbor8_geohash]
+\end{lstlisting}
+
+\item
+For each geohash in \lstinline|list_of_geohashes|, LBS calls the ``Geohash'' Redis server to fetch corresponding business IDs. Calls to fetch business IDs for each geohash can be made in parallel to reduce latency.
+
+\item
+Based on the list of business IDs returned, LBS fetches fully hydrated business in formation from the ``Business info'' Redis server, then calculates distances between a user and businesses, and returns the result to the client
+\end{enumerate}
+
+\subsection{View, update, add or delete a business}
+
+All business related APIs are separated from the LBS.
+
+\begin{itemize}
+\item
+To view the detailed information about a business, the business service first checks if the data is stored in the ``Business info'' Redis cache
+\item
+If it is, cached data cached data will be returned to the client
+\item
+If not, data is fetched from the database lcluster and then stored in the Redis cache, allow subsequent requests to get results from the cache directly
+\item
+Since we have an upfront bsuienss agreement that newly added updates businesses will be effective the enxt day, cached business data is updated by a nightly job
+\end{itemize}
+
+\subsection{Step 4 - Wrap Up}
+
+In this chapter, we have presented the design for proximity service. The system is a typical LBS that lverages geospatial indexing.
+
+We discussed several indexing options:
+
+\begin{itemize}
+\item
+Two-dimesnional search
+\item
+Evenly divided grid
+\item
+Geohash
+\item
+Quadtree
+\item
+Google S2
+\end{itemize}
+
+Geohash, quadtree, and S2 are widely used by different tech companies.
+
+\begin{itemize}
+\item
+We choose geohash as an example to show how a geospatial index works
+\item
+In the deep dive, we discuused why caching is effective in reducing the latency, what should be cached and how to use cache to retrieve
+nearby businesses fast.
+\item
+We also discussed how to scale the database with replication and sharding
+\item
+We then looked at deploying LBS in different regions and availability zones to improve availability, to make users physicallly closer to the servers  and to comply better with local privacy laws
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{proximity_service}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this chapter, we design a scalable dbackend system for a new mobile app feature called ``Nearby friends''.
+
+\begin{itemize}
+\item
+For an op-in user who grants permission to access their location, the mobile lcient presents a list of friends who are geographically nearby
+\item
+If you are looking for a real-world example, please refer to this article [1] about a similar feature in the Facebook app.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{facebook_nearby_friends}
+    \caption{}
+  \end{center}
+\end{figure}
+
+If you read Chapter 1 Proximity Service, you may wonder why we need a separate chapter for designing ``nearby friends'' since it looks similar to proximity services.
+
+\begin{itemize}
+\item
+If you think carefully though, you will find major differences
+\item
+In proximity services, the addresses for businesses are static as their locations do not change, while in ``nearby friends'', data is more dynamic because user locations change frequently
+\end{itemize}
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+Any backend system at the Facebook scale is complicated. Before starting with the design, we need to ask clarification questions to narrow down the scope.
+
 
 \end{document}
