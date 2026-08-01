@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  1 AUG 2026 01:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  1 AUG 2026 11:03
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -920,18 +920,29 @@ File: images/facebook_nearby_friends.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/facebook_nearby_friends.jpg  used on input line
  1369.
 (pdftex.def)             Requested size: 276.00105pt x 359.4284pt.
- [33 <./images/facebook_nearby_friends.jpg>] [34] (./system_design_interview.au
-x)
+ [33 <./images/facebook_nearby_friends.jpg>] [34] [35]
+<images/peer_to_peer.jpg, id=147, 2366.08969pt x 1547.7825pt>
+File: images/peer_to_peer.jpg Graphic file (type jpg)
+<use images/peer_to_peer.jpg>
+Package pdftex.def Info: images/peer_to_peer.jpg  used on input line 1515.
+(pdftex.def)             Requested size: 276.00105pt x 180.53009pt.
+<images/shared_backend.jpg, id=148, 2737.97906pt x 1381.41093pt>
+File: images/shared_backend.jpg Graphic file (type jpg)
+<use images/shared_backend.jpg>
+Package pdftex.def Info: images/shared_backend.jpg  used on input line 1528.
+(pdftex.def)             Requested size: 276.00105pt x 139.24527pt.
+ [36 <./images/peer_to_peer.jpg>] [37 <./images/shared_backend.jpg>] (./system_
+design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 25359 strings out of 467533
- 580467 string characters out of 5422138
- 1013501 words of memory out of 5000000
- 53925 multiletter control sequences out of 15000+600000
+ 25387 strings out of 467533
+ 581217 string characters out of 5422138
+ 1013502 words of memory out of 5000000
+ 53953 multiletter control sequences out of 15000+600000
  630970 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -945,10 +956,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (34 pages, 80815196 bytes).
+Output written on system_design_interview.pdf (37 pages, 83108702 bytes).
 PDF statistics:
- 193 PDF objects out of 1000 (max. 8388607)
- 113 compressed objects within 2 object streams
+ 207 PDF objects out of 1000 (max. 8388607)
+ 122 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 113 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 123 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -1389,7 +1389,157 @@ Any backend system at the Facebook scale is complicated. Before starting with th
 Candidate: How geographically close is considered to be ``nearby''?
 
 Interviewer: 5 miles. This number should be configurable.
+\item
+Candidate: Can I assume the distance is calculated as the straight-line distance between tow users? In real life, there could be, for example, a river in between the users, resulting a longer travel distance.
+
+Interviewer: Yes, that's a reasonable assumption.
+\item
+Candidate: Do we need to store location history?
+
+Interviewer: Yes, location history can be valuable for different purposes such as machine learning.
+\item
+Candidate: Could we assume if a friend is inactive for more than 10 minutes, that friend will disappear from the nearby friend list? Or should we dispaly the last known location?
+
+Interviewer: We can assume inactive friends will no longer be shown
+
+\item
+Candidate: Do we need to worry about privacy and data laws such as GDPR or CCPA?
+Interviewer: Good question. For simplicity, we don't worry about it for now.
 \end{enumerate}
+
+\subsection{Functional requirements}
+
+\begin{itemize}
+\item
+\begin{itemize}
+\item
+Users should be able to see nearby friends on their mobile apps
+\item
+Each entry in the nearby friend list has a distance and a timestamp incidcating when the distance was last updated
+\end{itemize}
+\item
+Nearby friend lists should be updated every few seconds
+\end{itemize}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Low latency: It's important to receive location updates from friends without too much delay
+\item
+Reliability: teh system needs to be reliable overall, but occasional data point loss is acceptable
+\item
+Eventual consistency: The location data store doesn't need strong consistency. A few second delay in receiving location data in
+different replicas is acceptable
+\end{itemize}
+
+\subsection{Back of the envelope estimation}
+
+Let's do a back of the envelope estimation to determine the potential scale and challeges  our solution will need to address. Some constrains and assumptions are listed below:
+
+\begin{itemize}
+\item
+Nearby friends are defined as friends who location are within a 5-mile radius
+\item
+
+\begin{itemize}
+\item
+The location refresh interval is 30 seconds
+\item
+The reason for this is that human walking speed is slow (average 3-4 miles per hour)
+\item
+The distance traveled in 40 seconds does not make a significatn difference on the ``nearby friends'' feature
+\end{itemize}
+\item
+On average 1000 million users use the ``nearby friends'' feature every day
+\item
+Assume the number of concurrent users is 10\% of DAU (Daily Active Users) so the number of concurrent users is 10 million
+\item
+On average, a users has 400 friends. Assume all of them use the ``nearby friends'' feature
+\item
+The app displays 20 nearby friends per page and may load more nearby friends upon request
+\end{itemize}
+
+
+\underline{Calculate QPS}
+
+\begin{itemize}
+\item
+100 million DAU
+\item
+Concurrent users: $10\% \times 100 \text{ million} = 10 \text{ million }$
+\item
+Users report their locations every 30 seconds
+\item
+Location update QPS = $\frac{10 \text{ million}}{30} =~ 334,000$
+\end{itemize}
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+In this section, we will discuss the following:
+
+\begin{itemize}
+\item
+High-level design
+\item
+API design
+\item
+Data model
+\end{itemize}
+
+In other chapters, we usually API design and data model before the high-level design.
+
+\begin{itemize}
+\item
+However, for this problem, the commucation protocol between client and server might not be a straightforward HTTP protocol, as we
+need to push location data to all friends
+\item
+Without understanding the high-level design, it's adifficult to know what the APIs look like
+\item
+Therefore, we discuss the high-level design first
+\end{itemize}
+
+\subsection{High-level design}
+
+At a high level, this problem calls for a design with efficient message passign.
+
+\begin{itemize}
+\item
+Conceptually, a user would like to receive location updates from every active friend nearby
+\item
+It could in theory be done puerly peer-to-peer, that is, a user could maintain a persistent connection to every other active friend in the vicinity (Figure 2.2)
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{peer_to_peer}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This solution is not practical for a mobile device with sometimes faky connections and a tight power consumption budge, but the idea
+sheds some light on the general design direction.
+
+A more practical design would have a shared backend and look like this:
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{shared_backend}
+    \caption{}
+  \end{center}
+\end{figure}
+
+What are responsibilities of the backend in Figure 2.3?
+
+\begin{itemize}
+\item
+Receive location updates from all active users
+\item
+For each location update, find all the active friends who should receive it and forward it to those users' devices
+\item
+If the distance between two users is over a certain threshold, do not forward it to the recipient's device
+\end{itemize}
 
 
 \end{document}
