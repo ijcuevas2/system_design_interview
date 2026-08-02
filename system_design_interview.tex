@@ -2550,7 +2550,7 @@ The world is a sphere that rotates on its axis. At the very top, there is the no
 Lat (latitude): denotes how far north or south we are
 Long (Longitude): denotes how far east or west we are
 
-\subsection{going from 3D to 2D}
+\subsection{Going from 3D to 2D}
 
 \begin{itemize}
 \item
@@ -2561,6 +2561,302 @@ There are different ways to do map projection, and each comes with its own stren
 Almost all of them distort the actual geometry
 \item
 Below we can see more examples
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{map_projections}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Google Maps selected a modified version of Mercator projection called Web Mercator.
+
+For more details on positioning systems and porjections, please refer to [3].
+
+\subsection{Geocoding}
+
+Geocoding is the process fo converting addresses to geographic coordinates.
+
+\begin{itemize}
+\item
+For instance, ``1600 Amphitheatre Parkway, Mountain View, CA'' is geocoded to a ltitude/longitude pair of (latitidue, 37.423021, longitude -122.083739)
+\item
+In other direction, the conversion from the latitude/longitude pair to the actual human readable address is called reverse geo coding
+\item
+On eway to geocode is interpolation [8]
+\item
+This method lverages the data from different sources such as geographic information systems (GIS) where the street network is mapped to the geographic coordinate space
+\end{itemize}
+
+\subsection{Geohashing}
+
+Geohasing is an ecoding system that encodesa geographic area into a short string of letters and digits
+
+\begin{itemize}
+\item
+At its core, it depicts the eart as a flattened surface and recursively divides the grids into sub-grids, which can be square or rectangular
+\item
+We represent each grid with a string of numbers between 0 to 3 that are created recursively
+\item
+``et's assume the initial flattened surface is of size $20,000 \text{ km } \times 10,000 \text{ km }$
+\item
+After the first division, we would have 4 grids of size $10,000 \text{ km } \times 5,000 \text{ km }$
+\item
+We represent them as 00, 01, 10, and 11 as shown in Figure 3.3
+\item
+We further divide each grid into 4 grids and use the same naming strategy
+\item
+Each sub-grid is now of size $5000 \text{ km } \times 2500 \text{ km }$
+\item
+We recursively divide the grids until each grid reachces a certain size threshold
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{geohashing}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Geohashing has many uses. In our design, we use geohasing for map tiling. For more details on geohashing and its benefits, please refer to [9]
+
+\subsection{Map rendering}
+
+\begin{itemize}
+\item
+We won't go into a lot of detail about map rendering here, but it is worth mentioning the basics
+\item
+One foundation concept to map rendering is tiling,
+\item
+Instead of rendering the entire map as one large custom image, the world is broken up into smaller tiles
+\item
+The client only downloads the relevant tiles for the area the user is in and stitches them togher like a mosaic for display.
+\end{itemize}
+
+There are distinct sets of tiles at different zoom levels.
+
+\begin{itemize}
+\item
+The client choooses the set of tiles appropritate for the zoom level of the map viewer on the client
+\item
+This provides the right level of map details without consuming execess bandwidth
+\item
+To illustate with an extreme example, when the client is zoomed all the way out to show the entire world, we don't want to have to download hundreds of thousands of tiles for a very high zoom level
+\item
+All the details would go to waste
+\item
+Instead, the client would download one tile at the lowest zoom level, which represents the entire world with a single $256 \times 256$ pixel image
+\end{itemize}
+
+\subsection{Road data processing}
+
+Most routing algorithms are variations of Dijkstra's or A* pathfinding algorithms.
+
+\begin{itemize}
+\item
+The exact algorithm choice is a complex topic and we won't go into much detail in this chapter
+\item
+What is important to note is that all these algorithms operate on a graph data structure where intersections are nodes and roads are
+edges of the graph
+\end{itemize}
+
+See Figure 3.4 for an example:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{map_as_a_graph}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The pathfinding performance for most of these algorithsm is extreneley sensitive to the size of the graph.
+
+\begin{itemize}
+\item
+Representing the entire world of road networks as a single graph would consume too much memory and is liekly too large for any of these algorithms to run efficiently
+\item
+The graph needs to be broken up into manageable units for these algorithsm to work at our design scale
+\item
+One way to break up road networks around the world is very similar to the tiling concept we discussed for map rendering
+\item
+By employing a similar subdivision technique as geohasing, we divide the world into small grids
+\item
+For each grid, we convert the raods whithin the grid into a small graph data structure that consists of the nodes (intersections) and
+edges (roads) inside the geographical area covered by the grid
+\item
+We call these grids routing  tiles
+\item
+Each routing title holds rreferences to all the other tiles it connects to
+\item
+This is how the routing algorithms can stitch together a bigger road graph as it traverses these interconnected routing tiles
+\item
+By breaking up raod networks into routing tiles that can ve loaded on demand, the routing algorithms can significantly reduce memory consumption and improve pathfinding performance by only consuming a small subset of the routing tiles at a time, and only loading additional tiles as needed
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{routing_tiles}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{defbox}{Reminder}
+\begin{itemize}
+\item
+In Figure 3.5, we call these grids routing tiles
+\item
+Routing tiles are similar to map tiles in that both a re grids covering certain geographical areas
+\item
+map tiles are PNG images, while routing tiles are binary files of road data for the area covered by the tiles
+\end{itemize}
+\end{defbox}
+
+\subsection{Hierarchical routing tiles}
+
+efficient navigation routing also requires having road data at the right level of detail.
+
+\begin{itemize}
+\item
+For example, for cross country routing, it would be slow to run the routing algorithm against a highly detailed set of street-level routing tiles
+\item
+The graph stitched from these detailed routing tiles would liekly be too large and cosume too much memory
+\item
+There are typically three sets of routing tiles with different levels of detail
+\item
+At the most detailed level, the routing tiles are small and contain only local roads
+\item
+At the next level, the tiles are bigger and contain only arterial roads connectiong distrcits toeghter
+\item
+At the lowerest level of detail, the tiels cover large areas and contain only major highways connecting cities and states together
+\item
+At each level, there could be edges connecting to tiles at a different zoom level
+\item
+For example, for a freeway entrance from local street A to freeway F, there would be a reference from the node (street A) in the samll tile to the node (freeway F) in the big tile
+\item
+See figure 3.6 for an example of routing tiles of varying sizes
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{routing_tiles_of_varying_sizes}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Back-of-the-envelope estimation}
+
+Now that we understand the basics, let's do a back-of-the-envelope esitmation
+
+Since the focus of the design is mobile, data usage and battery consumption are two important factos to consider.
+
+Before we dive into the estimation, here are some imperial/metric conversions for reference.
+
+\begin{itemize}
+\item
+1 foot = 0.3048 meters
+\item
+1 kilometer (km) = 0.6214 miles
+\item
+1 km = 1000 meters
+\end{itemize}
+
+\subsection{Storage usage}
+
+We need to store three types of data.
+
+\begin{itemize}
+\item
+Map of the world: A detailed calculation is shown below
+\item
+Metadata: Given that the metadata for each map tile could be begligible in size, we can skip the metadata in our computation
+\item
+Road info: The interviewer told us there are TBs of road data from external source. We transform this dataset into routing tiles, which are also likely to be terabytes in size.
+\end{itemize}
+
+\subsection{Map of the world}
+
+We discussed the concept of map tiling in the ``Map 101'' section on page 60.
+
+\begin{itemize}
+\item
+There are many sets of map tiles, with one at each zoom level
+\item
+To get an idea of the stroage requirement for the entire collection of map tile images, it would be informative to estimate the
+size of the largest tile set at the highest zoom level first
+\item
+At zoom level 21, there are about 4.3 million tiles (Table 3.1)
+\item
+Let's assume that each tile is a $256 \times 256$ pixel compressed PNG image, with the image use of about 100KB.
+\item
+The entire set at the highest zoom level would need about 4.4 trillion $\times$ 100KB = 440 PB.
+\end{itemize}
+
+In table 3.1, we show the progression of the tile counts at every zoom level.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+Zoom & Number of Tiles \\
+\hline
+0 & 1 \\
+\hline
+1 & 4 \\
+\hline
+2 & 16 \\
+\hline
+3 & 64 \\
+\hline
+4 & 256 \\
+\hline
+5 & 1024\\
+\hline
+6 & 4096 \\
+\hline
+7 & 16384 \\
+\hline
+8 & 65536 \\
+\hline
+9 & 262144 \\
+\hline
+10 & 1048576 \\
+\hline
+11 & 4194304 \\
+\hline
+12 & 16777216 \\
+\hline
+13 & 67108864 \\
+\hline
+14 & 268435456 \\
+\hline
+15 & 1073741824 \\
+\hline
+16 & 4294967296 \\
+\hline
+17 & 17179869184 \\
+\hline
+18 & 68719476736 \\
+\hline
+19 & 274877906944 \\
+\hline
+20 & 1099511627776 \\
+\hline
+21 & 4398046511104 \\
+\hline
+\end{tabular}
+
+However, keep in mind that about 90\% of the world's surface is natural and mostly inhabited  areas like oceans, deserts, lakes and mountains.
+
+\begin{itemize}
+\item
+Since these areas are highly compressible as images, we could conservatively reduce the storage estimate by 80 $\sim$ 90\%.
+\item
+That would reduce the storage size to a range of 44 to 88PB. Let's pick a simple roud number of 50PB.
+\item
+Next, let's estimate how much storage each subsequent lower zoom level would take.
+\item
+At each lower zoom level, the number of tiles for both north-south and east-west directions drops by half
+\item
+This results in a total reducation of the number of tiles by 4x, which drops the storage size for the zoom level by 4x.
 \end{itemize}
 
 

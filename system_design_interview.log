@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  2 AUG 2026 08:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  2 AUG 2026 13:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1065,17 +1065,66 @@ File: images/latitude_and_longitude.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/latitude_and_longitude.jpg  used on input line 
 2545.
 (pdftex.def)             Requested size: 276.00105pt x 206.99536pt.
-[63] [64 <./images/latitude_and_longitude.jpg>] (./system_design_interview.aux)
+[63]
+<images/map_projections.jpg, id=252, 4015.0pt x 3011.25pt>
+File: images/map_projections.jpg Graphic file (type jpg)
+<use images/map_projections.jpg>
+Package pdftex.def Info: images/map_projections.jpg  used on input line 2568.
+(pdftex.def)             Requested size: 276.00105pt x 206.99536pt.
+ [64 <./images/latitude_and_longitude.jpg>]
+Overfull \hbox (12.52734pt too wide) in paragraph at lines 2583--2585
+[]\OT1/cmr/m/n/10 For in-stance, ``1600 Am-phithe-atre Park-way, Moun-tain View
+, CA'' is geocoded
+ []
+
+[65 <./images/map_projections.jpg>]
+Overfull \hbox (4.1394pt too wide) in paragraph at lines 2604--2606
+[]\OT1/cmr/m/n/10 After the first di-vi-sion, we would have 4 grids of size $10
+\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 000[] \OMS/cmsy/m/n/10 ^^B \OT1/cmr/m/n/10 5
+\OML/cmm/m/it/10 ; \OT1/cmr/m/n/10 000[]$ 
+ []
+
+<images/geohashing.jpg, id=259, 3011.25pt x 4015.0pt>
+File: images/geohashing.jpg Graphic file (type jpg)
+<use images/geohashing.jpg>
+Package pdftex.def Info: images/geohashing.jpg  used on input line 2617.
+(pdftex.def)             Requested size: 276.00105pt x 367.95091pt.
+[66 <./images/geohashing.jpg>]
+<images/map_as_a_graph.jpg, id=263, 2097.33563pt x 1099.85907pt>
+File: images/map_as_a_graph.jpg Graphic file (type jpg)
+<use images/map_as_a_graph.jpg>
+Package pdftex.def Info: images/map_as_a_graph.jpg  used on input line 2668.
+(pdftex.def)             Requested size: 276.00105pt x 144.73207pt.
+ [67]
+<images/routing_tiles.jpg, id=268, 4015.0pt x 3011.25pt>
+File: images/routing_tiles.jpg Graphic file (type jpg)
+<use images/routing_tiles.jpg>
+Package pdftex.def Info: images/routing_tiles.jpg  used on input line 2699.
+(pdftex.def)             Requested size: 276.00105pt x 206.99536pt.
+ [68 <./images/map_as_a_graph.jpg>] [69 <./images/routing_tiles.jpg>]
+<images/routing_tiles_of_varying_sizes.jpg, id=275, 1646.40094pt x 1671.24374pt
+>
+File: images/routing_tiles_of_varying_sizes.jpg Graphic file (type jpg)
+<use images/routing_tiles_of_varying_sizes.jpg>
+Package pdftex.def Info: images/routing_tiles_of_varying_sizes.jpg  used on inp
+ut line 2742.
+(pdftex.def)             Requested size: 276.00105pt x 280.15501pt.
+ [70 <./images/routing_tiles_of_varying_sizes.jpg>]
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 2797--2846
+[][] 
+ []
+
+[71] [72] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 25569 strings out of 467533
- 588080 string characters out of 5422138
+ 25643 strings out of 467533
+ 590279 string characters out of 5422138
  1013502 words of memory out of 5000000
- 54135 multiletter control sequences out of 15000+600000
+ 54209 multiletter control sequences out of 15000+600000
  630970 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1089,10 +1138,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (64 pages, 123779188 bytes).
+Output written on system_design_interview.pdf (72 pages, 137680589 bytes).
 PDF statistics:
- 305 PDF objects out of 1000 (max. 8388607)
- 180 compressed objects within 2 object streams
+ 335 PDF objects out of 1000 (max. 8388607)
+ 197 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 188 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 213 words of extra memory for PDF output out of 10000 (max. 10000000)
 
