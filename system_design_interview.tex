@@ -2857,6 +2857,354 @@ Next, let's estimate how much storage each subsequent lower zoom level would tak
 At each lower zoom level, the number of tiles for both north-south and east-west directions drops by half
 \item
 This results in a total reducation of the number of tiles by 4x, which drops the storage size for the zoom level by 4x.
+\item
+With the storage size reduced by 4x at each lower zoom level, the math for the total size is a series: $50 + \frac{50}{4} + \frac{50}{16} + \frac{50}{64} + \cdots =\sim 67$ PB.
+\item
+This is just a rough estimate
+\item
+It is good enough to know that we need roughly about 100PB to store all the map tiles at varying levels of detail.
+\end{itemize}
+
+\subsection{Server throughput}
+
+To estimate the server throughput, let's review the types of requests we need to support.
+
+\begin{itemize}
+\item
+There are two main types of requests
+\item
+The first is navigation requests
+\item
+These are sent by the clients to initiate a navigation session
+\item
+The second is location update requests
+\item
+These are sent by the client as the user moves aorund druing a navigation session
+\item
+The location data is used by down stream services in many different ways
+\item
+For example, location data is one of the inputs for live traffic data
+\item
+We will cover the use cases of location data in the design deep dive section
+\item
+Now we can analyze the server throughput for navigation requests
+\item
+Let's assume we have 1 billion DAU, and each user on average uses navigation for a total of 35 minutes per week
+\item
+this translates to 35 billion minutes per week or 5 billion minutes per day
+\item
+One simple approach would be to send GPS coordinates every second, which results in 300 billion (5 billion minutes $\times$ 60) requests per day or 3 million QPS ($\frac{300 \text{ billion requests}}{10^5}$ = 3 million)
+\item
+However, the client may not need to send a GPS update every second
+\item
+we can batch these on the client and send them at a much lower frequency (for example, every 15 seconds or 30 seconds) to reduce the write QPS
+\item
+The actual frequency  could depend on factors such as how fast the user moves
+\item
+If they are stuck in traffic, a client can slow down the GPS updates
+\item
+In our design, we assume GPS updates are batched and then sent to the server every 15 seconds
+\item
+With this batched approach, the QPS is reduced to 200000 ($\frac{3 \text{ million}}{15}$)
+\item
+Assume peak QPS is five times average. Peak QPS for location updates = 200000 $\times$ 5 = 1 million
+\end{itemize}
+
+\subsection{Setp2- Popose High-level Design and Get Buy-In}
+
+Now that we have more knowledge about Google Maps, we are ready to propose a high level design (Figure 3.7)
+
+\subsubsection{High-level design}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_37_high_level_design}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The high-level design supports three features. Let's take a look at them one by one.
+
+\begin{itemize}
+\item
+Location service
+\item
+Navigation service
+\item
+Map rendering
+\end{itemize}
+
+\subsubsection{Location Service}
+
+The location service is responsible for recording a uer's location update. The architecture is shown in Figure 3.8.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_38_location_service}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The basic design calls for the clients to send location updates every $t$ seconds, where $f$ is a configurable interval.
+
+\begin{itemize}
+\item
+The periodic updates have several benefits
+\item
+First, we can lerage the streams of location data to imporve our system over time
+\item
+We can use the data to monitor live traffic, etetect new or closed roads, and analyze user behavior to enable personalization, for example.
+\item
+second, we can leverage the location data in near real-time to provide more accurate ETA estimates to the users and to reourte around traffic, if necessary.
+\item
+But do we really need to send every location update to the server immediately?
+\item
+The answer is probably no
+\item
+Location history can be buffered on the client and sent in batch to the server at a much lower frequency
+\item
+For example, as shown in Figure 3.9, the location updates are recorded  every second, but area only sent to the server as part of a batch ervery 15 second
+\item
+This significantly reduces the total update traffic sent by all the clients
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_39_batch_requests}
+    \caption{}
+  \end{center}
+\end{figure}
+
+For a system like Google Maps, even when location updates are batched, the write volume is still very high.
+
+\begin{itemize}
+\item
+We need a database that is optimzied for high write colume and is highly scalable, such as Cassandra
+\item
+We may also need to log location data using a stream processing engine such as Kafka for further processing
+\item
+We discuss this in detail in the deep dive section
+\item
+What communication protocol might be a good fit here?
+\end{itemize}
+
+HTTP with the keep-alive operation [10] is a good choice because it is very efficient.
+
+The HHTP request might look like this:
+
+\begin{lstlisting}
+POST /v1/location
+Parameters
+locs: JSON encoded array of (latitude, longitude, timestamp) tuples
+\end{lstlisting}
+
+\subsection{Navigation service}
+
+This component is responsible for dfinding a reasonably fast route from point A to point B.
+
+\begin{itemize}
+\item
+We can tolerate a little bit of latency
+\item
+The calculated route does not have to be the fastest, but accuracy is critical
+\item
+As shown in Figure 3.8, the user sends an HTTP request to the navigation service through a load balancer
+\end{itemize}
+
+The request includes origin and estimation as the parameters. The API might look like this.
+
+\begin{lstlisting}
+{
+  'distance': {'text':'0.2 mi', 'value': 259},
+  'duration': {'text': '1 min', 'value': 83},
+  'end_location': {'lat': 37.4038943, 'lng': -121.9410454},
+  'html_instructions': 'Head <b>northeast</b> on <b>Brandon St</b> toward <b>Lumin Way</b><div style="font-size:0.9em">Restricted usage road</div>',
+  'polyline': {'points': '_fhcFjbhgVuAwDsCal'},
+  'start_location': {'lat': 37.4027165, 'lng': -121.9435809},
+  'geocoded_waypoints': [
+    {
+      "geocoder_status" : "OK",
+      "partial_match" : true,
+      "place_id" : "ChIJwZNMti1fawwRO2aVVVX2yKg",
+      "types" : [ "locality", "political" ]
+    },
+    {
+      "geocoder_status" : "OK",
+      "partial_match" : true,
+      "place_id" : "ChIJ3aPgQGtXawwRLYeiBMUi7bM",
+      "types" : [ "locality", "political" ]
+    }
+  ],
+  'travel_mode': 'DRIVING'
+}
+\end{lstlisting}
+
+Please refer to [11] for more details on Google Map's offical APIs.
+
+So far we have not taken reroute and traffic hanges into consideration. Those problems are tackled by the Adaptive ETA service in the deep dive section.
+
+\subsection{Map rendering}
+
+As we discussed in the back-of-the-envelope estimation, the entire collection of map tiles at various zoom levels is about a hundred
+petabytes in size.
+
+It is not practical to hold the entire dataset on the client
+
+The map tiles must be fetch on-demand from the server based on the client's location and the zoom level of the client viewport.
+
+Whwne should the client fetch new map tiles from the server? Here are some scenarios:
+
+\begin{itemize}
+\item
+The user is zooming and panning the map viewpoint on the client to explore these surroundings
+\item
+During navigation, the user moves out of the current amp tile into a nearby tile.
+\end{itemize}
+
+We are dealing with a lot of data. Let's see hwo we could serve these map tiles from the server efficiently.
+
+\subsection{Option 1}
+
+The server builds the map tiles on the fly, based on the client location and zoom level of the client viewport.
+
+Considering that there is an infinite number of location and zoom level combinations, generating map tiles dynamically has a few severe disadvantages:
+
+\begin{itemize}
+\item
+It puts a huge load on the server cluster to generate every map tile dynamically
+\item
+Since the map tiles are dynamically generated, it is hard to take advantage of caching
+\end{itemize}
+
+\subsection{Option 2}
+
+Another option is to server a pre-generated set of map tiles at each zoom level.
+
+\begin{itemize}
+\item
+The map tiles are static, with each tile convering a fixed rectangular grid using a subdivision schema like geohashing
+\item
+Each tile is therefore represented by its geohash
+\item
+In other words, there is a unique geohash associated with each grid
+\item
+When a client needs a map tile, it first determines the map tile collection to use based on its zoom level
+\item
+It then computes the map tile URL by converting its location to the geohash at the appropriate zoom level
+\item
+These static, pre-generated images are served by a CDN as shown in Figure 3.10.
+\end{itemize}
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_310_pre_generated_images}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In the diagram above, the milbe user makes an HTTP request to fetch a tile from the CDN.
+
+\begin{itemize}
+\item
+If the CDN has not yet served that specific tile before, it fetches a copy from the origin server, caches it locally, and returns it to the user
+\item
+On subsequent reequests, even if those requests are from different users, the CDN returns a cached copy without contacting the origin server
+\item
+This approach is more scalable and performant becaues the map tiles are served from the nearest point of presence (POP to the client as hsown in Figure 3.11)
+iiThe static nature of the map tiles makes them highly cacheable.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{without_cdn_vs_with_cdn}
+    \caption{}
+  \end{center}
+\end{figure}
+
+It is important to keep mobile data useage low.
+
+Let's calculate the amount of data the client needs to load during a typical navigation session.
+
+Note the following calculations don't take client-side acching into consideration.
+
+Since the routes a user takes could be similar each day, the data usage is likely to be a lot lower with client-side caching.
+
+\begin{defbox}{Data usage}
+\begin{itemize}
+\item
+Let's assume a user moves at 30 km/h, and at a zoom level where each image covers a block of 200m $\times$ 200m (a block can be represented by a 256-pixel by 256-pixel image and the average image size is 100KB)
+\item
+For an area of 1 km $\times$ 1 km, we need 25 images or 2.5MB (25 $\times$ 100 KB) of data
+\item
+Therefore, if the pseed is 30 km/h, we need 75MB  (30 $\times$ 2.5MB) of data per hour or 1.25MB of data per minute
+\end{itemize}
+\end{defbox}
+
+Next, we estimate the CDN data usage. At our scale, the cost is an important factor to consider.
+
+\begin{defbox}{Traffic through CDN}
+\begin{itemize}
+\item
+As metnioned earlier, we serve 5 billion minutes of navigation per day
+\item
+This translates to 5 billion $\times$ 1.25MB = 6.25 million MB per day
+\item
+Hence, we serve 625000MB $\frac{6.25 \text{ million}}{10^5 \text{ seconds in a day}}$ of map data per second
+\item
+With a CDN, these map images are going to be served from the POPs all over the world.
+\item
+Let's assume there are 200 POPs
+\item
+Each POP would only need to esrve a few hundred MBs ($\frac{62500}{200}$) per second
+\end{itemize}
+\end{defbox}
+
+There is one final detail in the map rendering design we have only briefly touched on.
+
+\begin{itemize}
+\item
+How does the client know which URLs to use to fetch the map tiles from the CDN?
+\item
+Keep in mind that we are using option 2 as discussed above
+\item
+With that option, the map tiles are static and pre-generated based on fixed sets of grids, with each set representing a discrete
+zoom level
+\item
+Since we encode the grids in geohash, and there is one unique geohash per grid, computationally it is very efficient to go from the client's location (in latitude and longitude) and zoom level to the geohash, for the map tile
+\item
+This calculation can be done on the client and we can fetch any static image tile from the CDN
+\item
+For example, the URL for the image tile of Google headquarter could look like this: \lstinline|https://cdn.map-provider.com/tiles/9q9hvu.png|
+\end{itemize}
+
+Refer to Chapter 1 Proximity Service on page 10 for a more detailed discussion of geohash encoding
+
+Calculating geohash on the client should work well.
+
+\begin{itemize}
+\item
+However, keep in mind that this algorithm is hardcoded in all the clients on all different platforms
+\item
+Shipping changes to mobile apps is a time-consuming and somehwat risky process
+\item
+We have to be sure that geohashing is the method we plan to use long-term to ecndoe the collection of map tiles and that is unlikely to change
+\item
+If we need to switch to another encoding method for some reason, ti will take a lot of effort and the risk is not low
+\item
+Here is another option worth considering
+\item
+Instead of using a hardcoded client-side algorithm to convert a ltatude/longitude (lat/lng) pair and zoom level to a tile URL, we could introduce a service as an intermeidary whose job is to construct the tile URLs based ont he same inputs mentioned above
+\item
+This is a very simple service
+\item
+The added operational flexibility might be worth it
+\item
+This is a very intresting tradeoff discussion we could have with the interviewer
+\item
+The alternative map rednering flow is whon in Figure 3.12
+\item
+When a user moves to a new location or to a new zoom level, the map tile service determines which tiles are needed and translates that information into a set of tile URLs to retrieve.
 \end{itemize}
 
 
