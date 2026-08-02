@@ -2246,5 +2246,43 @@ The WebSocket servers are notified about the update and each one then notififes 
 Each WebSocket handler keeps a list of all channels it ahs subscribved to and upong receign the notification from ther server, it checks each channel against the hash ring to determine if a channel need to be re-subscribed on a new server
 \end{itemize}
 
+Using the hash ring from Figure 2.9 above, if \lstinline|p_1| went down, and we replace it with \lstinline|p1_new|, the hash ring
+would be updated like so:
+
+\begin{tabular}{|p{8cm}|}
+\hline
+Old:  \lstinline|"p_1", "p_2", "p_3", "p_4"| \\
+New:  \lstinline|"p_1_new", "p_2", "p_3", "p_4"| \\
+\hline
+\end{tabular}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=\linewidth]{replace_pub_sub_serverer}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Adding/removing friends}
+
+What should the client do when the user removed a friend?
+
+\begin{itemize}
+\item
+When a new friend is added, the client's Websocket connection handler on the server needs to be notified so it can subscribe to the new friend's Pub/Sub channel
+\item
+Since the ``nearby friends'' feature is within the ecosystem of a larger app, we can assume that the ``nearby feature'' could register a callback on the mobile client whenver a new friend is added
+\item
+The callback, upon invocation, sends a message to the WebSocket server to subscribe to the new frien's Pub/Sub channel
+\item
+The WebSocket server also returns a message containing the new friend's latest location and timestamp, if they are active
+\item
+Likewise, the client could reggister a callback in the application wehenver a friend is removed
+\item
+The callback would send a message to the WebSocket server to unsubscribe from the friend's Pub/Sub channel
+\item
+This subscribe/unsubscribe callback could also be used whever a riend has opted in or out of the location update
+\end{itemize}
+
 
 \end{document}
