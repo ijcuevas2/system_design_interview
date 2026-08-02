@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  1 AUG 2026 15:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  2 AUG 2026 08:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -914,121 +914,168 @@ Package pdftex.def Info: images/proximity_service.jpg  used on input line 1353.
 (pdftex.def)             Requested size: 276.00105pt x 502.39655pt.
  [31]
 [32 <./images/proximity_service.jpg>]
+Chapter 2.
 <images/facebook_nearby_friends.jpg, id=137, 3103.09312pt x 4041.0975pt>
 File: images/facebook_nearby_friends.jpg Graphic file (type jpg)
 <use images/facebook_nearby_friends.jpg>
 Package pdftex.def Info: images/facebook_nearby_friends.jpg  used on input line
- 1369.
+ 1371.
 (pdftex.def)             Requested size: 276.00105pt x 359.4284pt.
- [33 <./images/facebook_nearby_friends.jpg>] [34] [35]
-<images/peer_to_peer.jpg, id=147, 2366.08969pt x 1547.7825pt>
+[33
+
+] [34 <./images/facebook_nearby_friends.jpg>] [35] [36]
+<images/peer_to_peer.jpg, id=150, 2366.08969pt x 1547.7825pt>
 File: images/peer_to_peer.jpg Graphic file (type jpg)
 <use images/peer_to_peer.jpg>
-Package pdftex.def Info: images/peer_to_peer.jpg  used on input line 1515.
+Package pdftex.def Info: images/peer_to_peer.jpg  used on input line 1517.
 (pdftex.def)             Requested size: 276.00105pt x 180.53009pt.
-<images/shared_backend.jpg, id=148, 2737.97906pt x 1381.41093pt>
+<images/shared_backend.jpg, id=151, 2737.97906pt x 1381.41093pt>
 File: images/shared_backend.jpg Graphic file (type jpg)
 <use images/shared_backend.jpg>
-Package pdftex.def Info: images/shared_backend.jpg  used on input line 1528.
+Package pdftex.def Info: images/shared_backend.jpg  used on input line 1530.
 (pdftex.def)             Requested size: 276.00105pt x 139.24527pt.
- [36 <./images/peer_to_peer.jpg>]
-<images/high_level_design.jpg, id=152, 2186.1675pt x 1971.61594pt>
+ [37 <./images/peer_to_peer.jpg>]
+<images/high_level_design.jpg, id=156, 2186.1675pt x 1971.61594pt>
 File: images/high_level_design.jpg Graphic file (type jpg)
 <use images/high_level_design.jpg>
-Package pdftex.def Info: images/high_level_design.jpg  used on input line 1568.
+Package pdftex.def Info: images/high_level_design.jpg  used on input line 1570.
 
 (pdftex.def)             Requested size: 276.00105pt x 248.88823pt.
- [37 <./images/shared_backend.jpg>]
-<images/restful_api_request_flow.jpg, id=157, 4129.17656pt x 3754.27594pt>
+ [38 <./images/shared_backend.jpg>]
+<images/restful_api_request_flow.jpg, id=160, 4129.17656pt x 3754.27594pt>
 File: images/restful_api_request_flow.jpg Graphic file (type jpg)
 <use images/restful_api_request_flow.jpg>
 Package pdftex.def Info: images/restful_api_request_flow.jpg  used on input lin
-e 1593.
+e 1595.
 (pdftex.def)             Requested size: 276.00105pt x 250.91077pt.
- [38 <./images/high_level_design.jpg>] [39 <./images/restful_api_request_flow.j
+ [39 <./images/high_level_design.jpg>] [40 <./images/restful_api_request_flow.j
 pg>]
-<images/redis_pub_sub.jpg, id=164, 3911.61375pt x 1995.70593pt>
+<images/redis_pub_sub.jpg, id=167, 3911.61375pt x 1995.70593pt>
 File: images/redis_pub_sub.jpg Graphic file (type jpg)
 <use images/redis_pub_sub.jpg>
-Package pdftex.def Info: images/redis_pub_sub.jpg  used on input line 1633.
+Package pdftex.def Info: images/redis_pub_sub.jpg  used on input line 1635.
 (pdftex.def)             Requested size: 276.00105pt x 140.80995pt.
-<images/periodic_location_update.jpg, id=165, 4188.64874pt x 4198.43532pt>
+<images/periodic_location_update.jpg, id=168, 4188.64874pt x 4198.43532pt>
 File: images/periodic_location_update.jpg Graphic file (type jpg)
 <use images/periodic_location_update.jpg>
 Package pdftex.def Info: images/periodic_location_update.jpg  used on input lin
-e 1657.
+e 1659.
 (pdftex.def)             Requested size: 276.00105pt x 276.62352pt.
- [40 <./images/redis_pub_sub.jpg>] [41 <./images/periodic_location_update.jpg>]
-<images/send_location_update_to_friends.jpg, id=172, 3901.8272pt x 3477.24094pt
+ [41 <./images/redis_pub_sub.jpg>] [42 <./images/periodic_location_update.jpg>]
+<images/send_location_update_to_friends.jpg, id=175, 3901.8272pt x 3477.24094pt
 >
 File: images/send_location_update_to_friends.jpg Graphic file (type jpg)
 <use images/send_location_update_to_friends.jpg>
 Package pdftex.def Info: images/send_location_update_to_friends.jpg  used on in
-put line 1713.
+put line 1715.
 (pdftex.def)             Requested size: 276.00105pt x 245.92548pt.
- [42] [43 <./images/send_location_update_to_friends.jpg>]
-Overfull \hbox (21.63303pt too wide) in paragraph at lines 1784--1791
+ [43] [44 <./images/send_location_update_to_friends.jpg>]
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 1786--1793
 [][] 
  []
 
-[44]
-Overfull \hbox (103.33853pt too wide) in paragraph at lines 1819--1824
+[45]
+Overfull \hbox (103.33853pt too wide) in paragraph at lines 1821--1826
 [][] 
  []
 
-[45] [46] [47]
-Overfull \hbox (2.52824pt too wide) in paragraph at lines 1980--1982
+[46] [47] [48]
+Overfull \hbox (2.52824pt too wide) in paragraph at lines 1982--1984
 []\OT1/cmr/m/n/10 As men-tioned ear-lier, we choose Re-dis Pub/Sub ecause it is
  very lightweight
  []
 
-[48] [49]
-<images/consistent_hashing.jpg, id=199, 2258.4375pt x 2445.135pt>
+[49] [50]
+<images/consistent_hashing.jpg, id=202, 2258.4375pt x 2445.135pt>
 File: images/consistent_hashing.jpg Graphic file (type jpg)
 <use images/consistent_hashing.jpg>
-Package pdftex.def Info: images/consistent_hashing.jpg  used on input line 2099
+Package pdftex.def Info: images/consistent_hashing.jpg  used on input line 2101
 .
 (pdftex.def)             Requested size: 276.00105pt x 298.81345pt.
- [50]
-<images/figure_out_the_correct_redis_server.jpg, id=203, 2258.4375pt x 2886.283
+ [51]
+<images/figure_out_the_correct_redis_server.jpg, id=207, 2258.4375pt x 2886.283
 13pt>
 File: images/figure_out_the_correct_redis_server.jpg Graphic file (type jpg)
 <use images/figure_out_the_correct_redis_server.jpg>
 Package pdftex.def Info: images/figure_out_the_correct_redis_server.jpg  used o
-n input line 2108.
+n input line 2110.
 (pdftex.def)             Requested size: 276.00105pt x 352.72499pt.
- [51 <./images/consistent_hashing.jpg>] [52 <./images/figure_out_the_correct_re
+ [52 <./images/consistent_hashing.jpg>] [53 <./images/figure_out_the_correct_re
 dis_server.jpg>]
-Overfull \hbox (1.0839pt too wide) in paragraph at lines 2167--2169
+Overfull \hbox (1.0839pt too wide) in paragraph at lines 2169--2171
 []\OT1/cmr/m/n/10 If a chan-nel is moved, which ould hap-pen when the chan-nel'
 s Pub/Sub
  []
 
-[53]
-Overfull \hbox (0.94499pt too wide) in paragraph at lines 2198--2200
+[54]
+Overfull \hbox (0.94499pt too wide) in paragraph at lines 2200--2202
 []\OT1/cmr/m/n/10 During these mass re-sub-scrip-tion events, some lo-ca-tion u
 p-dates might
  []
 
-[54]
-<images/replace_pub_sub_serverer.jpg, id=217, 2686.78781pt x 1259.4553pt>
+[55]
+<images/replace_pub_sub_serverer.jpg, id=221, 2686.78781pt x 1259.4553pt>
 File: images/replace_pub_sub_serverer.jpg Graphic file (type jpg)
 <use images/replace_pub_sub_serverer.jpg>
 Package pdftex.def Info: images/replace_pub_sub_serverer.jpg  used on input lin
-e 2261.
+e 2263.
 (pdftex.def)             Requested size: 345.0pt x 161.71707pt.
- [55 <./images/replace_pub_sub_serverer.jpg>] [56]
-(./system_design_interview.aux)
+ [56 <./images/replace_pub_sub_serverer.jpg>]
+<images/redis_pub_sub_channels.jpg, id=225, 5821.49907pt x 3280.75688pt>
+File: images/redis_pub_sub_channels.jpg Graphic file (type jpg)
+<use images/redis_pub_sub_channels.jpg>
+Package pdftex.def Info: images/redis_pub_sub_channels.jpg  used on input line 
+2330.
+(pdftex.def)             Requested size: 276.00105pt x 155.5372pt.
+ [57]
+<images/publish_location_update_to_random_nearby_person.jpg, id=229, 5565.54282
+pt x 3309.36375pt>
+File: images/publish_location_update_to_random_nearby_person.jpg Graphic file (
+type jpg)
+<use images/publish_location_update_to_random_nearby_person.jpg>
+Package pdftex.def Info: images/publish_location_update_to_random_nearby_person
+.jpg  used on input line 2339.
+(pdftex.def)             Requested size: 276.00105pt x 164.11447pt.
+<images/nine_geohash_grids.jpg, id=230, 8190.6pt x 6142.95pt>
+File: images/nine_geohash_grids.jpg Graphic file (type jpg)
+<use images/nine_geohash_grids.jpg>
+Package pdftex.def Info: images/nine_geohash_grids.jpg  used on input line 2354
+.
+(pdftex.def)             Requested size: 276.00105pt x 206.96411pt.
+ [58 <./images/redis_pub_sub_channels.jpg> <./images/publish_location_update_to
+_random_nearby_person.jpg>] [59 <./images/nine_geohash_grids.jpg>] [60]
+<images/chapter2_summary.jpg, id=240, 3011.25pt x 4015.0pt>
+File: images/chapter2_summary.jpg Graphic file (type jpg)
+<use images/chapter2_summary.jpg>
+Package pdftex.def Info: images/chapter2_summary.jpg  used on input line 2452.
+(pdftex.def)             Requested size: 276.00105pt x 367.95091pt.
+ [61 <./images/chapter2_summary.jpg>]
+Chapter 3.
+[62
+
+]
+Overfull \hbox (3.91731pt too wide) in paragraph at lines 2528--2530
+[]\OT1/cmr/m/n/10 Smooth nav-i-ga-tion: On the client-side, users should ex-pe-
+ri-ence very smooth
+ []
+
+<images/latitude_and_longitude.jpg, id=248, 4015.0pt x 3011.25pt>
+File: images/latitude_and_longitude.jpg Graphic file (type jpg)
+<use images/latitude_and_longitude.jpg>
+Package pdftex.def Info: images/latitude_and_longitude.jpg  used on input line 
+2545.
+(pdftex.def)             Requested size: 276.00105pt x 206.99536pt.
+[63] [64 <./images/latitude_and_longitude.jpg>] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 25499 strings out of 467533
- 585365 string characters out of 5422138
+ 25569 strings out of 467533
+ 588080 string characters out of 5422138
  1013502 words of memory out of 5000000
- 54065 multiletter control sequences out of 15000+600000
+ 54135 multiletter control sequences out of 15000+600000
  630970 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1042,10 +1089,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (56 pages, 101130627 bytes).
+Output written on system_design_interview.pdf (64 pages, 123779188 bytes).
 PDF statistics:
- 275 PDF objects out of 1000 (max. 8388607)
- 163 compressed objects within 2 object streams
+ 305 PDF objects out of 1000 (max. 8388607)
+ 180 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 163 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 188 words of extra memory for PDF output out of 10000 (max. 10000000)
 
