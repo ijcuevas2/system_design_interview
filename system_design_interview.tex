@@ -3567,4 +3567,53 @@ https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Park
 }
 \end{lstlisting}
 
+The navigation service calls this service to geocode the origin and the destination before passing the latitude/longitude pairs downstream to find the routes.
+
+\subsection{Route planner service}
+
+This services computes a suggested rout that is optimzied for tavel time according to current traffic and road conditions. It interacts
+with serveral services which are discsused next.
+
+\subsection{Sourtest-path service}
+
+THe shortest-path service receives the origiin and the desintation in lat/lng pairs and returns the top-k shortest paths without considering traffic or current conditions
+
+\begin{itemize}
+\item
+THis computation only depends on the structure of the reaods
+\item
+Here, caching the routes could be beneficial because the graph rarely changes
+\item
+\end{itemize}
+
+The shoretest-path services runs a variabtion of A* pathfind algorithsm aginst the routing tiles in object storage.
+
+Here is an overview:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The algorithm receives the origin and desitnation in lat/lng pairs
+\item
+The lat/lng pairs are converted to geohashes which are then used to load the start and end-points of routing tiles
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+The algorithm starts from the origin routing tile, travsers the graph data structure, and hydrates additinal neighoboring tiles from object storage (or its local cache if it has loaded it before) as it expands the search area
+\item
+It's worth nothign that there are connections from one level of tile to another covering the same area
+\item
+This is how the algorithm could ``enter'' the bigger tiles containing only highways, for example
+\item
+THe algorithm continues to expand its search by hudrating more neighboring tiles (or tiles at differentesolutions) as needed until a set of best routes is found
+\end{itemize}
+\end{itemize}
+
+FIgure 3.18 (based on [14]) gives a conceptual overview of the tiles used in the graph traversal.
+
 \end{document}
