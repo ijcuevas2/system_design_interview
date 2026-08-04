@@ -3284,5 +3284,287 @@ This provides a fast lookup mechanism to locate a tile by lat/lng pair
 We discuss how the shortest path service uses these routing tiles shortly
 \end{itemize}
 
+\subsubsection{User location data}
+
+User location data is valuable
+
+\begin{itemize}
+\item
+We use it to update our road data and routing tiles
+\item
+We also use it to build a database of live and historical traffic data
+\item
+This location data is also consumed by multiple data stream processing services to update the map data
+\item
+FOr user location data, we need a database that can handle the write-heavy workload well and can be horizontally scaled
+\item
+Cassandra could be a good candidate
+\end{itemize}
+
+Here is what a single row could like
+
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+\hline
+\lstinline|user_id| & \lstinline|timestamp| & \lstinline|user_mode| & \lstinline|driving_mode| & \lstinline|location| \\
+\hline
+101 & 1635740977 & active & driving & (20, 30.5) \\
+\hline
+\end{tabular}
+
+Table 3.2: Location table
+
+\subsubsection{Geocoding database}
+
+\begin{itemize}
+\item
+This databse stores places and their corresponding lat/lng pair
+\item
+We can use a key-value database such as Redis for fast reads, since we have frequent reads and infrequent writes
+\item
+We use it convert an origin or desitnation to a lat/lng pair before passing it to the route planner service
+\end{itemize}
+
+\subsubsection{Precomputed images of the world map}
+
+\begin{itemize}
+\item
+When a device asks for a map of a particular area, we need to get enarby roads and compute an image that represents that area with all the roads and related details.
+\item
+These computations would be heavy and redundant, so it could be helpful to compute them once and then cache the images.
+\item
+We precompute images at different zoom levels and store them ona CDN, which is backed by cloud storage such as Amazon S3.
+\end{itemize}
+
+Here is an example of such an image:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_13_precomputed_tiles}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Services}
+
+NOw that we have discussed the data model, let's take a close look at some of the most important services: location service, map rendering service, and navigation service.
+
+\subsubsection{Location service}
+
+\begin{itemize}
+\item
+In the high level design, we discussed how location service works.
+\item
+In this section, we focus on the database design for this service and also how user location is used in detail
+\item
+In Figure 3.14, the key-value store is used to store user location data
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_14_user_location_database}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Given the fact we have 1 million location updates every second, we need to have a database that supports fast writes.
+
+\begin{itemize}
+\item
+A NoSQL key-value databse or column-oriented database would be a good choice here
+\item
+In addition, a uer's location is continously changing and becomes stale as soon as a new update arrives
+\item
+Therefore, we can prioritize availability over consistency
+\item
+The CAP theorem [13] states that we would choose two attributes among consistency, availability, and partition tolerance
+\item
+Given our constraints, we would go with availability and partition tolerance
+\item
+One database that is a good fit is Cassandra
+\item
+It can handle our scale with a strong availability guarantee
+\item
+THe key is the combination of (\lstinline|user_id|, \lstinline|timestamp|) and the value is a lat/lng pair.
+\item
+In this setup, \lstinline|user_id| is the primary key and \lstinline{timestamp} is the clustering key
+\item
+The advantage of using \lstinline|user_id| as the partition key is that we can quickly read the latest position of specific user
+\item
+All the data with the same partition key are stored together, sorted by \lstinline|timestamp|
+\item
+With this arrangement, the retrieval of the location data for a specific user within a time range is very efficient
+\end{itemize}
+
+Below is an example of what the table may look like.
+
+\begin{tabular}{|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.2cm}|p{2.4cm}|}
+\hline
+\lstinline|key (user_id)| & \lstinline|timestamp| & \lstinline|lat| & \lstinline|long| & \lstinline|user_mode| & \lstinline|navigation_mode| \\
+\hline
+51 & 132053000 & 21.9 & 89.8 & active & driving \\
+\hline
+\end{tabular}
+
+\subsection{How do we use the user location data?}
+
+User location data is essential.
+
+\begin{itemize}
+\item
+It supports many use cases
+\item
+We use the data to detect new and recently closed roads
+\item
+We use it as one of the inputs to improve th accuracy of our map over time
+\item
+It is also a n input for live traffic data
+\item
+To support these use cases, in addition to writing currnt user locations in our database, we log this information int a message queue,
+such as Kafka
+\item
+Kafka is a unified low-latency, high-throughput data streaming platform designed for real-time data feeds.
+\item
+Figure 3.15 shows  how Kafka is used in the improved design
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_15_location_data_is_used_by_other_services}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Other services consume the location data stream form Kafka for various use cases
+\begin{itemize}
+\item
+For instance, the live traffic service digests the output stream and updates the live traffic database
+\item
+The routing tile processing service improves the map of the world by detecting new or closed roads and updating the affected routing tiles in object storage
+\item
+Other services can also tap into the stream for different purposes
+\end{itemize}
+
+\subsubsection{Rendering map}
+
+In this section, we dive deep into prcomputed map tiles and amp rednering optimization. THey are primary inspired by the work of Google Design [3].
+
+\subsubsection{Precomputed tiles}
+
+As mentioned previously, there are different sets of precomputed map tiles at various distinct zoom levels to provide the approrpiate level of map detail to the user, based on the client's viewport size and zoom level
+\begin{itemize}
+\item
+Google Maps users 21 zoom levels (Table 3.1)
+\item
+THis is what we use, as well
+\item
+Level 0 is the most zoom-out level
+\item
+The entire map is represented by a single tile of size $256 \times 256$ pixels
+\item
+WIth each increment of the zoom level, the number of map tiles doubles in both north-south and east-west directions, while each tile
+stays at $256 \times 256$ pixel
+\item
+As shown in Figure 3.16, at zoom level 1, there are $2 \times 2$ tiles, with a total combined resolution of $512 \times 512$ pixels
+\item
+At zoom level 2, there are $4 \times 4$ tiles, with a total combined resolution of $1024 \times 1024$ pixels
+\item
+With each increment, the entire set of tiles has $4\times$ as many pixels as the previous level.
+\item
+THe increased pixel count provides an increasing level of detail to the user
+\item
+This allows the client to render the map at the best granularities depending on the clinet's zoom level, without consuming excessive bandwidth to download tiles in excessive detail
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_16_zoom_levels}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Optimization: Use vectors}
+
+With the development and implemtnation of WebGL, one potential imporvement is to change the design from sending the images over the network, to sending the vector information (paths and polygons) instead.
+
+The client draws the paths and polygons from the vector information.
+
+\begin{itemize}
+\item
+One obvious advantage of vector tiles is that vector data compresses much better than images do.
+\item
+The bandwidth saving is substantial
+\item
+A less obvious benefit is that vector tiles provide a much better zooming experience
+\item
+With rasterized images, as the client zooms in from one level to another, everything gets stretched and looks pixelated
+\item
+The visual effect is pretty jarring
+\item
+With vectorized images the client can scale each element appropriately, providing a much smoother zooming experience
+\end{itemize}
+
+\subsection{Navigation service}
+
+Next, let's deep dive into the navigation service. This service is responsible for finding the fastest routes. The design diagram is shown in Figure 3.17.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_17_navigation_service}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Geocoding service}
+
+\begin{itemize}
+\item
+First, we need to have a service to resulve an address to a location of a lattidude and longitude pair
+\item
+An address could be in different formats for example, it could be the name of a place or a textual address
+\end{itemize}
+
+Here is an example request and response from Google's geocaching API:
+
+\textbf{Request:}
+
+\begin{lstlisting}
+https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA
+\end{lstlisting}
+
+\textbf{JSON response:}
+
+\begin{lstlisting}
+{
+  "results" : [
+    {
+      "formatted_address" : "1600 Amphitheatre Parkway, Mountain View, CA 94043, USA",
+      "geometry" : {
+        "location" : {
+          "lat" : 37.4224764,
+          "lng" : -122.0842499
+        },
+        "location_type" : "ROOFTOP",
+        "viewport" : {
+          "northeast" : {
+            "lat" : 37.4238253802915,
+            "lng" : -122.0829009197085
+          },
+          "southwest" : {
+            "lat" : 37.4211274197085,
+            "lng" : -122.0855988802915
+          }
+        }
+      },
+      "place_id" : "ChIJ2eUgeAK6j4ARbn5u_wAGqWA",
+      "plus_code" : {
+        "compound_code" : "CWC8+W5 Mountain View, California, United States",
+        "global_code" : "849VCWC8+W5"
+      },
+      "types" : [ "street_address" ]
+    }
+  ],
+  "status" : "OK"
+}
+\end{lstlisting}
 
 \end{document}
