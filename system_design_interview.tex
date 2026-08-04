@@ -3207,5 +3207,82 @@ The alternative map rednering flow is whon in Figure 3.12
 When a user moves to a new location or to a new zoom level, the map tile service determines which tiles are needed and translates that information into a set of tile URLs to retrieve.
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_12_map_rendering}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+A mobile user calls the map tile service to fetch the tile URLs. The request is sent to the load balancer
+\item
+The load balancer forwards the request to the map tile service
+\item
+The map tile service takes the client's location and zoom level as inputs and returns 9 URLs of the tiles to the client. These tiles include the tile to render and the eight surrounding tiles
+\item
+The mobile client downloads the tiles from the CDN
+\end{itemize}
+
+We will go into more detail on the precomputed map tiles in the design deep dive section.
+
+\subsection{Step 3: Design Deep Dive}
+
+In this section, we first have a discussion about the data mode. Then we talk about location service, navigation service, and map rendering in more detail.
+
+\subsubsection{Data Model}
+
+We are dealing with four types of data: routing tiles, user location data, geo coding data, and precomputed map tiles of the wordl.
+
+\subsubsection{Routing tiles}
+
+As mentioned previously, the initial raod dataset is obtained from different sources and authorities.
+
+\begin{itemize}
+\item
+It contains terabytes of data
+\item
+The dataset is improved over time by the location data the application continously collects from ther users as they use the application
+\item
+This dataset contains a large number of raods and associated metadata such as names, county, longitude, and latitude
+\item
+This data is not organized as graph data structures and is not usable by most routing algorithms
+\item
+We run a periodic offline processing pipline, called routing tile processing service, to transform this dataset into the routing tiles we introduced
+\item
+The service runs periodically to capture new changes to the road data
+\item
+The output of the routing tile processing service is routing tiles
+\item
+There are three sets of these tiles at different resolutions, as described in the ``Map 101'' section on page 60
+\item
+Each tile contains a list of graph nodes and edges representing the intersections and raods within the area covered by the tile
+\item
+It also contains references to other tiles its raods connect to
+\item
+These tiles together form an interconnected network of roads that the routing algorithms can consume incrementally
+\item
+Where should the routing tile processing service store these tiles?
+\item
+Most graph data is represented as adjancency lists [12] in memory
+\item
+There are too many tiles to keep the entire set of adjancency lists in memory
+\item
+We could store the nodes and edges as rows in a database, but we would only be using the database as storage, and it seems an expensive way to store bits of data
+\item
+We also don't need any database features for routing tiles
+\item
+the more efficient way to store these tiles is in object storage lik S3 and cache it aggressively on the routing service that uses those tiles
+\item
+There are many high-performance packages we could use to serialize the adjancency lists to a binary file
+\item
+We could organize thes4e tiles by their geohashes in object storage
+\item
+This provides a fast lookup mechanism to locate a tile by lat/lng pair
+\item
+We discuss how the shortest path service uses these routing tiles shortly
+\end{itemize}
+
 
 \end{document}
