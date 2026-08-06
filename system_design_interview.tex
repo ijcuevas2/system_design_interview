@@ -3623,5 +3623,52 @@ Figure 3.18 (based on [14]) gives a conceptual overview of the tiles used in the
   \end{center}
 \end{figure}
 
+\subsection{ETA service}
+
+
+
+\begin{itemize}
+\item
+Once the route planner receives a lit of possible shortest paths, it caals the ETA service for each possible route and gets a time estimate.
+\item
+For this, the ETA services uses machine learning to predict the ETAs based onthe current traffic and historical data.
+\item
+One of the challenges here is that we not only need to have real-time traffic data bu also to predict how the traffic will look like in 10 or 20 minutes
+\item
+These kinds of challenges need to be addressed at an aglrithmic level and will not be discussed in this section if you are interested, refer to [15] and [16]
+\end{itemize}
+
+\subsection{Ranker service}
+
+\begin{itemize}
+\item
+Finally, after the route pallner obtains the ETA predictions, it passes this info to the ranker to apply possible filters
+as defined by the user.
+\item
+Some example filters include operations to avoid toll roads or to avoid freeways
+\item
+The ranker service then ranks the possible routes from fastest to slowest and returns top-k results to the navigation service
+\end{itemize}
+
+\subsection{Updater dservices}
+
+These services tap into the Kafka location update stream and asynchronously update some of the important databases to keep them up-to-date.
+
+\begin{itemize}
+\item
+The traffic database and the routing tiles are some examples
+\item
+The routing tile processing service is responsible for transforming the road dataset with newly found roads and road closures into a continously updated set of routing tiles
+\item
+This helps the shortest path service to be more accurate
+\item
+THe traffic update service extracts traffic conditions from the streams of locaiton updates sent by the active users
+\item
+This insight is fed into the live traffic database
+\item
+This enables the ETA service to provide more accurate estimates
+\end{itemize}
+
+
 
 \end{document}
