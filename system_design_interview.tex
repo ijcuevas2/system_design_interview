@@ -3669,6 +3669,182 @@ This insight is fed into the live traffic database
 This enables the ETA service to provide more accurate estimates
 \end{itemize}
 
+\subsection{Improvement: adaptive ETA and rerouting}
+
+The current design does not support adaptive ETA and rerouting. To address this, the server needs to keep track of all the active navigating users and update them on ETA continously, whever traffic conditions change.
+
+Here we need to answer a few important questions:
+
+\begin{itemize}
+\item
+How do we track actively navigating users?
+\item
+HOw do we stores the data, so that we can efficiently locate the users affected by traffic changes among millions of navigation routes?
+\end{itemize}
+
+Let's start with a naive solution. In Figure 3.19, \lstinline|user_1|'s navigation route is represented by routing tiles \lstinline|r_1|, \lstinline|r_2|, \lstinline|r_3|, ..., \lstinline|r_7|.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_19_navigation_route}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The database stores actively navigating users and routes information which might look like this:
+
+The database stores actively navigating users and routes information which might look like this:
+
+\begin{lstlisting}
+user_1: r_1, r_2, r_3, ..., r_k
+user_2: r_4, r_6, r_9, ..., r_n
+user_2: r_2, r_8, r_9, ..., r_m
+...
+user_n  r_2, r_10, r_21, ..., r_l
+\end{lstlisting}
+
+Let's say there is a traffic incident in routing tile 2 (\lstinline|r_2|). To figure out which users are affected, we scan
+through each row and check if routing tile 2 is in our list of routing tiles (see example below),
+
+\begin{lstlisting}
+user_1: r_1, r_2, r_3, ..., r_k
+user_2: r_4, r_6, r_9, ..., r_n
+user_3: r_2, r_8, r_9, ..., r_m
+\end{lstlisting}
+
+Assume the number of rows in the table is \lstinline|n| and the average length of the navigation route is \lstinline|m|,
+
+The time complexity to find all users affected by the traffic change is \lstinline|O(n x m)|.
+
+Can we make this process faster?
+
+Let's explore a different approach
+
+For each actively navigating user, we keep the current routing tile, the routing tile at the next resolution level that contains it, and recursively find the routing tile at the next resolution level until we find the user's destination in the
+tile as well (Figure 3.20)
+
+By doing this, we can get a row of the database table like this.
+
+\begin{lstlisting}
+user_1, r_1, super(r_1), super(super(r_1))
+\end{lstlisting}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_20_building_tiles}
+    \caption{}
+  \end{center}
+\end{figure}
+
+To find out if a user is affected by the traffic change, we need only check if a routing tile is inside the last routing tile of a row in the databse.
+
+\begin{itemize}
+\item
+If not, the user is not impacted. If it is, the user is affected.
+\item
+BY doing this, we can quickly filter out many users
+\item
+This approach doesn't specify what happens when traffic clears
+\item
+For example, if routing tile 2 clears sand users can go back to the old route, how do users know reoruting is available
+\item
+One idea is to keep track of all possible routes for navigating user, recalculate the ETAs regularly and notify the user if a new route with a shorter ETA is found.
+\end{itemize}
+
+\subsection{Delivery protocols}
+
+It is a reality that during navigation, route conditions can change and the server needs a reliable way to push data to mobile clients.
+
+For delivery protocol from the server to the client, our options include mobile push notification, long polling, WebSocket, and Server-Sent Events (SSE).
+
+\begin{itemize}
+\item
+Mobile push notification is not a great option because the apyload size is very limited (4096 bytes for iOS) and it doesn't support web applications
+\item
+WebSocket is generally considered to be a better option than long polling because it has a very light footprint on servers
+\item
+
+\begin{itemize}
+\item
+Since we have rules out the mobile push notification and long polling, the choice mainly between WebSocket, and Server-Sent (SSE)
+\item
+Even though both can work, we lean towards webSocket because it supports bi-directional communication and features such as last-minute delivery might require bi-directional real-time communication
+\end{itemize}
+
+\end{itemize}
+
+For more details about ETA and rerouting, please refer to [15].
+
+Now we have every piece of the design together. Please see the update design in Figure 3.21.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_3_21_final_design}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 4: Wrap Up}
+
+IN this chapter, we designed a simplified Google Maps application with key features sush as location update, ETAs, route planning and map rendering.
+
+\begin{itemize}
+\item
+If you are interested in expanding the system, one potential improvement would be to provide multi-stop navigation capability for enterprise cusomters
+\item
+For example, for a given set of destinations, we have to find the optimal order in which to visit them all and provide proper navigation, based on live traffic conditions
+\item
+This could be helpful for deliver services such as DoorDash, Uber, Lyft, etc.
+\end{itemize}
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.95\linewidth]{chapter_3_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\chapter*{Chapter 4}
+
+In this chapter, we explore a popular question in system design itnerviews: design a distributed message queue.
+
+\begin{itemize}
+\item
+In modern architecture, systems are broke up into small and independent building blocks with well-defined interfaces between them.
+\item
+Message queues provide communication and coordination for those building blocks.
+\end{itemize}
+
+What benefits do message queues bring?
+
+\begin{itemize}
+\item
+Decoupling. Message queues eliminate the tight coupling between components so they can be updated independently.
+\item
+Improved scalability. We can scal producers and consumers independelty based on traffic load. For example, during peak hours, more consumers can be added to handle the increased traffic
+\item
+Increased availability. If one part of the system goes offline, the other components can continue to interact with the queue
+\item
+
+\begin{itemize}
+\item
+Better performance. Message queues make asynchronous communication easy.
+\item
+Producers can add messages to a queue without waiting for the response and consumers consume messages whenever they are available
+\item
+They don't need to wait for each other
+\end{itemize}
+\end{itemize}
+
+Figure 4.1 shows some of the most popular distributed message queues on the market.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_1}
+    \caption{}
+  \end{center}
+\end{figure}
 
 
 \end{document}
