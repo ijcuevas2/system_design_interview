@@ -5189,4 +5189,133 @@ With consumer groups and the rebalance mechanism, the scalability and fault tole
 
 Before discussing scalability on the broker side, let's first consider the failure recover of brokers
 
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_28}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's use an example in Figure 4.28 to explain how failure recovery works.
+
+\begin{enumerate}
+\item
+Assume there are 4 brokers and the partition (replica) distribution plan is shown below:
+
+\begin{itemize}
+\item
+Partition-1 of topic A: replicas in Broker-1 (leader), 2, and 3
+\item
+Partition-2 of topic A: replicas in Broker-2 (leader), 3, and 4
+\item
+Partition-1 of topic B: replicas in Broker-3 (leader), 4, and 1
+\end{itemize}
+\item
+Broker-3 crashes, which means all the partitions on the node are lost.
+
+The partition distribution plan is changed to
+
+\begin{itemize}
+\item
+Partition-1 of topic A: replicas in Broker-1 (leader) and 2
+\item
+Partition-2 of topic A: replicas in Broker-2 (leader) and 4
+\item
+Partition-1 of topic B: replicas in Broker-4 and 1
+\end{itemize}
+
+\item
+The broker controller detects Broker-3 is down and generates a new partition distribution plan for the remaining broker nodes:
+
+\begin{itemize}
+\item
+Partition-1 of topic A: replicas in Broker-1 (leader), 2, and 4 (new)
+\item
+Partition-2 of topic A: replicas in Broker-2 (leader), 4 and 1 (new)
+\item
+Partition-1 of topic B: replicas in Broker-4 (leader), 1, and 2 (new)
+\end{itemize}
+\item
+The new replicas work as followers and catch up with the leader
+\end{enumerate}
+
+To make the broker fault-tolerant, here are additional considerations:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The minimum number of ISRs specifies how many replicas the producer must receive before a message is considered to be succesfully committed
+\item
+The higher the number, the safer
+\item
+But on the other hand, we need to balance latency and safety
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+If all replicas of a partition are in the same broker node, then we cannot tolerate the failure of this node
+\item
+It is also a waste of resources to replicate data in the same node
+\item
+Therefore, replicas should not be in the same node
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+If all the replicas of a partition crash, the data for that partition is lost forvever
+\item
+When choosing the number of replicas and replica locations, there's a trade-off between data safety, resource cost, and latency
+\item
+It is safer to distribute replicas across data centers, but this will incur much more latency and cost, to synchronize data between replicas
+\item
+As a workaround, data mirroring can help to copy data across data centers, but this is out of scope
+\item
+The reference material [14] covers this topic
+\end{itemize}
+\end{itemize}
+
+Now let's get back to discussing the scalability of brokers.
+
+THe simplest solution would be to redistribute the replicas when broker nodes are added or removed.
+
+However, there is a better approach. The broker controller can temporarily allow more replcas in the system than the number of replicas in the config file.
+
+WHen the newly added broker catches up, we can remove the ones that are no longer needed.
+
+Let's use an example as shown in Figure 4.29 to understand the approach.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_29}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+The initial setup: 3 brokers, 2 partitions, and 3 replicas for each partition
+\item
+\begin{itemize}
+\item
+New Broker-4 is added.
+\item
+Assume the broker controller changes the replica distribution of Partition-2 to the broker (2, 3, 4)
+\item
+The new replica in Broker-4 starts to copy data from leader Broker-2
+\item
+Now the number of replicas for Partition-2 is temporarily more than 3
+\item
+After the replica in BRoker-4 cathces up, the redundant partition in Broker-1 is gracefully removed
+\end{itemize}
+\end{itemize}
+
+By following this process, data loss while adding brokers can be avoided. A similar process can be applied to remove brokers safely.
+
 \end{document}
