@@ -4680,5 +4680,32 @@ Based on these considerations, most message queues choose the pull model.
 
 Figure 4.15 shows the workflow of the consumer pull model.
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_15}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+A new consumer wants to join group-1 and subscribves to Topic-A
+\item
+It finds the corresponding broker node by hasing the group name
+\item
+By doing so, all the consumers in the same gorup connect to the same broker, which is also called the coordinator of this consumer group
+\item
+Despite the naming similarity, the consumer group coordinator is different from the coordination service mention in Figure 4.8
+\item
+This coordinator coordinates the consumer gorup, while the coordination service mentioned earlier coordinates the broker cluster
+\end{itemize}
+\item
+The coordinator confirms that the consumer has joined the group and assign Partition-2 to the consumer. THere are different parittion assignment strategies including roudn-boring, range, etc. [7]
+\item
+Consumer processes messages and commits the offset to the broker. The order of data processing and offset committing affects the message delivery semantics, which wil be discussed shortly.
+\end{enumerate}
 
 \end{document}
