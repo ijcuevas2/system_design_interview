@@ -3980,5 +3980,107 @@ The messages can be consumed in a different order than they were produced
 These differences greatly simplify the design which we will discuss where appropriate
 \end{itemize}
 
+\subsubsection{Step 2: Propose High-level Design and Get Buy-in}
+
+First, let's discuss the basic functionalities of a message queue.
+
+Figure 4.2 shows the key components of a message queue and the simplified interactions between these components.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Producer send messages to a message queue
+\item
+Consumer subscribes to a queue and consumes the subscribed messages
+\item
+Message queue is a service in the middle that decouples the producers from the consumers, allowing each of them to operate and scale independently
+\item
+Both producer and consumer are clients in the client/server model, while the message queue is the server. THe clients and servers communicate over the network
+\end{itemize}
+
+\subsection{Messaging models}
+
+The most popular messaging models are point-to-point model, its capabilities map more naturally to the publish-subscribe model.
+
+\subsubsection{Publish-subscribe}
+
+First, let's introduce a new concept, the topic.
+
+\begin{itemize}
+\item
+Topics are the categoriesused to organize messages
+\item
+Each topic has a name that is unique across the entire message queue service
+\item
+Messages are sent to and read from a specific topic
+\item
+IN the publish-subscribe model, a message is sent to a topic and received by the consumers subscribing to this topic
+\item
+As shown in Figure 4.4, message A is consumed by both consumer 1 and consumer 2
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Our distributed message queue supports both models.
+\item
+THe publish-subscribe model is implemented by \textbf{topics}, and the point-to-point model can be simulated by the concept of the \textbf{consumer group}, which will be introduced in the consumer group section
+\end{itemize}
+
+\subsubsection{Topics, partitions, and brokers}
+
+As mentioend earlier, messages are persisted by topics. What if the data volume in a topic is too large for a single server to handle?
+
+One approach to solve this problem is called \textbf{partition (sharding)}
+
+\begin{itemize}
+\item
+As Figure 4.5 shows, we deivid a topic into partitions and deliver messages evenly across partitions
+\item
+Think of a partition as a msall subset of the messages for a topic
+\item
+Partitions are evenly distributed across the servers in the message queue cluster
+\item
+These servers that hold partitions are called \textbf{brokers}
+\item
+The distribution of partitions among brokers is the key element to support high scalability
+\item
+We can scale the topic capacity by expanding the number of partitions
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Each topic partition operates in the form of a queue with the FIFO (first in, first out) mechanism
+
+\begin{itemize}
+\item
+Thie means we can keep the order of messages inside a partition
+\item
+The position of a message in the partition is called an \textbf{offset}
+\item
+When a message is sent by a producer, it is actually sent to one of the partitions for the topic
+\item
+Each message has an optional message key (for example, a user's ID), and all messages for the same message key are sent to the same partition
+\item
+If the message key is absent, the message is randonly sent to one of the partitions
+\end{itemize}
+
 
 \end{document}
