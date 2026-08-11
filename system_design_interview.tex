@@ -4082,5 +4082,207 @@ Each message has an optional message key (for example, a user's ID), and all mes
 If the message key is absent, the message is randonly sent to one of the partitions
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Each topic partition operates in the form of a queue with the FIFO (first in, first out) mechanism.
+
+\begin{itemize}
+\item
+This means we can keep the order of messages inside a parittion
+\item
+THe position of a message in the partition is called an \textbf{offset}
+\item
+When a message is sent by a producer, it is actually sent to one of the parittions for the topic
+\item
+Each message has an optional message key (for example, a user's ID), and all messages for the same message key are sent to the same partition
+\item
+If the message keykey is absent, the message is randly sent to one of the partitions
+\end{itemize}
+
+When a consumer subscribes to a topic, it pulls data from one or more of these partitions.
+
+The consumers form a \textbf{consumer group} in a topic.
+
+The message queue cluster with brokers and partitions is represented in Figure 4.6.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Consumer group}
+
+As mentioned earlier, we need to support both point-to-point and subscribe-publish models.
+
+\textbf{A consumer group} is a set of consumers, working together to consume messages from topics.
+
+Consumers can be organized into groups. Each consumer group can subscribe to multipel topics and maintain its own consuming offsets.
+
+For example, we can group consumers by use cases, one group for billing and the other for accounting.
+
+The instances in the same group can consume traffic in parallel, as in Figure 4.7.
+
+\begin{itemize}
+\item
+Consumer group 1 subscribes to topic A
+\item
+Consumer group 2 subscribes to both topics A and B
+\item
+
+\begin{itemize}
+\item
+Topic A is subscribed by both consumer groups-1 and group-2, which means the same message is consumed by multiple consumers
+\item
+This pattern supports the subscribe/publish model
+\end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+However, there is one problem. Reading data in paralllel improves the thorughput, but the consumption order of messages in the same parittion cannot be guaranteed.
+
+\begin{itemize}
+\item
+For example, if Consumer-1 and Consumer-2 both read from Partition-1, we will not be able to guarantee the message consumption order in Partition-1
+\item
+THe good news is we can fix this by adding a constraint, that a single a single partition can only be consumed by one consumer in the same group
+\item
+If the number of consumers of a group is larger than the number of partitions of a topic, some consumers will not get data from this topic
+\item
+For example, in FIgure 4.7, Consumer-3 in Consumer group-2 cannot consume message from topic B because it is consumed by Consumer-4 in the same consumer group, already
+\item
+With this constraint, if we put all consumers in the same consumer gorup, then messages in the same partition are consumed by only one consumer, which is equivalent to the point-to-point model
+\item
+Since a partition is the smallest storage unit, we can allocate enough parititions in advance to avoid the need to dynamically increase the number of partitions
+\item
+To handle high scale, we just need to add consumers
+\end{itemize}
+
+\subsection{High-level architecture}
+
+Figure 4.8 shows the updated high-level design.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Clients
+\begin{itemize}
+\item
+Producer: pushes messages to specific topics
+\item
+Consumer group: subscribes to topics and consumes messages
+\end{itemize}
+
+Core service and storage
+
+\begin{itemize}
+\item
+Broker: holds multiple partitions. A partition holds a subset of messages for a topic
+\item
+Storage:
+
+\begin{itemize}
+\item
+Data storage: messages are persisted in data storage in partitions
+\item
+State storage: consumer states are managed by state storage
+\item
+Metadata storage: configuration and properties of topics are persisted in metadata
+\end{itemize}
+\item
+Coordination service:
+
+\begin{itemize}
+\item
+Service discover: which brokers are alive
+\item
+Leader elelection: one of the brokers is selected as the active controller THere is only on e active controller in the cluster. THe active contrller is reponsible for assigning partitions
+\item
+Apache ZooKeeper [2] or etcd [3] are commonly used to elect a controller
+\end{itemize}
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+To achieve high throughput while satisfying the high data retention requirement, we made three important design choices, which we explain in detail now.
+
+\begin{itemize}
+\item
+
+\item
+We chose an on-disk data structure that takes advantage of the great sequential acccess performance of rotational disks and the aggressive disk caching stregy of modern operating systems.
+\item
+\begin{itemize}
+\item
+We dicussed the message data structure to allow a message to be passed from the producer to the queue and finally to the consumer, with no modifications
+\item
+This minimizes the need for copying which is very expensive in a high volume and high traffic system
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+We designed the system to favor batching
+\item
+Small I/O is an enemy of high throughput
+\item
+SO, wherever possible, our deisng encourages batching
+\item
+The producers send messages in batches
+\item
+The message queue persists messages in even larger bathces
+\item
+The consumers fetch messages in batches when possible too
+\end{itemize}
+\end{itemize}
+
+\subsection{Data storage}
+
+Now let's explore the options to persist messages in more detail, In order to find the best choice, let's consider the trafffic pattern of a message queue.
+
+\begin{itemize}
+\item
+Write-heavy, read-heavy
+\item
+\begin{itemize}
+\item
+No update or delete operations
+\item
+As a side note, a traditional message queue does not persist messages unless the queue falls behind, in which case there will be ``delete'' operations when the queue cathces up
+\item
+What we are talking about here is the persistence of a data streaming platform
+\end{itemize}
+\item
+Predominantly sequential read/write access.
+\end{itemize}
+
+Option 1: Database
+
+The first option is to use a database.
+
+\begin{itemize}
+\item
+Relational database: create a topic table and write messages to the table as rows
+\item
+NoSQL database: create a collection as a topic and write messages as documents
+\end{itemize}
+
 
 \end{document}
