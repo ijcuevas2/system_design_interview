@@ -4708,4 +4708,61 @@ The coordinator confirms that the consumer has joined the group and assign Parti
 Consumer processes messages and commits the offset to the broker. The order of data processing and offset committing affects the message delivery semantics, which wil be discussed shortly.
 \end{enumerate}
 
+\subsection{COnsumer rebalancing}
+
+Consumer rebalancing decides which consumer is responsible for which subset of partitions.
+
+\begin{itemize}
+\item
+The process could occur when a consumer joins, when a consuer leaves, when a consumer crashes, or when parittions are adjusted.
+\item
+WHen consumer rebalancing occurs, the coordinator plays an important role
+\item
+Let's first take a look at what a coordinator is
+\item
+THe coordinator is one of the brokers responsible for communicating with consumers to achieve consumer rebalancing
+\item
+THe coordinator receives heartbeat from consumers and manages their offset on the partitions
+\item
+Let's use an example to undertsnad how the coordinator and the consumers work together
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+A shown in FIgure 4.16, each consumer belongs to a group
+\item
+It finds the dedicated coordinator by hashing the group name
+\item
+All consumers from the same group are connected to the same coordinator
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+The coordinator maintains a joined consumer list
+\item
+When the list changes, the coordinator elects a new leader of the group
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+As the new leader of the consumer group, it generates a new parittion dispatch plan and reports it back to the coordinator
+\item
+The coordinator will broadcast the plan to the other consumers in the group
+\end{itemize}
+
+\end{itemize}
+
+
 \end{document}
