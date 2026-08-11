@@ -4367,13 +4367,6 @@ If any parts of the system disagree on this contract, messages will need to be m
 
 Below is a sample schema of the mssage data structure
 
-\begin{figure}[H]
-  \begin{center}
-    \includegraphics[width=0.8\linewidth]{table_4_1}
-    \caption{}
-  \end{center}
-\end{figure}
-
 \begin{tabular}{|p{6cm}|p{6cm}|}
 \hline
 \textbf{Field Name} & \textbf{Data Type} \\
@@ -4779,5 +4772,348 @@ WHen this happens, the coordinator will trigger a rebalance process to re-dispat
 Let's simulate a few rebalance scenarios. Assume there are 2 consumers in the group, and 4 partitions in the subscribed topic.
 
 Figure 4.18 shows the flow when a new Consumer B joins the group.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+Initially, only Consumer A is in group. It consumes all the partitions and keep the heartbeat with the coordinator
+\item
+Consumer B sends a request to join the groupe
+\item
+The coordinator knows it's time to rebalance, so it notifies al the consumers in the group in a passive way. When Consumer A's heartbeat is received by the coordinator, it asks Consumer A to rejoin the group.
+\item
+Once all the consumers have rejoined the group, the coordinator chooses one of them as the leader and informs all the consumers about the election result
+\item
+The leader consumer generates the paritition dispatch plan and sends it ot the coordinator. Follower consumers ask the coordinator about the partition dispatch plan
+\item
+Consumers start consuming messages from newly assigned partitions
+\end{enumerate}
+
+Figure 4.19 shows the flow when an existing Consumer A leaves the group.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Consumer A and B are in the same consumer group
+\item
+Consumer A needs to be shutdown, so it requests to leave the group
+\item
+The coordinator knows it's time to rebalance. When Conusmer B's heartbeat is received by the coordinator, it asks Consumer B to rejoin the group
+\item
+The remaining steps are the same as the ones shown in Figure 4.18
+\end{itemize}
+
+Figure 4.20 shows the flow when an existing Consumer A crashes.
+
+\begin{itemize}
+\item
+Consumer A and B are in the same consumer group
+\item
+Consumer A needs to be shutdown, so it requests to leave the group
+\item
+The coordinator knows it's time to rebalance. When Consumer B's heartbeat is received by the coordinator, it asks Consumer B to rejoin the group
+\item
+The remaining steps are the same as the ones shown in Figure 4.18
+\end{itemize}
+
+Figure 4.20 shows the flow when an existing Consumer A crashes.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Consumer A and B keep heartbeats with the coordinator
+\item
+
+\begin{itemize}
+\item
+Consumer A crashes, so there is no heartbeat sent from Consumer A to the coordinator
+\item
+Since the coordinator, doesn't get any heartbeat signal within a specified amount of time from Consumer A, it marks the consumer as dead
+\end{itemize}
+
+\item
+The coordinator triggers the rebalance process
+\item
+The following steps are the same as the ones in the previous scenario
+\end{itemize}
+
+Now that we finished the detour on producer and consumer flows, let's come back and finish the deep dive on the rest of the message queue broker.
+
+\subsection{State storage}
+
+In the message queue broker, the state storage stores:
+
+\begin{itemize}
+\item
+The mapping between partitions and consumers
+\item
+
+\begin{itemize}
+\item
+The last consumed offsets of consumer groups for each partition
+\item
+As shown in Figure 4.21, the last consumed offset for consumer group-1 is 6 and the offset for consumer group-2 is 13
+\end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+FOr example, as shown in Figure 4.21, a consumer in group-1 consumes messages from the partition in sequence and commits the consumed offset 6.
+
+\begin{itemize}
+\item
+This means all the messages before and at offset 6 are already consumed
+\item
+If the consumer crashes, another new consumer in the same group will resume consumption by readin the last consumed offset from the state storage.
+\end{itemize}
+
+The data access patterns for consumer states are:
+
+\begin{itemize}
+\item
+Frequent read and write operations but the volume is not high
+\item
+Data is updated frequently and is rarely deleted
+\item
+Random read and write operations
+\item
+Data consistency is important
+\end{itemize}
+
+Lots of storage solutions can be used for storing the consumer state data.
+
+Considering the data consistency and fast read/write requirements, a KV store like ZooKeeper is a great choice.
+
+Kafka has moved the offset storage from ZooKepper to Kafka brokers.
+
+Interested readers can read the reference material [8] to learn more.
+
+\subsection{Metadata storage}
+
+The metadata storage stores the configuration and properties of topics, including a number of partitions, retention period, and distribution of replicas.
+
+Meta data does not change frequently and the data volume is small, but it has a high consistency requirement.
+
+ZooKeeper is a good choice for storing metadata.
+
+\subsection{ZooKeeper}
+
+By reading previous sections, you probably have already sensed that ZooKeeper tis very helpful for designing a distributed message queue.
+
+\begin{itemize}
+\item
+If you are not familiar with it, ZooKeeper is an essential service for distributed systems offering a hierarchical key-value store
+\item
+It is commonly used to provide a distributed configuratino service, synchronization service, and naming registry [2]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's briefly go over the change.
+
+\begin{itemize}
+\item
+Metadata and state storage are moved to ZooKeeper
+\item
+The broker now only needs to maintain the data storage for messages
+\item
+ZooKeeper helps with the leader election of the broker cluster
+\end{itemize}
+
+\subsection{Replication}
+
+In distributed systems, hardware issues are common and cannot be ignored.
+
+\begin{itemize}
+\item
+Data gets lost when a disk is damamaged or fails permanently
+\item
+Replication is the classic solution to achieve high availability
+\item
+As in Figure 4.23, each partition has 3 replicas, distributed across different broker nodes
+\item
+For each partition, the highlighted replicas are the leaders and the others are followers
+\item
+Producers only send messazges to the leader replica
+\item
+The follower replicas keep pulling new messages from the leader
+\item
+Once messages are synchronized to enough replicas, the leader returns an acknowledgment to the producer
+\item
+We will go into detail about how to definee ``enough'' in the In-sync Replicas section on page 113
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_23}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The distribution of replicas for each partition is called a replica
+distribution plan.
+
+For example, the replica distribution plan in Figure 4.23 can be described as:
+
+\begin{itemize}
+\item
+Partition-1 of Topic-A: 3 replicas, leader in Broker-1, folowers in Broker-2 and 3;
+\item
+Partition-2 of Topic-A: 3 replicas, leader in Broker-2, followers in Broker-3 and 4
+\item
+Partition-1 of Topic-B: 3 replicas, leader in Broker-3, followers in Broker-4 and 1
+\end{itemize}
+
+Who makes the replica distribution plan?
+
+\begin{itemize}
+\item
+It works as follows; with the help fo the coordination service, one of the broker nodes is elected as the leader
+\item
+It generates the replica distribution plan and persists the plan in metadata storage
+\item
+All the brokers now can work according to the plan
+\item
+If you are interested in knowing more about replicatons, check out ``Chapter 5. Replication'' of the book ``Design Data-Intensive Applications'' [9]
+\end{itemize}
+
+\subsection{In-sync replicas}
+
+We mentioned that messages are persisted in multiple partitions to avoid single node failure, and each partition has multiple replicas.
+
+\begin{itemize}
+\item
+Messages are only written to the leader, and followers ysnchronize data from the leader
+\item
+One problem we need to solve is keeping them in sync
+\item
+In-sync replicas (ISR) refer to replicas that are ``in-sync'' with the leader
+\item
+The definition of ``in-sync'' depends on the topic configuration
+\item
+For example, if the value of replica.lag.max.messages is 4, it means that as long as the follower is behind the leader by no more than 3 messages, it will not be removed from ISR [10]
+\item
+The leader is an ISR by default
+\end{itemize}
+
+Let's use an example as shown in Figure 4.24 to sshows how ISR works
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The committed offset in the leader replica is 13
+\item
+Two new messages are written to the leader, but not committed yet
+\item
+Committed offset means that all messages before and at this offset are already synchronized to all the replicas in ISR
+\end{itemize}
+\item
+Replica-2 and replica-3 have fully caught up with the leader, so they are in ISR and can fetch new messages
+\item
+Replica-4 did not fully catch up with the leader within the configured lag time, so it is not in ISR. When it catches up again, it can be added to ISR
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Why do we need ISR?
+
+\begin{itemize}
+\item
+The reason is that ISR reflects the trade-off between performance and durability
+\item
+If producers don't want to lsoe any messages, the safest way to do that is to ensure all replicas are already in sync before sneding an acknoewledgment
+\item
+But a slow replica will cause the whole partition to become slow or unavailable
+\item
+Now that we've discussed ISR, let's take a look at acknowledgment settings
+\item
+Producers can choose to receive acknowledgments until the $k$ number of ISRs has received the messager, where $k$ is configurable
+\end{itemize}
+
+\subsection{ACK=all}
+
+Figure 4.25 illustrates the case with ACK=all.
+
+With ACK=all, the producer gets an ACK when all ISRs have received the message.
+
+This means it takes a longer time to send a emssage because we need to wait fo rthe slowerest ISR, but it gives the strongest message durability.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_25}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{ACK=1}
+
+With ACK=1, the producer receives an ACK once the leader persists the message.
+
+\begin{itemize}
+\item
+The latency is imporved by not waiting for data synchronization
+\item
+If the elader fails immediately after a message is acknowledged but before it is replicaed by follower nodes, then the message is lost
+\item
+THis setting is suitable for low latency systems where occasional data loss is acceptable
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_26}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{ACK=0}
+
+The producer keeps sending messages to the leader without waiting for any acknoledgment, and it never retires.
+
+This method provides the lowest latency at the cost of potential message loss.
+
+This setting might be food for usecases like collecting metrics or loggin data since sdata volume is high and occasional data loss is acceptable.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_27}
+    \caption{}
+  \end{center}
+\end{figure}
+
 
 \end{document}

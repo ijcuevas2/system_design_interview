@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  11 AUG 2026 01:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  11 AUG 2026 17:20
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1313,22 +1313,7 @@ File: images/figure_4_10.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/figure_4_10.jpg  used on input line 4337.
 (pdftex.def)             Requested size: 276.00105pt x 115.45563pt.
  [111 <./images/figure_4_9.jpg> <./images/figure_4_10.jpg>]
-
-./system_design_interview.tex:4372: LaTeX Error: File `table_4_1' not found.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.4372 ...graphics[width=0.8\linewidth]{table_4_1}
-                                                  
-I could not locate the file with any of these extensions:
-.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-
-Overfull \hbox (21.63303pt too wide) in paragraph at lines 4377--4398
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 4370--4391
 [][] 
  []
 
@@ -1336,58 +1321,118 @@ Overfull \hbox (21.63303pt too wide) in paragraph at lines 4377--4398
 <images/figure_4_11.jpg, id=444, 4759.28062pt x 3669.20813pt>
 File: images/figure_4_11.jpg Graphic file (type jpg)
 <use images/figure_4_11.jpg>
-Package pdftex.def Info: images/figure_4_11.jpg  used on input line 4522.
+Package pdftex.def Info: images/figure_4_11.jpg  used on input line 4515.
 (pdftex.def)             Requested size: 276.00105pt x 212.75264pt.
  [115 <./images/figure_4_11.jpg>]
 <images/figure_4_12.jpg, id=449, 4759.28062pt x 3773.84906pt>
 File: images/figure_4_12.jpg Graphic file (type jpg)
 <use images/figure_4_12.jpg>
-Package pdftex.def Info: images/figure_4_12.jpg  used on input line 4568.
+Package pdftex.def Info: images/figure_4_12.jpg  used on input line 4561.
 (pdftex.def)             Requested size: 276.00105pt x 218.82005pt.
  [116 <./images/figure_4_12.jpg>]
 <images/figure_4_13.jpg, id=453, 4948.98938pt x 3783.63562pt>
 File: images/figure_4_13.jpg Graphic file (type jpg)
 <use images/figure_4_13.jpg>
-Package pdftex.def Info: images/figure_4_13.jpg  used on input line 4599.
+Package pdftex.def Info: images/figure_4_13.jpg  used on input line 4592.
 (pdftex.def)             Requested size: 276.00105pt x 210.95842pt.
 <images/figure_4_14.jpg, id=454, 5337.44063pt x 1925.69438pt>
 File: images/figure_4_14.jpg Graphic file (type jpg)
 <use images/figure_4_14.jpg>
-Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4610.
+Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4603.
 (pdftex.def)             Requested size: 276.00105pt x 99.55194pt.
 File: images/figure_4_14.jpg Graphic file (type jpg)
 <use images/figure_4_14.jpg>
-Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4621.
+Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4614.
 (pdftex.def)             Requested size: 276.00105pt x 99.55194pt.
  [117 <./images/figure_4_13.jpg> <./images/figure_4_14.jpg>] [118]
 <images/figure_4_15.jpg, id=461, 8190.6pt x 6142.95pt>
 File: images/figure_4_15.jpg Graphic file (type jpg)
 <use images/figure_4_15.jpg>
-Package pdftex.def Info: images/figure_4_15.jpg  used on input line 4685.
+Package pdftex.def Info: images/figure_4_15.jpg  used on input line 4678.
 (pdftex.def)             Requested size: 276.00105pt x 206.96411pt.
  [119 <./images/figure_4_15.jpg>]
 <images/figure_4_16.jpg, id=465, 5716.85812pt x 2711.63063pt>
 File: images/figure_4_16.jpg Graphic file (type jpg)
 <use images/figure_4_16.jpg>
-Package pdftex.def Info: images/figure_4_16.jpg  used on input line 4732.
+Package pdftex.def Info: images/figure_4_16.jpg  used on input line 4725.
 (pdftex.def)             Requested size: 276.00105pt x 130.87259pt.
  [120 <./images/figure_4_16.jpg>]
 <images/figure_4_17.jpg, id=469, 5479.72218pt x 2228.325pt>
 File: images/figure_4_17.jpg Graphic file (type jpg)
 <use images/figure_4_17.jpg>
-Package pdftex.def Info: images/figure_4_17.jpg  used on input line 4774.
+Package pdftex.def Info: images/figure_4_17.jpg  used on input line 4767.
 (pdftex.def)             Requested size: 276.00105pt x 112.2048pt.
- [121 <./images/figure_4_17.jpg>] (./system_design_interview.aux)
+<images/figure_4_18.jpg, id=470, 5764.28531pt x 4048.62563pt>
+File: images/figure_4_18.jpg Graphic file (type jpg)
+<use images/figure_4_18.jpg>
+Package pdftex.def Info: images/figure_4_18.jpg  used on input line 4778.
+(pdftex.def)             Requested size: 276.00105pt x 193.79436pt.
+ [121 <./images/figure_4_17.jpg>]
+<images/figure_4_19.jpg, id=475, 8190.6pt x 6142.95pt>
+File: images/figure_4_19.jpg Graphic file (type jpg)
+<use images/figure_4_19.jpg>
+Package pdftex.def Info: images/figure_4_19.jpg  used on input line 4802.
+(pdftex.def)             Requested size: 276.00105pt x 206.96411pt.
+ [122 <./images/figure_4_18.jpg>]
+<images/figure_4_20.jpg, id=479, 5764.28531pt x 3916.13063pt>
+File: images/figure_4_20.jpg Graphic file (type jpg)
+<use images/figure_4_20.jpg>
+Package pdftex.def Info: images/figure_4_20.jpg  used on input line 4835.
+(pdftex.def)             Requested size: 276.00105pt x 187.45226pt.
+ [123 <./images/figure_4_19.jpg>]
+<images/figure_4_21.jpg, id=483, 5764.28531pt x 2797.45125pt>
+File: images/figure_4_21.jpg Graphic file (type jpg)
+<use images/figure_4_21.jpg>
+Package pdftex.def Info: images/figure_4_21.jpg  used on input line 4879.
+(pdftex.def)             Requested size: 276.00105pt x 133.90477pt.
+
+[124 <./images/figure_4_20.jpg>] [125 <./images/figure_4_21.jpg>]
+<images/figure_4_22.jpg, id=490, 2871.97969pt x 1427.3325pt>
+File: images/figure_4_22.jpg Graphic file (type jpg)
+<use images/figure_4_22.jpg>
+Package pdftex.def Info: images/figure_4_22.jpg  used on input line 4935.
+(pdftex.def)             Requested size: 276.00105pt x 137.1661pt.
+ [126 <./images/figure_4_22.jpg>]
+<images/figure_4_23.jpg, id=494, 5868.17343pt x 2048.40282pt>
+File: images/figure_4_23.jpg Graphic file (type jpg)
+<use images/figure_4_23.jpg>
+Package pdftex.def Info: images/figure_4_23.jpg  used on input line 4976.
+(pdftex.def)             Requested size: 276.00105pt x 96.3312pt.
+ [127 <./images/figure_4_23.jpg>]
+<images/figure_4_24.jpg, id=499, 5868.17343pt x 3982.37813pt>
+File: images/figure_4_24.jpg Graphic file (type jpg)
+<use images/figure_4_24.jpg>
+Package pdftex.def Info: images/figure_4_24.jpg  used on input line 5048.
+(pdftex.def)             Requested size: 276.00105pt x 187.28117pt.
+ [128 <./images/figure_4_24.jpg>]
+<images/figure_4_25.jpg, id=503, 5138.69812pt x 3072.22781pt>
+File: images/figure_4_25.jpg Graphic file (type jpg)
+<use images/figure_4_25.jpg>
+Package pdftex.def Info: images/figure_4_25.jpg  used on input line 5078.
+(pdftex.def)             Requested size: 276.00105pt x 164.96495pt.
+<images/figure_4_26.jpg, id=504, 5394.65437pt x 3470.46562pt>
+File: images/figure_4_26.jpg Graphic file (type jpg)
+<use images/figure_4_26.jpg>
+Package pdftex.def Info: images/figure_4_26.jpg  used on input line 5098.
+(pdftex.def)             Requested size: 276.00105pt x 177.50507pt.
+ [129 <./images/figure_4_25.jpg>]
+<images/figure_4_27.jpg, id=508, 5471.44125pt x 3375.61125pt>
+File: images/figure_4_27.jpg Graphic file (type jpg)
+<use images/figure_4_27.jpg>
+Package pdftex.def Info: images/figure_4_27.jpg  used on input line 5113.
+(pdftex.def)             Requested size: 276.00105pt x 170.23267pt.
+ [130 <./images/figure_4_26.jpg> <./images/figure_4_27.jpg>] (./system_design_i
+nterview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 26130 strings out of 467533
- 605782 string characters out of 5422138
- 1099503 words of memory out of 5000000
- 54696 multiletter control sequences out of 15000+600000
+ 26240 strings out of 467533
+ 608678 string characters out of 5422138
+ 1099504 words of memory out of 5000000
+ 54806 multiletter control sequences out of 15000+600000
  631269 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1401,10 +1446,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (121 pages, 278889823 bytes).
+Output written on system_design_interview.pdf (130 pages, 326359002 bytes).
 PDF statistics:
- 527 PDF objects out of 1000 (max. 8388607)
- 306 compressed objects within 4 object streams
+ 565 PDF objects out of 1000 (max. 8388607)
+ 325 compressed objects within 4 object streams
  0 named destinations out of 1000 (max. 500000)
- 373 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 423 words of extra memory for PDF output out of 10000 (max. 10000000)
 
