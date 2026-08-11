@@ -4761,8 +4761,23 @@ As the new leader of the consumer group, it generates a new parittion dispatch p
 \item
 The coordinator will broadcast the plan to the other consumers in the group
 \end{itemize}
-
 \end{itemize}
 
+IN a distributed system, consumers might encounter all sorts of issues including network issues, crashes, restarts, etc.
+
+From the coordinator's perspective, they will no longer have heartbeats.
+
+WHen this happens, the coordinator will trigger a rebalance process to re-dispatch the partitions as illustrated in Figure 4.17.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's simulate a few rebalance scenarios. Assume there are 2 consumers in the group, and 4 partitions in the subscribed topic.
+
+Figure 4.18 shows the flow when a new Consumer B joins the group.
 
 \end{document}
