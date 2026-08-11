@@ -4284,5 +4284,401 @@ Relational database: create a topic table and write messages to the table as row
 NoSQL database: create a collection as a topic and write messages as documents
 \end{itemize}
 
+Databases can handle the storage requirement, but they are not ideal because it is hard to design a database that supports both write-heavy and read-heavy access patterns at a large scale.
+
+The database solution does not fit our specific data usage patterns very well.
+
+This means a database is not the best choice and could become a bottleneck of the system.
+
+
+Option 2: Write-ahead log (WAL)
+
+The second option is write-ahead log (WAL).
+
+\begin{itemize}
+\item
+WAL is just a plain file where new entries are appended to an append-only log
+iiWAL  is used in many systems, such as the redo log in MySQL [4] and the WAL in ZooKeeper
+\item
+We recommend persisting messages as WAL log files on disk
+\item
+WAL has a pure sequential read/write access pattern
+\item
+The disk performance of sequential access is very good [5]
+\item
+Also, rotational disks have large capacity ant they are pretty affordable
+\item
+As shown in Figure 4.9, a new message is appended to the tail of a partition, witha monotonically increasing offset
+\item
+THe easiest option is to use the line number of the log file as the offset
+\item
+However, a file cannot grow infinitely, so it is a good idea to divide it into segments
+\item
+With segments, new messages are appended only to the active segment file
+\item
+When the active segment reahces a certain size, a new active segment is created to receive new messages, and the currently active segment becomes inactive, like the rest of the non-active segments
+\item
+Non-active segments only serve read requests
+\item
+Old non-active-segment files can bvbe truncated if they exceeed the retention or capacity limit
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Segment files of the same parittion are oganized in a folder named \lstinline|Parittion-{:partition_id}|. The structure is shown in Figure 4.10.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{A note on disk performance}
+
+To meet the high data retention requirement, our design relies heavily on disk drives to hold a large amount of data.
+
+\begin{itemize}
+\item
+There is a common misconception that rotational disks are slow, but this is really only the case for random access
+\item
+FOr our workload, as long as we deisgn our on-disk data structure to take advantage of the sequential access pattern, the moden disk drives in a RAID configuration (i.e. with disks striped together for higher performance) could comfortably achieve several hundred MB/sec of read and write speed
+\item
+This is more than enough for our needs, and the coststructure is favorable
+\end{itemize}
+
+\subsection{Message data structure}
+
+The data structure of a message is key to high throughput.
+
+\begin{itemize}
+\item
+It defines the contract between the producers, message queue, and consumers
+\item
+Our design achieves high performance by eliminating unnecessary data copying while the messages are in transit from the producers to the queue and finally to the consumers
+\item
+If any parts of the system disagree on this contract, messages will need to be mutated which invles expensive copying. It could seriously hurt the performance of the system.
+\end{itemize}
+
+Below is a sample schema of the mssage data structure
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{table_4_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{Field Name} & \textbf{Data Type} \\
+\hline
+\lstinline|key| & \lstinline|byte[]| \\
+\hline
+\lstinline|value| & \lstinline|byte[]| \\
+\hline
+\lstinline|topic| & \lstinline|string| \\
+\hline
+\lstinline|partition| & \lstinline|integer| \\
+\hline
+\lstinline|offset| & \lstinline|long| \\
+\hline
+\lstinline|timestamp| & \lstinline|long| \\
+\hline
+\lstinline|size| & \lstinline|integer| \\
+\hline
+\lstinline|crc| & \lstinline|integer| \\
+\hline
+\end{tabular}
+
+\subsection{Message key}
+
+The key of the message is used to determine the partition of the message.
+
+\begin{itemize}
+\item
+If the key is not defined, the partition is randomly chosen
+\item
+Otherwise, the partition is chosen by \lstinline|hash(key) % numPartitions|
+\item
+If we need more flexilibility, the producer can define its own mapping algorithm to choose partitions
+\item
+Please note that the key is not equivalent to the partition number
+\item
+The key can be a string or a number
+\item
+It usually carries some business infoormation
+\item
+The partition number is a concept in the message queue, which should not be explicitly exposed to clients
+\item
+The key can be a string or a number
+\item
+It usually carries some buisness information
+\item
+The partition number is a concept in the message queue, which should not be explicitly exposed  to clients
+\item
+With a proper mapping algorithmm, if the number of partitions changes, messages can still be evenly sent to all the partitions
+\end{itemize}
+
+\subsection{Message value}
+
+The message value is the payload of a message. It can be plain text or a compressed binary block.
+
+\begin{defbox}{Reminder}
+\begin{itemize}
+\item
+The key and value of a message are different from the key-value pair in a key-value (KV) store
+\item
+In the KV store, keys are unique, and we can find the value by key
+\item
+In a message, keys do not need to be unique
+\item
+Sometimes they are not even mandatory, and we don't need to find a value by key
+\end{itemize}
+\end{defbox}
+
+\subsubsection{Other fields of a message}
+
+\begin{itemize}
+\item
+Topic: the name of the topic that the message belongs to
+\item
+Partition: the ID of the partition that the message blongs to
+\item
+Offset: the position of the message in the partition. We can find a message via the combination of three fields: topic, partition, offset
+\item
+Timestamp: the timestamp of when this message is stored
+\item
+Size: the size of this message
+\item
+CRC: Cyclic redundancy check (CRC) is used to ensure the integrity of raw data
+\end{itemize}
+
+To support additional features, some optinal fields can be added on demand. For example, messages can be filtered by tags, if tags are part of the optional fields.
+
+\subsection{Batching}
+
+\begin{itemize}
+\item
+Batching is pervasive in this design
+\item
+We batch messages in the producer, the consumer, and the message queue itself
+\item
+Batching is critical to the performance of the system
+\item
+In this section, we focus primarily on batching in the message queue
+\item
+We discuss batching for producer and consumer in more detail, shortly
+\end{itemize}
+
+Batching is critical to imporving performance because:
+
+\begin{itemize}
+\item
+It allows the operating system to group emssages together in a single network request and amortizes the cost of expensive network round trips
+\item
+The broker writes messages to the append logs in large chunks, which leads to larger lbocks of sequential writes and larger contiguous blocks of disk cache, maintained by the oeprating system
+\item
+Both lead to much greater sequential disk access throughput
+\end{itemize}
+
+There is a tradeoff between throughput and latency.
+
+\begin{itemize}
+\item
+If the system is deployed as a traditional message queue where latncy might be more important, the system could be tuned to use a smaller batch size
+\item
+DIsk performance will suffer a little bit in this use case
+\item
+If tuned for throughput, there might need to be a higher number of  parititions per topic, to make up for the slower sequential disk write throughput
+\item
+SO far, we've covered the main disk storage subsystem and its associated on-disk data structure
+\item
+NOw, let's switch gears and discuss the producer and consumer flows
+\item
+There we will come back and finish teh deep dive into the rest of the message queue
+\end{itemize}
+
+\subsection{Producer flow}
+
+If a producer wants to send messages to a partition, which broker should it connect to?
+
+\begin{itemize}
+\item
+The first option is to introduce a routing layer.
+\item
+ALl messages sent to the routing layer are routed to the ``correct'' broker
+\item
+If the brokers are replicated, the ``correct'' broker is the leader replica. We will cover replication later
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_11}
+    \caption{}
+  \end{center}
+\end{figure}
+
+A shown in Figure 4.11, the producer tries to send messages to Partition-1 of Topic-A.
+
+\begin{enumerate}
+\item
+THe producer sends messages ot the routing layer
+\item
+\begin{itemize}
+\item
+The routing layer reads the replicat distribution  from the metadata storage and cahces it locally. When a message arrives, it routes the message to the leader replica of Partition-1, which is stored in Broker-1.
+\item
+The distribution of replicas for each parittion is called a replca distribution plan
+\end{itemize}
+
+\item
+The leader replicae receives the emssage and follower replicas pull data from the leader
+\item
+\begin{itemize}
+\item
+When ``enough'' replicas have synchronized the message, the leader commits the data (persisted on disk), which means the data can be consumed
+\item
+Then it responds to the producer
+\end{itemize}
+\end{enumerate}
+
+You might be wonderingy why we need both leader and follower replicas.
+
+The reason is fault tolerance. We dive deep into this process in the ``In sync replicas'' section on page 113.
+
+This approach works, but it has a few drawbacks.
+
+\begin{itemize}
+\item
+A new routing layer means additional network latency caused by overhead and additional network hops
+\item
+Request batching is one of the big drivers of efficiency. This design doesn't take that into consideration.
+\end{itemize}
+
+Figure 4.12 shows the improved design.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The routing layer is wrapped into the producer and a buffer component is added ot the producer. Both can be installed in the producer as part of the producer client library.
+
+This change brings several benefits:
+
+\begin{itemize}
+\item
+Fewer network hops mean lower latency
+\item
+Producers can have their own logic to determine which parittion the message should be sent to
+\item
+Batching buffers messages in memory and sends out larger bathces in a single request. This increases throughput.
+\end{itemize}
+
+THe choice of the batch size si a classic trade off between throughput and latency (Figure 4.13).
+
+\begin{itemize}
+\item
+With a large batch size, the throughput increases but latncy is higher, due to a longer wait time to accumulate the batch
+\item
+With a small batch size, requests are sent sooner so the latency is lower, but throughput suffers
+\item
+Producers can tune the bgatch size based on use cases.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Consumer flow}
+
+The consumer specifies its offset in a partition and receives back a chunk of events beginning from that position. An example is shown in Figure 4.14.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Consumer flow}
+
+The consumer specifics its offset in a parittion and receives back a chunk of events
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Push vs Pull}
+
+AN importatn question to answer is wehetare brokers should push data to consumers, or if consumers should pull data from the brokers.
+
+\subsubsection{Push model}
+
+Pros:
+
+\begin{itemize}
+\item
+Low latency. The broker can push messages ot the consumer immediately upon receiving them
+\end{itemize}
+
+Cons:
+
+\begin{itemize}
+\item
+If the rate of consumption falls below the rate of production, consumers could be overwhelmed
+\item
+It is difficult with consumers with diverse processing power because the brokers control the rate at which data is transferred
+\end{itemize}
+
+\subsubsection{Pull model}
+
+Pros:
+
+\begin{itemize}
+\item
+Consumers control the consumption rate. We can have on set of consumers process messages in real-time and another set of consumers process messages in batch mode
+\item
+If the rate of consumption falls below the rate of production, we can scale out the consumers, or simply catch up when it can
+\item
+\begin{itemize}
+\item
+The pull model is more suitable for batch processing
+\item
+eeIN the push model, the broker has no knowledge of whether consumers will be able to prcess messages immediately
+\item
+If the broker sends one message at a atime to the consumer and the consumer is backed up, new messages wil end up waiting in the buffer
+\item
+A pull model pulls all available messages after the consumer's current position in the log (or up to the configurable max size)
+\item
+It is suitable for aggressive batching of data.
+\end{itemize}
+\end{itemize}
+
+Cons:
+
+\begin{itemize}
+\item
+When there is no message in the broker, a consumer might still keep pulling data, wasting resources, to overcome this issue, many message queues support long polling mode, which allows pulls to wait a specified amount of time for new messages[6].
+\end{itemize}
+
+Based on these considerations, most message queues choose the pull model.
+
+Figure 4.15 shows the workflow of the consumer pull model.
+
 
 \end{document}

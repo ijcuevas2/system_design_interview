@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  10 AUG 2026 23:50
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  11 AUG 2026 01:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1301,17 +1301,76 @@ File: images/figure_4_8.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/figure_4_8.jpg  used on input line 4179.
 (pdftex.def)             Requested size: 276.00105pt x 148.12349pt.
 
-[108 <./images/figure_4_8.jpg>] [109] [110] (./system_design_interview.aux)
+[108 <./images/figure_4_8.jpg>] [109] [110]
+<images/figure_4_9.jpg, id=430, 5934.42094pt x 1687.80562pt>
+File: images/figure_4_9.jpg Graphic file (type jpg)
+<use images/figure_4_9.jpg>
+Package pdftex.def Info: images/figure_4_9.jpg  used on input line 4328.
+(pdftex.def)             Requested size: 276.00105pt x 78.47185pt.
+<images/figure_4_10.jpg, id=431, 4759.28062pt x 1991.18906pt>
+File: images/figure_4_10.jpg Graphic file (type jpg)
+<use images/figure_4_10.jpg>
+Package pdftex.def Info: images/figure_4_10.jpg  used on input line 4337.
+(pdftex.def)             Requested size: 276.00105pt x 115.45563pt.
+ [111 <./images/figure_4_9.jpg> <./images/figure_4_10.jpg>]
+
+./system_design_interview.tex:4372: LaTeX Error: File `table_4_1' not found.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.4372 ...graphics[width=0.8\linewidth]{table_4_1}
+                                                  
+I could not locate the file with any of these extensions:
+.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPEG,.JBIG2,.JB2,.eps
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 4377--4398
+[][] 
+ []
+
+[112] [113] [114]
+<images/figure_4_11.jpg, id=444, 4759.28062pt x 3669.20813pt>
+File: images/figure_4_11.jpg Graphic file (type jpg)
+<use images/figure_4_11.jpg>
+Package pdftex.def Info: images/figure_4_11.jpg  used on input line 4522.
+(pdftex.def)             Requested size: 276.00105pt x 212.75264pt.
+ [115 <./images/figure_4_11.jpg>]
+<images/figure_4_12.jpg, id=449, 4759.28062pt x 3773.84906pt>
+File: images/figure_4_12.jpg Graphic file (type jpg)
+<use images/figure_4_12.jpg>
+Package pdftex.def Info: images/figure_4_12.jpg  used on input line 4568.
+(pdftex.def)             Requested size: 276.00105pt x 218.82005pt.
+ [116 <./images/figure_4_12.jpg>]
+<images/figure_4_13.jpg, id=453, 4948.98938pt x 3783.63562pt>
+File: images/figure_4_13.jpg Graphic file (type jpg)
+<use images/figure_4_13.jpg>
+Package pdftex.def Info: images/figure_4_13.jpg  used on input line 4599.
+(pdftex.def)             Requested size: 276.00105pt x 210.95842pt.
+<images/figure_4_14.jpg, id=454, 5337.44063pt x 1925.69438pt>
+File: images/figure_4_14.jpg Graphic file (type jpg)
+<use images/figure_4_14.jpg>
+Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4610.
+(pdftex.def)             Requested size: 276.00105pt x 99.55194pt.
+File: images/figure_4_14.jpg Graphic file (type jpg)
+<use images/figure_4_14.jpg>
+Package pdftex.def Info: images/figure_4_14.jpg  used on input line 4621.
+(pdftex.def)             Requested size: 276.00105pt x 99.55194pt.
+ [117 <./images/figure_4_13.jpg> <./images/figure_4_14.jpg>] [118] [119]
+(./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 25970 strings out of 467533
- 602013 string characters out of 5422138
- 1099504 words of memory out of 5000000
- 54536 multiletter control sequences out of 15000+600000
+ 26088 strings out of 467533
+ 604741 string characters out of 5422138
+ 1099503 words of memory out of 5000000
+ 54654 multiletter control sequences out of 15000+600000
  631269 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1325,10 +1384,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (110 pages, 244197472 bytes).
+Output written on system_design_interview.pdf (119 pages, 262111661 bytes).
 PDF statistics:
- 482 PDF objects out of 1000 (max. 8388607)
- 282 compressed objects within 3 object streams
+ 517 PDF objects out of 1000 (max. 8388607)
+ 301 compressed objects within 4 object streams
  0 named destinations out of 1000 (max. 500000)
- 328 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 358 words of extra memory for PDF output out of 10000 (max. 10000000)
 
