@@ -3846,5 +3846,139 @@ Figure 4.1 shows some of the most popular distributed message queues on the mark
   \end{center}
 \end{figure}
 
+\subsection{Message queues vs event streaming platforms}
+
+Strictly speaking, Apache Kafka and Pulsar are not message queues as they are event streaming platforms.
+
+However, there is a convergence of features that starts to blur the distinction between message queues (RocketMQ, ActiveMQ, RabbitMQ, ZeroMQ, etc.) and event streaming platforms (Kafka, Pulsar).
+
+\begin{itemize}
+\item
+For example, RabbitMQ, which is a typical message queue, added an optional streams to allow repeated message consumption and long message retention, and its implementation uses an appened-only log, much like an event streaming platform would
+\item
+Apache Pulsar is primarily a Kafa competitor but it is also flexible and performant enough to be used as a typical distributed message queue
+\end{itemize}
+
+In this chapter, we will design a distributed message queue with \textbf{additional features, such as long data retention, repeated consumption of messages, etc.,} that are typically only available on event streaming platforms.
+
+These additional features make the design more complicated.
+
+Throughout the chapter, we will highlight places where the design could be simplified if the focus of your interview centers around the more traditional distributed message queues.
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+In a nutshell, the basic functionality of a message queue is striaghtforward: producers send messages toa queue, and consumers consume messages from it.
+
+Beyond this basic functionality, there are other considerations including performance, message delivery semantics, data detention, etc.
+
+THe following set of questions will help clarify requirements and narrow down the scope.
+
+\begin{enumerate}
+\item
+\textbf{Candidate}: What's the format and average size of messages? Is it text only? Is multimedia allowed?
+
+\textbf{Interviewer}: Text messages only. Messages are generally measured in the range of kilobytes (KBs)
+\item
+\textbf{Candidate}: Can messages be repreatedly consumed?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+Yes, messages can be repeatedly consumed by different consumers.
+\item
+Note that is an added feature.
+\item
+A traditional distributed message queue does not retain a message once it has been successfully delivered to a consumer
+\item
+Therefore, a message cannot be repeatedly consumed in a traditional message queue
+\end{itemize}
+
+\item
+
+\textbf{Candidate}: Are messages consumed in the same order they were produced?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+Yes, messages should be consumed in the same order they were produced
+\item
+Note that this is an added feature
+\item
+A traditional distributed message queue does not usually guarantee delivery orders
+\end{itemize}
+\item
+
+\textbf{Candidate}: Does data need to be persisted and what is the data retention?
+
+\textbf{Interviewer}: Yes, let's assume data retention is two weeks. This is an added feature. A traditional distributed message queue does not retain messages.
+
+\item
+
+\textbf{Candidate}: How many producers and consumers are we going to support?
+
+\textbf{Interviewer}: The more the better
+
+\item
+
+\textbf{Candidate}: What's the data delivery semantic we need to support? FOr example, at most-once, at-least-once, and exactly once.
+
+\textbf{Interviewer}: We definitely want to support at-least-once. Ideally, we should support all of them and make them configurable
+
+\item
+
+\textbf{Candidate}: What's the target throughput and end-to-end latency?
+
+\textbf{Interviewer}: It should support high throughput for use cases like log aggregation. I should also support low latency delivery for more traditional message queue use cases.
+\end{enumerate}
+
+With the above conversation, let's assume we have the following functional requirements:
+
+\begin{itemize}
+\item
+Producers send messages to a message queue
+\item
+Consumers consume messages from a message queue
+\item
+Messages can be consumed repeatedly or only once
+\item
+Historical data can be truncated
+\item
+Message size is in the kilobyte range
+\item
+Ability to deliver messages to consumers in the order they were added to the queue
+\item
+Data delivery semantics (at-least once, at-most once, or exactly once) can be configured by users
+\end{itemize}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+High throughput or low latency, configurable based on use cases
+\item
+Scalable. The system should be distributed in nature, It should be able to support a sudden surge in message volume
+\item
+Persistent and durable. Data should be persisted on disk and replicated across multiple nodes
+\end{itemize}
+
+\subsubsection{Adjustments for traditional message queues}
+
+Traditional message queues like RabbitMQ do not have as strong a retention requirement as event streaming platforms.
+
+\begin{itemize}
+\item
+Traditional queues retain messages in memory just long enough for them to be consumed
+\item
+THey provide on-disk overflow capacity [1] which is several orders of magnitude smaller than the capacity required for event streaming platforms
+\item
+Traditional message queues do not typically maintain message ordering
+\item
+The messages can be consumed in a different order than they were produced
+\item
+These differences greatly simplify the design which we will discuss where appropriate
+\end{itemize}
+
 
 \end{document}
