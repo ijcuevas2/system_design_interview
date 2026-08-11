@@ -5086,7 +5086,7 @@ With ACK=1, the producer receives an ACK once the leader persists the message.
 
 \begin{itemize}
 \item
-The latency is imporved by not waiting for data synchronization
+The latency is improved by not waiting for data synchronization
 \item
 If the elader fails immediately after a message is acknowledged but before it is replicaed by follower nodes, then the message is lost
 \item
@@ -5115,5 +5115,78 @@ This setting might be food for usecases like collecting metrics or loggin data s
   \end{center}
 \end{figure}
 
+Configurable ACK allows us to trade durability for performance.
+
+Now let's look at the consumer side. The easiest setup is to let consuemrs connect to a leader replica to consume messages.
+
+You might be wondering if the leader replica would be overwhelmed by this design and why messages are not read from ISRs. The reasons are:
+
+\begin{itemize}
+\item
+Design and operational simplicity
+\item
+Since messages in one partition are dispatched to only one consumer within a consumer group, this limits the number of connections to the leader replica
+\item
+The number of connections to the leader replicas is usually not large as long as a topic is not super hot
+\item
+If a topic is hot, we can scale by expanding the number of partitions and consumers
+\end{itemize}
+
+In some scenarios, reading from the leader replica might not be the best option
+
+\begin{itemize}
+\item
+For example, if a consumer is located in a different data center from the leader replica, the read performance suffers
+\item
+In this case, it is wrothwhile to enable consumers to read from the closest ISRs
+\item
+Interested readers can checkout the reference material about this [11]
+\item
+ISR is very important
+\item
+How does it determine if a replica is ISR or not?
+\item
+Usually, the leader for every partition tracks the ISR list by computing the lag of every replca from itself.
+\item
+If you are interested in detailed algoriths, you can find the implementations in reference materials [12] [13]
+\end{itemize}
+
+\subsection{Scalability}
+
+By now we have made great process designing the distributed message queue system.
+
+In the next step, let's evaluate the scalability of different system components:
+
+\begin{itemize}
+\item
+Producers
+\item
+Consumers
+\item
+Brokers
+\item
+Partitions
+\end{itemize}
+
+\subsection{Producers}
+
+The producer is conceptually much simpler than the consumer because it doesn't need group coordination.
+
+The scalability of producers can easily be achieved by adding or removing producer instances
+
+\subsection{COnsumer}
+
+\begin{itemize}
+\item
+Consumer groups are isolated from each other, so it is easy to add or remove a consumer gorup
+\item
+INside a consumer group, the rebalancing mechanism helps to handle the cases where a consumer gets added ore removed, or when it crashes
+\item
+With consumer groups and the rebalance mechanism, the scalability and fault tolerance of consumers can be achieved
+\end{itemize}
+
+\subsection{Broker}
+
+Before discussing scalability on the broker side, let's first consider the failure recover of brokers
 
 \end{document}
