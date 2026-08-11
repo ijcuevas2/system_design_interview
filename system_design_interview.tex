@@ -5318,4 +5318,72 @@ After the replica in BRoker-4 cathces up, the redundant partition in Broker-1 is
 
 By following this process, data loss while adding brokers can be avoided. A similar process can be applied to remove brokers safely.
 
+\subsection{Partition}
+
+For various operational reasons, such as scaling the topic, throughput tuning, balancing avaiability / throughput, etc., we may change the number of partitions.
+
+\begin{itemize}
+\item
+When the number of partitions changes, the producer will be notified after it communicates with any broker, and the consumer will trigger consumer rebalancing
+\item
+Therefore, it is safe for both the producer and consumer
+\end{itemize}
+
+Now let's consider the data storage layer when the number of partitions changes.
+
+As in Figure 4.30, we have added a partition to the topic.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_30}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Persisted messages are still in the old partitions, so there's no data migration
+\item
+After the new partition (partition-3) is added, new messages wil be persisted in all 3 partitions
+\end{itemize}
+
+So it is straightforward to scale the topic by increasing partitions.
+
+\subsection{Decrease the number of partitions}
+
+Decreasing partitions is more complicated, as illustrated in Figure 4.31.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_31}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Partition-3 is decommiseioned so new messages are only received by the remaining partitions (partition-1 and partition-2)
+\item
+
+\begin{itemize}
+\item
+THe decommissioned partition (partition-3) cannot be removed immediately because date might be currently consumed by consumers for a certain amount of time
+\item
+Only after the configured retention period passes, data can be truncated and storage space is freed up
+\item
+Reducing partitions is not a shortcut to reclaiming data space
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+During this transactional period (while partition-3 is decommisioned), producers only send messages to the remaining 2 partitions, but consumers can still consume from all 3 partitions
+\item
+After the retention period of the decommisioned partition expires, consumer groups need rebalancing
+\end{itemize}
+
+\end{itemize}
+
+
 \end{document}
