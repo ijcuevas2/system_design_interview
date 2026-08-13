@@ -5382,7 +5382,46 @@ During this transactional period (while partition-3 is decommisioned), producers
 \item
 After the retention period of the decommisioned partition expires, consumer groups need rebalancing
 \end{itemize}
+\end{itemize}
 
+\subsection{Data delivery semantics}
+
+As the name suggests, at-most once means a message will be delivered not more than once. Messages may be lost but are not redelivered.
+
+This is how at-most once delivery works at the high level.
+
+\begin{itemize}
+\item
+The producer sends a message a asynchronously to a topic without waiting for an acknowledgment (ACK=0). If message delivery fails, there is no retry.
+\item
+\begin{itemize}
+\item
+
+Consumer fetches the message and commits the offset before the data is processed.
+\item
+ If the consumer crashes just after offset commit, the message will not be reconsumed.
+\item
+On the other hand, if a consumer processes the message but fails to commit the offset to the broker, the message will be re-consumed when the consumer restarts, resulting in duplicates
+\end{itemize}
+
+\item
+A message might be delivered more than once to the brokers and consumers
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_33}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Use cases: With at-least once, messages won't be lost but the same message might be delivered multiple times.
+
+\begin{itemize}
+\item
+While not ideal from a user perspective, at-least once delivery semantics are usually good enough for use cases where data duplication is not a big issue or deduplication is possible on the consumer side
+\item
+For example, with a unique key in each message, a message can be rejected when writing duplicate data to the database.
 \end{itemize}
 
 
