@@ -5968,4 +5968,111 @@ vCPU or CPU & RAM & I0PS & Writes per second & Queries per second & Unique serie
 \end{tabular}
 
 Figure 5.5: InfluxDB benchmarking
+
+Since a time-series databse is a specialized database, you are not expected to understand the internals in an interview unless you explicitly mentioned it in your resume.
+
+\begin{itemize}
+\item
+For the purpose of an interview, it's important to undertsand the metrics data are time-series in nature and we can select time-series databases such as INfluxDB for stoage to store them
+\item
+Another feature of a strong time-series database is efficient aggregation and analysis of a large amount of time-series data by labels, also known as tags in some databses
+\item
+For example, InfluxDB builds indexes on labels to facilitate the fast lookup of time-series by labels [15].
+\item
+It provides clear best-practice guidelines on how to use labels, without overloading the database
+\item
+The key is to make sure each label is of low cardinality (having a small set of possible values).
+\item
+This feature is critical for visuzliation, and it would take a lot of effort to build this with a general-purpose database
+\end{itemize}
+
+\subsubsection{High-Level Design}
+
+The high-level design diagram is shown in Figure 5.6
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+\textbf{Metrics source}: This can be application servers, SQL databases, message queues, etc.
+\item
+\textbf{Metrics collector}. It gathers metrics data and writes data into the time-series database
+\item
+\textbf{Time-series database}.
+
+\begin{itemize}
+\item
+This stores metrics data as time series
+\item
+It usually provides a custom query interface for analyzing and summarizing a large amount of time-series data
+\item
+It maintains indexes on labels to facilitate the fast lookup of time-series data by labels
+\end{itemize}
+\item
+\textbf{Alerting systems}
+
+This sends alert notifications to various alerting desitnations
+\item
+\textbf{Visualization system}.
+
+This shows metrics in the form of various graphs/charts.
+
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+In a system design interview, candidates are expected to dive deep into a few key compones or flows. In this section, we investigate the following topics in detail:
+
+\begin{itemize}
+\item
+Metrics collection
+\item
+Scaling the metrics transmission pipeline
+\item
+Query service
+\item
+Storage layer
+\item
+Alerting system
+\item
+Visualization system
+\end{itemize}
+
+\subsection{Metrics collection}
+
+For metrics collection like counters or CPU usage, occasional data loss is not the end of the world.
+
+It's acceptable for clients to fire and forget.
+
+Now let's take a look at the metrics collection flow, This part of the system is inside the dashed box (Figure 5.7).
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Pull vs push models}
+
+There are two ways metrics data can be collected, pull or push. It is a routine debate as to which one is better and there is no clear answer. Let's take a close look.
+
+\subsection{Pull model}
+
+Figure 5.8 shows data collection with a pull model over HTTP. We have deicated metric collectors which pull metrics values from the running applications periodically.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+
 \end{document}
