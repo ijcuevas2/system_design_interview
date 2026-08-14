@@ -6143,5 +6143,61 @@ Each collector is responsible for collectin metrics from a distinct set of serve
 Collector 2 is responsible for collecting metrics from Server 1 and Server 5
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_11}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Push model}
+
+As shown in Figure 5.12, in a push model various metrics sources, such as web servers, database servers, etc, directly send metrics to the metrics collector.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In a push model, a collection agent is commonly installed on every server being monitored.
+
+\begin{itemize}
+\item
+A collection agent is a piece of long-running software that colelcts metrics from the services running on the server and pushes those metrics periodically to the metrics collector
+\item
+The collection agent may also aggregate metrics (especifally a simple counter) locally, before sending them to metric collectors
+\item
+Aggregation is an effective way to reduce the volume of data sent to the metrics collector
+\item
+If the push traffic is high and the metrics collector rejects the push with an error, the agent could keep a small buffer of data locally (possibly by storign them locally on disk), and resend them later
+\item
+However, if the servers are in auto-scaling roup where they are rotated our frequently, then holding data locally (even temporarily) might result in data loss when the metrics collector falls behind
+\item
+To prevent the metrics collector from falling behind in a push model, the metrics collector should be in an auto-scaling cluster with a load balancer in front of it (Figure 5.13)
+\item
+The cluster should scale up and down based on the CPU load of the metric collector servers
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Pull or push?}
+
+So, which one is the better choice for us? Justlike many things in life. Both sides have widely adopted real-world use cases.
+
+\begin{itemize}
+\item
+Examples of pull architectures include Prometheus
+\item
+Examples of push architectures include Amazon CloudWatch and Graphite [19]
+\end{itemize}
+
+Knowing the advantages and disadvantages of each approach is more important than picking a winner during an interview. Table 5.3 compares the proces and cons of push and pull architectures [20] [21] [22] [23].
 
 \end{document}
