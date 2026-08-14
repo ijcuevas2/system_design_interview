@@ -6667,5 +6667,123 @@ We went through a few iterations to refine the design, and our final design look
   \end{center}
 \end{figure}
 
+\chapter*{Chapter 6: Ad Click Event Aggregation}
+
+With the rise of Facebook, YouTube, TikTok, and the online media economy, digital advertising is taking an ever-bigger share of the total advertising spending.
+
+\begin{itemize}
+\item
+As a result, tracking ad click events is very important
+\item
+In this chapter, we explore how to design an ad click event aggregation system at Facebook or Google scale
+\item
+Before we dive into technical design, let's learn about the core concepts of online advertising to better understand this topic
+\item
+One core benefit of online advertising is its mersurability, as quantified by real-time data
+\item
+Digital advertising has a core process called Real-Time Bidding (RTB), in which digital advertising  inventory is bought and sold
+\item
+Figure 6.1 shows how the online advertising process works
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+The speed of the RTB process is important as it usually occurs in less than a second.
+
+\begin{itemize}
+\item
+Data accuracy is also very important
+\item
+Ad click event aggregation plays a critical role in measuring the effectiveness of online advertising, which essnetially impacts how much money advertisers pay
+\item
+Based on the click aggregation results, campaign managers can control the budget or adjust bidding strategies, such as changing targeted audience groups, keywords, etc.
+\item
+The key metrics used in online advertising, including click-through rate (CTR) [1] and conversion rate (CVR) [2], depend an aggregated ad click data
+\end{itemize}
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+The following set of questions helps to clairfy requirements and narrow down the scope.
+
+\begin{enumerate}
+\item
+
+\textbf{Candidate}: What is the format of the input data?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+It's a log file located in different servers and the latest click events are appended to the end of the log file
+\item
+The event has the following attributes: \lstinline|ad_id|, \lstinline|click_timestamp|, \lstinline|user_id|, \lstinline|ip| and \lstinline|country|
+\end{itemize}
+
+\item
+\textbf{Candidate}: What's the data volume?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+1 billion ad clicks per day and 2 million ads in total
+\item
+The number of ad click events grows 30\% year-over-year
+\end{itemize}
+
+\item
+\textbf{Candidate}: WHat are some of the most important queries to support?
+
+\textbf{Interviewer}:
+
+The system  needs to support the following 3 queries:
+\begin{itemize}
+\item
+Return the number of click events for a particular ad in the last $M$ minutes
+\item
+Return the top 100 most clicked ads in the past 1 minute. Both parameters should be ocnfigurable. Aggregation occurs every minute.
+\item
+Support data filtering by \lstinline|ip|, \lstinline|user_id| or \lstinline|country| for the above two queries
+\end{itemize}
+
+\item
+
+\textbf{Candidate}: Do we need to worry about edge cases? I can think of the following:
+
+\begin{itemize}
+\item
+There might be events that arrive later than expected
+\item
+There might be duplicated events
+\item
+Different parts of the system might be down at any time, so we need to consider system recovery
+\end{itemize}
+
+\textbf{Interviewer}: That's a good list. Yes, take these into consideration.
+
+\item
+
+\textbf{Candidate}: What is the latency requirement?
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+A few minutes of end-to-end latency
+\item
+NOte that latency requirements for RTB and ad click aggregation are very different
+\item
+While latency for RTB is usually less  than one second due to the responsiveness requirement, a few minutes of latency is acceptable for ad click event aggregation because it is primaryly used for ad billing and reporting
+\end{itemize}
+\end{enumerate}
+
+With the information gathered above, we have both functional and non-functional requirements.
+
+
 
 \end{document}
