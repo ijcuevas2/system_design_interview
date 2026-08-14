@@ -6073,6 +6073,34 @@ Figure 5.8 shows data collection with a pull model over HTTP. We have deicated m
   \end{center}
 \end{figure}
 
+In this approach, the metrics collector needs to know the complete list of services endpoints to pull data from.
+
+\begin{itemize}
+\item
+One naive approach is to use a file to hold DNS/UP information for every services endpoint on the ``metric collector'' servers
+\item
+While the idea is simple, this approach is hard to maintain in a large-scale environment where servers are added or removed frequently, and we want to ensure that metric collectors don't miss out on collecting metrics from any new servers
+\item
+The good news is that we have a reliable, scalable, and maintainable solution available through Service Discovery, provided by etcd [16], ZooKeeper [17], etc., wherein services register thei availability and the metrics collector can be notified by the Service Discovery component whever the list of service endpoints changes
+\item
+Service discovery contains configuration rules about when and where to collect metrics as shown in Figure 5.9.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Figure 5.10 explains the pull model in detail.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_10}
+    \caption{}
+  \end{center}
+\end{figure}
 
 
 \end{document}
