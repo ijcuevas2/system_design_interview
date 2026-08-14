@@ -6530,5 +6530,122 @@ cpu & 2021-10-24T19:00:50Z & host-a & 30 \\
 \hline
 \end{tabular}
 
+Rollup from 10 second resolution data to 30 second resolution data
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+metric & timestamp & hostname & \lstinline|metric_value| \\
+\hline
+cpu & 2021-10-24T19:00:00Z & host-a & 10 \\
+\hline
+cpu & 2021-10-24T19:00:30Z & host-a & 25 \\
+\hline
+\end{tabular}
+
+Table 5.5: 30-second resolution data
+
+\subsubsection{Cold storage}
+
+Cold storage is the storage of inactive data that is rarely used. The financial cost for cold storage is much lower.
+
+In a nutshell, we should probably use third-party visualization and alerting systems, instead of building our own.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The alert flow works as follows:
+
+1. Load config files to cache servers. Rules are defined as config files on the disk. YAML [29] is a commonly used format to define rules.
+
+Here is an example of alert rules:
+
+- name: instance_down
+
+rules:
+# Alert for any instance that is unreachable for >5 minutes
+-alert: instance down
+  expr: up == 0
+  for: 5m
+  label:
+  severity: page
+
+2. The alert manager fetches lart configs from the cache
+
+3. Based on config rules the alert manager calls the query service at a predefied interval.
+
+If the value violates the threshold, an alert event is created.
+
+The alert amanager is responsible for the follow:
+
+\begin{itemize}
+\item
+Filter, merge, and dedupe alerts. Here is an example of merging alerts that are trigger within one instace within a short amount of time (instance 1) (Figure 5.20)
+\item
+Access control. To avoid human error and keep the system secure, it is essential to restrict access to certain alert management operations to authorized individuals only.
+\item
+Retry. The alert manager checks alert states and ensures a notification is sent at least once
+\end{itemize}
+
+4. The alert sotre is a key-value database, such as Cassandra, that keeps the state (inactive, pending, firing, resolved) of all alerts. It ensures a notificiation is sent at least once
+
+5. Eligible alerts are inserted into Kafka
+
+6. Alert consumers pull alert events from Kafka.
+
+7. Alert consuemrs process lart events from Kafka and send notifications
+
+\subsection{Alerting system - building vs buy}
+
+There are mny industrial-scale alerting system savailable off-the-shelf, and most provide tight integration with the popular time-series databases.
+
+Many of these alerting systems integrate well with existing notification channels, such as email and PagerDuty.
+
+In the real world, it is a tough call to justify building your own alert system.
+
+In interview settings, especially for a senior position, be ready to justify your decision.
+
+\subsection{Visualization system}
+
+\begin{itemize}
+\item
+Visualization is built on top of the data layer
+\item
+Metrics can be shown on the metrics dashboard over various time scales and alerts can be shown on the alerts dashboard
+\item
+Figure 5.21 shows a dashboard that displays some o fthe metrics like the current server requests, memory/CPU utilization, page load time, traffic, and login information. [30]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+A high quality visualization system is hard to build. The argument for using an off-the-shelf system is very strong. For example, Grafana can be a very good system for this purpose.
+
+It integrates well with many popular time-series databases which you can buy.
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we presented the design for a metrics monitoring and alerting system.
+
+At a high level, we talked about data collection, time-series database, alerts, and visualization.
+
+Then we went in-depth into some of the most important techniques/components
+
+\begin{itemize}
+\item
+Push vs pull model for collecting metrics data
+\item
+Utilize Kafka to scale the system
+\item
+Choose the right time-series database
+\end{itemize}
+
 
 \end{document}
