@@ -6296,5 +6296,25 @@ There might not be a way to install an agent from which to push data in the firs
   \end{center}
 \end{figure}
 
+Let's zoom in on the metrics collector and time-series databases.
+
+\begin{itemize}
+\item
+Whether you use a push or pull model, the metrics collector is a cluster of servers, and the cluster receives enormous amounts of data
+\item
+For either push or pull, the metrics collector cluster is setup for auto-scaling to ensure that there are an adequate number of collector instance to handle the demand
+\item
+However, there is a risk of data loss if the time-series database is unavailable
+\item
+To mitigate this proble, we introduce a queueing component as shown in Figure 5.15
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_15}
+    \caption{}
+  \end{center}
+\end{figure}
+
 
 \end{document}
