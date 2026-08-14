@@ -6200,4 +6200,86 @@ Examples of push architectures include Amazon CloudWatch and Graphite [19]
 
 Knowing the advantages and disadvantages of each approach is more important than picking a winner during an interview. Table 5.3 compares the proces and cons of push and pull architectures [20] [21] [22] [23].
 
+Pull vs Push.
+
+\begin{enumerate}
+\item
+\textbf{\underline{Easy Debugging}}
+
+Pull
+
+The metrics endpoint on application servers used for pulling
+metrics can be used to view metrics at any time.
+
+You can even do this on your laptop.
+
+\textbf{Pull wins}
+
+Push
+
+N/A
+\item
+
+\textbf{\underline{Health check}}
+
+Pull
+
+If an application servser doesn't respond to the pull, you can quickly figure out if an application servser is down.
+
+\textbf{Pull wins}
+
+Push
+
+If the metrics collector doesn't receive metrics, the problem mgiht be caused by network issues.
+
+\item
+
+\textbf{\underline{Short-lived jobs}}
+
+Pull: N/A
+
+Push
+
+Some of the batch job smight be short-lived and don't last long enough to be pulled. \textbf{Push wins}. This can be fixed by introducing push gateways fo rthe pull model [24]
+
+\item
+
+Firewall or complicated network setups
+
+Pull
+
+Having servers pulling metrics requires all metric endpoints to be reachable. This is potentially problematic in multiple data center setups. It might require a more elaborate network infrastructure.
+
+
+Push
+
+If the metrics collector is set up with a load balancer and an auto-scaling group, it is possible to receive data from anywhere.
+
+\textbf{Push wins}
+\item
+
+\textbf{\underline{Performance}}
+
+Pull: Pull methods typically use TCP.
+
+Push:
+Push methods typically use UDP. This means the push method provides lower-latency transports of metrics. The counterargument here is that the effort of establishing a TCP connection is small compared to sending the metrics payload
+
+\item
+\textbf{\underline{Data authenticity}}
+
+Push:
+
+Application servers to collect metrics from are defined in config files in advance.
+
+Metrics gathered from those servers are guaranteed to be authentic.
+
+Pull:
+
+Any kind of client can push metrics to the metrics collector
+
+This can be fixed by whitelisting servers from which to accept metrics, or by requiring authentication.
+
+\end{enumerate}
+
 \end{document}
