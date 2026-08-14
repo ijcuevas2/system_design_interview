@@ -5615,5 +5615,262 @@ Some popular protocols include Advanced Message Queuing Protocol (AMQP) [18] and
   \end{center}
 \end{figure}
 
+\chapter*{Chapter 5}
+
+In this chapter, we explore the design of a scalable metrics monitoring and altering system
+
+\begin{itemize}
+\item
+A well-designed monitoring and alerting system plays a key role in providing clear visibility into the health of the infrastructure to ensure high availability and reliability
+\item
+Figure 5.1 shows some of the most popular metrics monitoring and altering services in the marketplace
+\item
+In this chapter, we design a similar service that can be used internally by a large company
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+\begin{itemize}
+\item
+A metrics monitorining and altering system can mean many different things to different companies, so it is essnetial to nail down the exact requirements first with the itnerviewer
+\item
+For example, you do not want to design a system that focuses on logs such as web server errror or access logs if the interviewer has only infrastructure metrics in mind
+\end{itemize}
+
+Let's first fully understand the problem and establish the scope of the design before diving into the details.
+
+
+\begin{enumerate}
+\item
+\textbf{Candidate}:
+
+\begin{itemize}
+\item
+Who are we building the system for?
+\item
+Are we building an in-house system for a large corporation like Facebook or Google, or are we designing a SaaS service like Datadog [1], Splunk [2], etc?
+\end{itemize}
+
+\textbf{Interviewer}:
+That's a great question. We are building it for internal use only.
+
+\item
+\textbf{Candidate}:
+Which metrics do we want to collect?
+
+\textbf{Interviewer}:
+\begin{itemize}
+\item
+We want to collect operational system metrics
+\item
+These can be low-level usage data of the operating system, such as CPU load, memory usage, and disk space consumption
+\item
+They can also be high-level concepts such as requests per second of a service or the running server count of a web pool
+\item
+Business metrics are not in the scope of this design
+\end{itemize}
+
+
+\item
+\textbf{Candidate}:
+What is the scale of the infrastructure we are monitoring with this system?
+
+\textbf{Interviewer}:
+100 million daily active users, 1,000 server pools, and 100 machines per pool
+\item
+\textbf{Candidate}: How long should we keep the data?
+\textbf{Interviewer}: Let's assume we want 1 year retention
+
+\item
+\textbf{Candidate}: May we reduce the resolution of the metrics data for long-term storage?
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+That's a great question.
+\item
+We would like to be able to keep newly received data for 7 days. After 7 days, you may roll them up to a 1 minute resolution for 30 days.
+\item
+After 30 days, you may further roll them up at a 1 hour resolution
+\end{itemize}
+
+\item
+\textbf{Candidate}: What are the supported alert channels?
+\textbf{Interviewer}: Email, phone, PageDuty [3], or webhooks (HTTP endpoint)
+
+\item
+\textbf{Candidate}: Do we need to collect logs, such as error log or access log?
+\textbf{Interviewer}: No
+
+\item
+\textbf{Candidate}: Do we need to support distributed system tracing?
+\textbf{Interviewer}: No.
+\end{enumerate}
+
+\subsection{High-level requirements ans assumptions}
+
+Now you have finished gathering requirements from ther interviewer and have a clear scope of the dersign. The requirements are:
+
+\begin{itemize}
+\item
+The infrastructure being monitored is large-scale.
+
+\begin{itemize}
+\item
+100 million dialy active users
+\item
+Assume we have 1,000 server pools, 100 machines per pool, 100 metrics per machine $\Rightarrow$ $\sim$ 10 million metrics
+\item
+1 year data retention
+\item
+Data retention policy: raw form for 7 days, 1 minute resolution for 30 days
+\end{itemize}
+
+\item
+A variety of metrics can be monitored, for example:
+
+\begin{itemize}
+\item
+CPU Usage
+\item
+Request count
+\item
+Memory usage
+\item
+Message count in message queues
+\end{itemize}
+
+\end{itemize}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Scalability. The system should be scalable to accommodate growing metrics and alert volume
+\item
+Low latency. The system needs to have low query latency for dashboards and alerts
+\item
+Reliability. The system should be highly reliable to avoid missing critical alters
+\item
+Flexibility. Technology keeps chaning, so the pipeline should be flexible enough to easily integrate new technologies in the future.
+\end{itemize}
+
+Which requirements are out of scope?
+
+\begin{itemize}
+\item
+Log monitoring. The Elasticsearch, Logstash, Kibana (ELK) stack is very popular for collecting and monitoring logs [4]
+\item
+Distributed system tracing [5] [6]. Distributed tracing refers to a tracing solution that tracks service requests as they flow through distributed systems. It collects data as requests go from one service to another
+\end{itemize}
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+In this section, we discuss some fundamental sof building the system, the data model, and the high-level design.
+
+\subsection{Fundamentals}
+
+A metrics monitoring and alterting system generally contains five components, as illustrated in Figure 5.2.
+
+\begin{itemize}
+\item
+Data collection: collect metric data from different sources
+\item
+Data transmission: transfer data from sources to the metrics monitoring system
+\item
+Data storage: organize and store incoming data
+\item
+Alerting: analyze incoming data, detect anomalies, and generate alerts. The system must be able to send alerts to different communication channels
+\item
+Visualization: present data in graphs, charts, etc. Engineers are better at identifying patterns, trends, or problems when data is presented visually, so we need visualization functionality
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Data model}
+
+Metrics data is usually recorded as a time series that contains a set of values with their associated timestamps. The series itself can be uniquely identified by its name, and operationaly by a set of labels.
+
+Example 1:
+
+What is the CPU load on production server instance \lstinline|i631| at \lstinline|20:00|.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The data point highlighted in Figure 5.3 can be represented by Table 5.1.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|metric_name| & \lstinline|cpu.load| \\
+\hline
+\lstinline|labels| & \lstinline|host:i631,env:prod| \\
+\hline
+\lstinline|timestamp| & \lstinline|1613707265| \\
+\hline
+\lstinline|value| & \lstinline|0.29| \\
+\hline
+\end{tabular}
+
+Table 5.1: The data point reprsented by a table
+
+In this example, the time series is represented by the metric name, the labels (\lstinline|host:i631, env:prod|), and a single point value at a specific time.
+
+\subsubsection{Example 2:}
+
+What is the average CPU load across all web servers in the us-west region for the last 10 minutes?
+
+Conceptually, we would pull up something like this from storage where the metric name is \lstinline|CPU.load| and the region label is \lstinline|us-west|:
+
+\begin{lstlisting}
+CPU.load host=webserver01,region=us-west 1613707265 50
+CPU.load host=webserver01,region=us-west 1613707265 62
+CPU.load host=webserver01,region=us-west 1613707265 43
+CPU.load host=webserver01,region=us-west 1613707265 53
+
+CPU.load host=webserver01,region=us-west 1613707265 76
+CPU.load host=webserver01,region=us-west 1613707265 83
+\end{lstlisting}
+
+The average CPU load could be computed by averaging the values at the end of each line.
+
+The format of the lines in the above example is called the line protocol.
+
+It is a common input format for many monitoring software in the market.
+
+Prometheus [7] and OpenTSDB [8] are two examples.
+
+Every time series consists of the following [9]:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{Name} & \textbf{Type} \\
+\hline
+\textbf{A metric name} & \textbf{String} \\
+\hline
+\textbf{A set of tags/labels} & \textbf{List of \lstinline|<key:value>| pairs} \\
+\hline
+An array of values and their timestamps & An array of \lstinline|<value, timestamp>| pairs\\
+\hline
+\end{tabular}
+
+\subsection{Data access pattern}
+
 
 \end{document}
