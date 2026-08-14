@@ -5862,9 +5862,9 @@ Every time series consists of the following [9]:
 \hline
 \textbf{Name} & \textbf{Type} \\
 \hline
-\textbf{A metric name} & \textbf{String} \\
+\A metric name & String \\
 \hline
-\textbf{A set of tags/labels} & \textbf{List of \lstinline|<key:value>| pairs} \\
+A set of tags/labels & List of \lstinline|<key:value>| pairs \\
 \hline
 An array of values and their timestamps & An array of \lstinline|<value, timestamp>| pairs\\
 \hline
@@ -5872,5 +5872,100 @@ An array of values and their timestamps & An array of \lstinline|<value, timesta
 
 \subsection{Data access pattern}
 
+In Figure 5.4, each label on the y-axis represents a time series (uniquely identified by the names and labels) while the x-axis represents time.
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The write load is heavy.
+
+\begin{itemize}
+\item
+As you can see, there can be many time-series data points written at any moment
+\item
+As we mentioned in the ``High-level requirements'' section on page 132, about 10 million operational metrics are written per day, and many metrics are collected at high frequeucny, so the traffic is undoubtedly write-heavy
+\item
+At the same time, the read load is spiky
+\item
+Both visualizatoin and alterting services send queries to the database, and depending on the access patterns of the graphs and alterts the read volume could be bursty
+\item
+In other words, the system is under constant heavy write load, while the read load is spiky
+\end{itemize}
+
+\subsection{Data storage system}
+
+The data storage system is the heart of the design.
+
+\begin{itemize}
+\item
+It's not recommended to build your own storage system or use a general-purpose storage system (for example, MySQL [10]) for this job.
+\item
+A general-purpose database, in theory, could support time-series data, but it would require expert-level tuning to make it work at our scale
+\item
+Specifically, a relational database is not optimized for operations you would commonly perform against time-series data
+\item
+For example, computing the moving average in a rolling time window requires complicated SQL that is difficult to read (there is an example of this in the deep dive section)
+\item
+Besides, to support tagging/labeling data, we need to add an index for each tag
+\item
+Moreover, a general-purpose relational database does not perform well under constant heavy write load
+\item
+At our scale, we would need to expend significant effort in tuning the database, and even then, it might not perform well
+\item
+How about NoSQL?
+\item
+In theory, a few NoSQL databases on the market could handle time-series data effectively
+\item
+For example, Cassandra and BigTable [11] can both be used for time series data
+\item
+However, this would require deep knowledge of the internal workings of each NoSQL to deivse a scalable schema for effectively storing and querying time-series data
+\item
+With industrial-scale time-series databases readily available, using a general-purpose NoSQL database is not appealing
+\end{itemize}
+
+There are many storage systems available that are optimized for time-series data.
+
+\begin{itemize}
+\item
+The optimization lets us use far fewer servers to handle the same volume of data
+\item
+Many of these databases also have custom query interfaces specially designed for the analysis of time-series data that are much easier to use than SQL
+\item
+Some even provide features to manage data retention and data aggregation
+\item
+Here are a few exaqmples of time-series databases
+\end{itemize}
+
+OpenTSDB is a distributed time-series databse, but since it is based on Hadoop and HBase, running a Hadoop/HBase cluster adds complexity
+
+\begin{itemize}
+\item
+Twitter uses MetricsDB [12] and Amazon offers Timestream as a time-series database [13]
+\item
+According to DB-engines [14], the two most popular time-series databases are InfluxDB [15] and Prometheus, which are designed to store large volumes of time-series data and quckly perform real-time analysis on that data
+\item
+Both of them primarily rely on an in-memory cache and on-disk storage
+\item
+And they both handle durability and performance quite well
+\item
+As shown in Figure 5.5, an InfluxDB with 8 cores and 32GB RAM can handle over 250,000 writes per second
+\end{itemize}
+
+\begin{tabular}{|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|p{1.5cm}|}
+\hline
+vCPU or CPU & RAM & I0PS & Writes per second & Queries per second & Unique series \\
+\hline
+2-4 cores & 2-4 GB  & 500 & $<$ 5000 & $<$ 5 & $<$ 100000\\
+\hline
+4-6 cores & 8-32 GB  & 500-1000 & $<$ 250000 & $<$ 25 & $<$ 1000000\\
+\hline
+8+ cores & 32+ GB  & 1000+ & $>$ 250000 & $>$ 25 & $>$ 1000000\\
+\hline
+\end{tabular}
+
+Figure 5.5: InfluxDB benchmarking
 \end{document}
