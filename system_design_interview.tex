@@ -6279,7 +6279,22 @@ Pull:
 Any kind of client can push metrics to the metrics collector
 
 This can be fixed by whitelisting servers from which to accept metrics, or by requiring authentication.
-
 \end{enumerate}
+
+As mentioned above, pull vs push is a routine debate topic and there is no clear answer.
+
+A large organization probably needs to support both,e speically with the popularity of serverless [25] these days.
+
+There might not be a way to install an agent from which to push data in the first place.
+
+\subsubsection{Scale the metrics transmission pipeline}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
 
 \end{document}

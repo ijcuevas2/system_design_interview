@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  14 AUG 2026 02:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  14 AUG 2026 02:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1636,17 +1636,24 @@ Overfull \hbox (0.73672pt too wide) in paragraph at lines 6198--6199
 h and Graphite
  []
 
-[157 <./images/figure_5_13.jpg>] [158] (./system_design_interview.aux)
+[157 <./images/figure_5_13.jpg>] [158]
+<images/figure_5_14.jpg, id=623, 5859.1397pt x 3167.08218pt>
+File: images/figure_5_14.jpg Graphic file (type jpg)
+<use images/figure_5_14.jpg>
+Package pdftex.def Info: images/figure_5_14.jpg  used on input line 6294.
+(pdftex.def)             Requested size: 276.00105pt x 149.18149pt.
+ [159 <./images/figure_5_14.jpg>]
+(./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 26534 strings out of 467533
- 615937 string characters out of 5422138
+ 26548 strings out of 467533
+ 616284 string characters out of 5422138
  1099503 words of memory out of 5000000
- 55100 multiletter control sequences out of 15000+600000
+ 55114 multiletter control sequences out of 15000+600000
  631269 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1224s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1660,10 +1667,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (158 pages, 401941627 bytes).
+Output written on system_design_interview.pdf (159 pages, 405978081 bytes).
 PDF statistics:
- 676 PDF objects out of 1000 (max. 8388607)
- 387 compressed objects within 4 object streams
+ 680 PDF objects out of 1000 (max. 8388607)
+ 389 compressed objects within 4 object streams
  0 named destinations out of 1000 (max. 500000)
- 528 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 533 words of extra memory for PDF output out of 10000 (max. 10000000)
 
