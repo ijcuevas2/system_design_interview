@@ -6510,5 +6510,25 @@ Retention: 30 days, downsample to 1 minute resolution
 Retention: 1 year, downsample to 1 hour resolution
 \end{itemize}
 
+Let's take a look at another concrete example. It aggregates 10-second resolution data to 30-second resolution data.
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+metric & timestamp & hostname & \lstinline|metric_value| \\
+\hline
+cpu & 2021-10-24T19:00:00Z & host-a & 10 \\
+\hline
+cpu & 2021-10-24T19:00:10Z & host-a & 16 \\
+\hline
+cpu & 2021-10-24T19:00:20Z & host-a & 20 \\
+\hline
+cpu & 2021-10-24T19:00:30Z & host-a & 30 \\
+\hline
+cpu & 2021-10-24T19:00:40Z & host-a & 20 \\
+\hline
+cpu & 2021-10-24T19:00:50Z & host-a & 30 \\
+\hline
+\end{tabular}
+
 
 \end{document}
