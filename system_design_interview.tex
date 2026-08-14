@@ -6316,5 +6316,75 @@ To mitigate this proble, we introduce a queueing component as shown in Figure 5.
   \end{center}
 \end{figure}
 
+In this design, the metrics collector sends metrics data to queuing systems like Kafka.
+
+THe consumers or streaming processing services such as Apache Storm, Flink, and SPark, process and push data to the time-series database.
+
+This approach has several advantages:
+
+\begin{itemize}
+\item
+Kafka is used as a hihgly reliable and scalable distributed messaging platform
+\item
+It decouples the data collection and data processing services from each other
+\item
+It can easily prevent data loss when the database is unavailable, by retaining the data in Kafka
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Alternative to Kafka}
+
+Maintaining a production-scale Kafka system is no msall undertaking.
+
+\begin{itemize}
+\item
+You might get push back from the interviewer about this
+\item
+There are large-scale monitoring ingestion system sin use without using an intermediate queue
+\item
+Facebook's Gorilla [26] in-memory time-series database is a prime example; itis designed to reamin hgihly avilable for writes, even when there is a partial network failture
+\item
+It could be argued that ushc a design is as reliable as having an intermediate queue like Kafka
+\end{itemize}
+
+\subsection{Where aggregations can happen}
+
+Metrics can be aggregated in different places; in the collection agent (on the client-side), the ingestion pipeline (before writing to storage), and the query side (after writing to storage)
+
+Let's take a closer look at each of them.
+
+\begin{enumerate}
+\item
+\textbf{Collection agent}:
+
+The collection agent installed on the client-side only supports simple aggregation logic. For example, aggregate a counter every minute before it is sent to the metrics collector
+
+\item
+
+\textbf{Ingestion Pipeline}:
+
+\begin{itemize}
+\item
+To aggregate data before writing to the storage, we usually need stream processing engines such as FLink
+\item
+The write volume will be significantly reduced since only the calculated result is written to the database
+\item
+However, handling late-arriving events could be a challenge and another downside is that we lose data precision and some flexibility because we no longer store the raw data
+\end{itemize}
+\item
+\textbf{Query side}:
+
+Raw data can be aggregated over a given time period at query time
+
+There is no data loss with this approach, but the query speed might be lslower because the query result is computed at query time and is run against the whole dataset.
+
+\end{enumerate}
+
 
 \end{document}
