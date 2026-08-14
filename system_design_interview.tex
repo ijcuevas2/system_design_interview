@@ -6855,4 +6855,90 @@ Support aggregation filtering by different attributes
 
 We only need to APIs to support those three use cases because filtering (the last requirement) can be supported by adding query parameters ot the requests.
 
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+API & Detail \\
+\hline
+\lstinline|GET /v1/ads/{:ad_id}/aggregate_count| & Return aggregated event count for a give \lstinline|ad_id| \\
+\hline
+\end{tabular}
+
+Table 6.1: API for aggregating the number of clicks
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Field} & \textbf{Description} & \textbf{Type} \\
+\hline
+from & Start minute (default is now minus 1 minute) & long \\
+\hline
+to & Start minute (default is now minus 1 minute) & long \\
+\hline
+filter & An identifer for different filtering strategies. For example, filter = 001 filters out non-US clicks & long \\
+\hline
+\end{tabular}
+
+Table 6.2: Request parameters for \lstinline|/v1/ads/{:ad_id}/aggregated_count|
+
+Response:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Field} & \textbf{Description} & \textbf{Type} \\
+\hline
+ad_id & The identifier of the ad & string \\
+\hline
+count & The aggregated count between the start and end minutes & long \\
+\hline
+\end{tabular}
+
+Table 6.3: Response parameters for \lstinline|/v1/ads/{:ad_id}/aggregated_count|
+
+API 2: Return top $N$ most clicked \lstinline|ad_ids| in the last \lstinline|M| minutes
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{API} & \textbf{Detail} \\
+\hline
+\lstinline|GET /v1/ads/popular_ads| & Retrun to N most clicked ads in the last M minutes \\
+\hline
+\end{tabular}
+
+Request parameters are
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Field} & \textbf{Description} & \textbf{Type} \\
+\hline
+count & Top N most clicked ads & integer \\
+\hline
+window & The aggregation window size (M) in minutes & integer \\
+\hline
+filter & An identifier for different filtering strategies & long \\
+\hline
+\end{tabular}
+
+Table 6.5: Request parameters for \lstinline|/v1/ads/popular_ads|
+
+Response:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Field} & \textbf{Description} & \textbf{Type} \\
+\hline
+\lstinline|ad_ids| & A list of the most clicked ads & array \\
+\hline
+\end{tabular}
+
+Table 6.6: Response for \lstinline|/v1/ads/popular_ads|
+
+\subsubsection{Data model}
+
+There are two types of data in the system: raw data and aggregated data
+
+\subsubsection{Raw data}
+
+Below shows what the raw data looks like in log files:
+
+\lstinline|[AdClickEvent] ad001, 2021-01-01 00:00:01, user 1, 207.148.22.22, USA|
+
 \end{document}
