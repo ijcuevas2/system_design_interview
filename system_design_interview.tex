@@ -5579,10 +5579,41 @@ Effectively transport data with large volumes
 \item
 Verify the integrity and correctness of the data
 \end{itemize}
+\item
+Retry consumption
+
+\begin{itemize}
+\item
+If some messages cnnot be consumed successfully, we need to retry the operation
+\item
+In order not to block incoming messages, how can we retry the operation after a certain time period?
+\item
+One idea is to send failed messages to a dedicated retry topic, so they can be consumed later
+\end{itemize}
+
+\item
+
+Historical data archive
+
+\begin{itemize}
+\item
+Assume there is a time-based or capacity-based log retrention mechanism
+\item
+If a consumer needs to replay some historical messages that are already truncated, how can we do it?
+\item
+One possible solution is to use storage systems with large capacities, such as HDFS [20] or object storage, to store historical data
+\end{itemize}
 
 \end{itemize}
 
+Some popular protocols include Advanced Message Queuing Protocol (AMQP) [18] and Kafka protocol [19].
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.95\linewidth]{chapter_4_summary}
+    \caption{}
+  \end{center}
+\end{figure}
 
 
 \end{document}
