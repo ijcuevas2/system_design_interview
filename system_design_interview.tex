@@ -6784,6 +6784,75 @@ While latency for RTB is usually less  than one second due to the responsiveness
 
 With the information gathered above, we have both functional and non-functional requirements.
 
+\subsection{Functional requirements}
 
+\begin{itemize}
+\item
+Aggregate the number of clicks of \lstinline|ad_id| in the last $M$ minutes
+\item
+Return the top 100 most clicked \lstinline|ad_id| every minute
+\item
+Support aggregation filtering by different attributes
+\item
+Dataset volumeis at Facebook or Google scale (see the back-of-evenlop estimation section for detailed system scale requirements)
+\end{itemize}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Correctness fo the aggregation result is important as the data is used for RTB and ads billing
+\item
+Properly handle delayed or duplicate events
+\item
+Robustness. THe system should be resilient to partial failures
+\item
+Latency requirement. End-to-end latency shouldbe a few minutes, at most.
+\end{itemize}
+
+\subsection{Back-of-the-envelope estimation}
+
+Let's do an estimation to understand the scale of the system and the potential challenges we will need to address
+
+\begin{itemize}
+\item
+1 billion DAU (Daily Active Users)
+\item
+Assume on average each user clicks 1 ad per day. That's 1 billion ad click events per day
+\item
+Ad click QPS $\frac{10^{9} \text{ events}}{10^{5} \text{ seconds in a day}} = 10,000$
+\item
+Assume peack ad click QPS is 5 times the average number. Peak QPS = 50,000 QPS
+\item
+Assume a single ad blick event occupies 0.1KB storage. Daily storage requirement is: \lstinline|0.1 KB x 1 billion = 100GB|. THe monlty storage requirement is about 3TB.
+\end{itemize}
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+In this section, we discuss query API design, data model, and high-level design
+
+\subsubsection{Query API design}
+
+The purpose of the API design is to have an agreement between the client and the server.
+
+\begin{itemize}
+\item
+In a consumer app, a client is usually the end-user who uses the product
+\item
+In our case, however, a client is the dashboard user (data scientist, product manager, advertiser, etc.) who runs queries against the aggreation service
+\end{itemize}
+
+Let's review the functional requirements os we can better design the APIs.
+
+\begin{itemize}
+\item
+Aggregate the number of clicks of \lstinline|ad_id| in the last $M$ minutes
+\item
+Return the top N most clicked \lstinline|ad_ids| in the last \lstinline|M| minut
+\item
+Support aggregation filtering by different attributes
+\end{itemize}
+
+We only need to APIs to support those three use cases because filtering (the last requirement) can be supported by adding query parameters ot the requests.
 
 \end{document}

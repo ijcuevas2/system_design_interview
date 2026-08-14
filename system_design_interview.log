@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  14 AUG 2026 13:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  14 AUG 2026 14:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1749,7 +1749,7 @@ Overfull \hbox (4.4452pt too wide) in paragraph at lines 6785--6786
 onal and non-functional
  []
 
-[173] (./system_design_interview.aux)
+[173] [174] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -1773,10 +1773,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (173 pages, 449078142 bytes).
+Output written on system_design_interview.pdf (174 pages, 449080667 bytes).
 PDF statistics:
- 734 PDF objects out of 1000 (max. 8388607)
- 419 compressed objects within 5 object streams
+ 737 PDF objects out of 1000 (max. 8388607)
+ 421 compressed objects within 5 object streams
  0 named destinations out of 1000 (max. 500000)
  578 words of extra memory for PDF output out of 10000 (max. 10000000)
 
