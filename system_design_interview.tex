@@ -5424,5 +5424,165 @@ While not ideal from a user perspective, at-least once delivery semantics are us
 For example, with a unique key in each message, a message can be rejected when writing duplicate data to the database.
 \end{itemize}
 
+\subsubsection{Exactly Once}
+
+Exactly once is the most difficult delivery semantic to implement. It is friendly to users, but it has a high cost for the system's performance and complexity.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_34}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Use cases: Financial-related use cases (payment, trading, accounting, etc.).
+
+Exactly once is especially important when duplication is not acceptable and the downstream service or third party doesn't support idempotency.
+
+\subsubsection{Advanced features}
+
+In this section, we talk briefly about some advanced features, such as message filtering, delayed messages, and scheduled messages.
+
+\subsubsection{Message filtering}
+
+A topic is a logical abstraction that contains messages of the same type.
+
+\begin{itemize}
+\item
+However, some consumer groups may only want to consume messages of certain subtypes
+\item
+For examples, that the ordering system sends all the activites about the order to a topic, but the payment system only cares about messages related to checkout and refund.
+\item
+One option is to build a dedicated topic for the payment system and another topic for the ordering system
+\end{itemize}
+
+This method is simple, but it might raise some concerns.
+
+\begin{itemize}
+\item
+What if other systems ask for different subtypes of messages? Do we need to build dedicated topics for every single consumer request?
+\item
+It is a waste of resources to save the same messages on different topics
+\item
+The producer needs to change every time a new consumer requirement comes, as the producer and consumer are now tightly coupled
+\end{itemize}
+
+Therefore, we need to resolve this requirement using a different approach.
+
+Luckily, message filtering comes to the rescue.
+
+A naive solution for message filtering is that consumer fetches the full set of messages and filters out unnecessary messages during processing time.
+
+\begin{itemize}
+\item
+This approach is flexible but introduces unnecessary traffic that will affect system performance
+\item
+A better solution is to filter messages on the broker side so that consumers wil only get messages they care about
+\item
+Implementing this requires some careful consideration
+\item
+If data filtering requires data decryption or deserialization, it will degrade the performance of the brokers
+\item
+Additionally, if messages contain sensitive data, they should not be readable in the message queue
+\item
+Therefore, the filtering logic in the broker should not extract the message payload
+\item
+It is better to put data used for filtering into the metadata of a emssage, which can be efficiently read by the broker
+\item
+For example, we can attach a tag to each message
+\item
+With a message tag, a broker can filter messages in that dimension
+\item
+If more tags are attached the messages can be filtered in multiple dimensions
+\item
+Therefore, a list of tags can support most of the filtering requirements
+\item
+To support more complex logic such as mathematical formulae, the broker will need a grammar parser or a script executor, which might be too heavyweight for the message queue
+\item
+With tags attached to each message, a consumer can subscribe to messages based on the specfied tag, as shown in Figure 4.35
+\item
+Interested readers can refer to the reference material [15]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_35}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Delayed messages \& scheduled messages}
+
+Sometimes you want to delay the delivery of messages to consumer for a specified period of time.
+
+\begin{itemize}
+\item
+For example, an order should be closed if not paid within 30 minutes after the order is created
+\item
+A dealyed verification message (check if the apyment is completed) is sent immediately but is delivered to the consumer 30 minutes later
+\item
+When the consumer receives the message, it checks the payment status
+\item
+If the payment is not completed, the order will be closed
+\item
+Otherwise, the message will be ignored
+\item
+Different from sending instant messages, we can send delayed messages to temporary storage on the broker side instead of to the topics immediately, and then deliver them to the topics when time's up
+\item
+The high-level design for this is shown in Figure 4.36
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_4_36}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Core components of the system include the temporary storage and the timing function.
+
+\begin{itemize}
+\item
+The temporary storage can be one or more special message topics
+\item
+The timing function is out of scope, but here are 2 popular solutions:
+
+\begin{itemize}
+\item
+Dedicated delay queues with predefined delay levels [16]
+\item
+For example, RocketMQ doesn't support delayed messages with arbitrary messages with arbitrary time precision, but delayed messages with specific levels are supported
+\item
+Message delay levels are 1s, 5s, 10s, 30s, 1m, 2m, 3m, 4m, 6m, 8m, 9m, 10m, 20m, 30m, 1h, and 2h
+\item
+Hierarchical time wheel
+\end{itemize}
+\end{itemize}
+
+A scheduled message means a message should be delivered ot the consumer at the scheduled time. The overall design is very similar to delayed messages.
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we have presented the design of a distrubted message queue with some advanced features commonly found in data streaming platforms.
+
+If there is extra time at the end of the interview, here are some additional talking points:
+
+\begin{itemize}
+\item
+Protocol: it defines rules, syntax, and APIs on how to exchange information and transfer data between different nodes. In a distributed message queue, the protocol should be able to:
+
+\begin{itemize}
+\item
+Cover all the activities such as production, consumption, heartbeat, etc
+\item
+Effectively transport data with large volumes
+\item
+Verify the integrity and correctness of the data
+\end{itemize}
+
+\end{itemize}
+
+
+
 
 \end{document}
