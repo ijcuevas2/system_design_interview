@@ -6382,9 +6382,133 @@ However, handling late-arriving events could be a challenge and another downside
 
 Raw data can be aggregated over a given time period at query time
 
-There is no data loss with this approach, but the query speed might be lslower because the query result is computed at query time and is run against the whole dataset.
+There is no data loss with this approach, but the query speed might be slower because the query result is computed at query time and is run against the whole dataset.
 
 \end{enumerate}
+
+\subsection{Query service}
+
+The query service comprises a cluster of query servers, which access the time-series databases and handle requrest from the visualizatoin or altering system
+
+\begin{itemize}
+\item
+Having a dedicated set of query servers decouples time-series databases from the clients (visualziation and alerting systems)
+\item
+And this gives us the flexibility to change the time-series database or the visualization and altering systems, whenever needed
+\end{itemize}
+
+\subsubsection{Cache Layer}
+
+To reduce the load of the time-series database and make query service more performance cache servers are added to store query results, as shown in Figure 5.17.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+\subsubsection{The case against query service}
+
+There might not be a pressing need to introduce oour own abstraction (a query service) because most industrical-scale visual and altering systems have powerful plugs to interface with well-known time-series databases on the market.
+
+And with a well-chosen time-series database, there is no need to add our own caching, either.
+
+\subsubsection{Time-series database query language}
+
+Most popular metrics monitoring systems like Prometheus and InfluxDB don't use SQL and have their own query languages.
+
+ONe major reason for this is that it is hard to build SQL queries to query time-series data.
+
+For example, as metnioned here [27], computing an exponential moving average might look like this in SQL:
+
+\begin{lstlisting}
+select id,
+       temp,
+       avg(temp) over (partition by group_nr order by time_read)
+       as rolling_avg
+from (
+    select id,
+           temp,
+           time_read,
+           interval_group,
+           id - row_number() over (partition by interval_group
+                                    order by time_read) as group_nr
+    from (
+        select id,
+               time_read,
+               "epoch"::timestamp + "900 seconds"::interval *
+                   (extract(epoch from time_read)::int4 / 900) as interval_group,
+               temp
+        from readings
+    ) t1
+) t2
+order by time_read;
+\end{lstlisting}
+
+\subsection{Equivalent query in Flux}
+
+\begin{lstlisting}
+from(db:"telegraf")
+    |> range(start:-1h)
+    |> filter(fn: (r) => r._measurement == "foo")
+    |> exponentialMovingAverage(size:-10s)
+\end{lstlisting}
+
+
+\subsection{Storage layer}
+
+Now let's dive into the storage layer
+
+\subsection{Choose a time-series database carefully}
+
+\begin{itemize}
+\item
+According to a research paper published by Facebook [26], at least 85\% of all queries to the operational data store were for data collected in the past 26 hours.
+\item
+If we use a time-series database that harnesses this property, it could have a significant impact on overall system performance
+\item
+If you are interested in the design o fthe storage engine, please refer to the design document of the InfluxDB storage engine [28]
+\end{itemize}
+
+\subsection{Space optimization}
+
+As explained in high-level requirements, the amount of metric data to store is enourmous. Here are a few strategies for tackling this.
+
+\subsection{Data encoding and compression}
+
+Data encoding and compression can significantly reduce the size of data. Those features are usually built into a good time-series database. Here is a simple example.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_5_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+As you can see in the image above, 1610087371 and 1610087381 differ by only 10 seconds, which takes only 4 bits to represent, instead of the full timestamp of 32 bits
+
+So, rather than storing absolute values, the delta of the values can be stored along with one base value like: 1610087371, 10, 10, 9, 11.
+
+\subsection{Downsampling}
+
+Downsampling is the process of converting high-resolution data to low-resolution to reduce overall disk usage.
+
+Since our data retention is 1 year, we can downsample old data.
+
+For example, we can let engineers and data scientists define rules for different metrics.
+
+Here is an example:
+
+\begin{itemize}
+\item
+Retention: 7 days, no sampling
+\item
+Retention: 30 days, downsample to 1 minute resolution
+\item
+Retention: 1 year, downsample to 1 hour resolution
+\end{itemize}
 
 
 \end{document}
