@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  15 AUG 2026 12:04
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  15 AUG 2026 14:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1830,17 +1830,128 @@ Overfull \hbox (34.03304pt too wide) in paragraph at lines 7024--7057
 [][] 
  []
 
-[176] [177] (./system_design_interview.aux)
+[176] [177] [178]
+<images/figure_6_2.jpg, id=696, 5357.01375pt x 1461.20906pt>
+File: images/figure_6_2.jpg Graphic file (type jpg)
+<use images/figure_6_2.jpg>
+Package pdftex.def Info: images/figure_6_2.jpg  used on input line 7157.
+(pdftex.def)             Requested size: 276.00105pt x 75.27205pt.
+<images/figure_6_3.jpg, id=697, 5357.01375pt x 3392.17313pt>
+File: images/figure_6_3.jpg Graphic file (type jpg)
+<use images/figure_6_3.jpg>
+Package pdftex.def Info: images/figure_6_3.jpg  used on input line 7189.
+(pdftex.def)             Requested size: 276.00105pt x 174.74286pt.
+ [179 <./images/figure_6_2.jpg>]
+Overfull \hbox (30.38023pt too wide) in paragraph at lines 7196--7201
+[][] 
+ []
+
+
+Overfull \hbox (59.03307pt too wide) in paragraph at lines 7208--7213
+[][] 
+ []
+
+
+Overfull \hbox (1.38943pt too wide) in paragraph at lines 7227--7228
+[]\OT1/cmr/m/n/10 You might be won-derin why we don't write the ag-gre-gated re
+-sults to the database
+ []
+
+<images/figure_6_4.jpg, id=701, 5528.655pt x 3772.34344pt>
+File: images/figure_6_4.jpg Graphic file (type jpg)
+<use images/figure_6_4.jpg>
+Package pdftex.def Info: images/figure_6_4.jpg  used on input line 7231.
+(pdftex.def)             Requested size: 276.00105pt x 188.28285pt.
+[180 <./images/figure_6_3.jpg>]
+<images/figure_6_5.jpg, id=705, 4126.91812pt x 4830.7978pt>
+File: images/figure_6_5.jpg Graphic file (type jpg)
+<use images/figure_6_5.jpg>
+Package pdftex.def Info: images/figure_6_5.jpg  used on input line 7250.
+(pdftex.def)             Requested size: 276.00105pt x 323.00574pt.
+ [181 <./images/figure_6_4.jpg>]
+<images/figure_6_6.jpg, id=710, 3940.97343pt x 3227.30719pt>
+File: images/figure_6_6.jpg Graphic file (type jpg)
+<use images/figure_6_6.jpg>
+Package pdftex.def Info: images/figure_6_6.jpg  used on input line 7263.
+(pdftex.def)             Requested size: 276.00105pt x 225.98383pt.
+ [182 <./images/figure_6_5.jpg>] [183 <./images/figure_6_6.jpg>]
+<images/figure_6_7.jpg, id=717, 5228.2828pt x 2847.13687pt>
+File: images/figure_6_7.jpg Graphic file (type jpg)
+<use images/figure_6_7.jpg>
+Package pdftex.def Info: images/figure_6_7.jpg  used on input line 7300.
+(pdftex.def)             Requested size: 276.00105pt x 150.27194pt.
+<images/figure_6_8.jpg, id=718, 5569.30687pt x 2661.19218pt>
+File: images/figure_6_8.jpg Graphic file (type jpg)
+<use images/figure_6_8.jpg>
+Package pdftex.def Info: images/figure_6_8.jpg  used on input line 7334.
+(pdftex.def)             Requested size: 276.00105pt x 131.84921pt.
+ [184 <./images/figure_6_7.jpg>]
+<images/figure_6_9.jpg, id=722, 4538.70656pt x 3033.83438pt>
+File: images/figure_6_9.jpg Graphic file (type jpg)
+<use images/figure_6_9.jpg>
+Package pdftex.def Info: images/figure_6_9.jpg  used on input line 7352.
+(pdftex.def)             Requested size: 276.00105pt x 184.47571pt.
+ [185 <./images/figure_6_8.jpg> <./images/figure_6_9.jpg>]
+Overfull \hbox (60.6594pt too wide) in paragraph at lines 7366--7383
+[][] 
+ []
+
+[186]
+Underfull \hbox (badness 4217) in paragraph at lines 7428--7428
+[]|\OT1/cmr/m/n/10 Services (on-line sys-
+ []
+
+
+Underfull \hbox (badness 1087) in paragraph at lines 7428--7428
+[]|\OT1/cmr/m/n/10 Batch sys-tem (of-fline
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7428--7429
+[]|\OT1/cmr/m/n/10 Streaming sys-tem
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7428--7429
+\OT1/cmr/m/n/10 (near real-time sys-
+ []
+
+
+Underfull \hbox (badness 4084) in paragraph at lines 7430--7430
+[]|\OT1/cmr/m/n/10 No re-sponse to the
+ []
+
+
+Underfull \hbox (badness 2409) in paragraph at lines 7430--7431
+[]|\OT1/cmr/m/n/10 NO re-sponse to the
+ []
+
+
+Underfull \hbox (badness 2626) in paragraph at lines 7432--7432
+\OT1/cmr/m/n/10 nite size. A large
+ []
+
+
+Underfull \hbox (badness 7203) in paragraph at lines 7436--7436
+[]|\OT1/cmr/bx/n/10 Performance mea-
+ []
+
+
+Overfull \hbox (103.33853pt too wide) in paragraph at lines 7426--7441
+[][] 
+ []
+
+[187] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 26674 strings out of 467533
- 619477 string characters out of 5422138
+ 26786 strings out of 467533
+ 622141 string characters out of 5422138
  1099504 words of memory out of 5000000
- 55240 multiletter control sequences out of 15000+600000
+ 55352 multiletter control sequences out of 15000+600000
  631269 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,12n,121p,516b,1647s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1854,10 +1965,10 @@ ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on system_design_interview.pdf (177 pages, 449087864 bytes).
+Output written on system_design_interview.pdf (187 pages, 475651523 bytes).
 PDF statistics:
- 747 PDF objects out of 1000 (max. 8388607)
- 428 compressed objects within 5 object streams
+ 788 PDF objects out of 1000 (max. 8388607)
+ 451 compressed objects within 5 object streams
  0 named destinations out of 1000 (max. 500000)
- 578 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 618 words of extra memory for PDF output out of 10000 (max. 10000000)
 

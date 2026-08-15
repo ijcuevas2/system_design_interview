@@ -7096,5 +7096,348 @@ Old raw data could be moved to cold storage to reduce costs
 Aggregated data serves as active data. It is tune for query performance.
 \end{itemize}
 
+\subsection{Choose the right database}
+
+When it comes to choosing the right databsae, we4e need to evaluate the following:
+
+\begin{itemize}
+\item
+What does the data look like? Is the data relational? Is it a document or a blob?
+\item
+Is the workflow read-heavy, write-heavy, or both?
+\item
+Is transaction support needed?
+\item
+Do the queries rely on many online analytical processing (OLAP) functions [3] like SUM, COUNT?
+\end{itemize}
+
+Let's examine the raw data first.
+
+\begin{itemize}
+\item
+Even though we don't need to query the raw dat aduring normal operations, it is useful for data scientists or machine learning engineers to study user response prediction, behavioral targeting, relevance feedback, etc. [4].
+\item
+A shown in the back of the envelope estimation, the average write QPS is 10,000 and the peak QPS can be 50,000, so the sytem is write-heavy
+\item
+On the read side, raw data is used as backup and a source for recalculation, so in theory, the read volume is low
+\item
+Relational databases can do the job, but scaling the write can be challenging
+\item
+NoSQL databases like Cassandra and InfluxDB are more suitable because they are optimized for write and time-range queries
+\item
+Another option is to store the data in Amazon S3 wusing one of the column datta formats like ORC [5], Parquet [6], or AVRO [7]
+\item
+We could put a cap on the size of each file (say 10GB) and the stream processor responsible for writing the raw data could handle the file rotation when the szie cap is reached
+\item
+Since this setup may be unfamiliar for many in this design we use Cassandra as an example
+\item
+FOr aggregated data, it is time-series in nature and the worflow is btoh read and write heavy
+\item
+This is because, for each ad, we need to query the database every minute to diplay the aggregation count fo rcustomers
+\item
+This feature is useful for au-refreshing the dashboard or tiggering alters in a timely manner
+\item
+Since there are two million ads in total,  the workflow is read-heavy
+\item
+Data is aggregated and written every minute by the aggregation service, so it's write-heavy as well
+\item
+We could use the same type of database to store both raw data and aggregated data.
+\item
+NO we have discussed query API design and data model, let's put together the high-level design
+\end{itemize}
+
+\subsection{High-level design}
+
+In real-time big data [8] processing, data usually flows into and out of the processing system as unboudned data streams.
+
+The aggregation service works in the same way; the input is the raw data (unbounded data streams), and the output is the aggregated results (see Figure 6.2).
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Figure 6.2: Aggregation Workflow
+
+\subsection{Asynchronous processing}
+
+The design we currently have is sunchronous.
+
+\begin{itemize}
+\item
+This is not good because the capacity of producers and consumers is not always equal
+\item
+Consider the following case; if there is a sudden increase in traffic and the number of events produced is far beyond what consumers can handle, consumers might get out-of-memory errors or experience an unexpected shotdown
+\item
+If one component in the syncronous link is down, the whole system stops working.
+\item
+A common solution is to adpt a message queue (Kafka) to decouple producers and consumers
+\item
+This makes the whole process asynchronous and producers/consumers can be scaled independently
+\item
+Putting everything we have discussed together, we come up with the high-level design as shown in Figure 6.3
+\item
+Log watcher, aggregation service, and database are decoupled by two message queues
+\item
+The database writer polls data form the message queue, transforms the data into the database format, and writes it to the database
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+What is stored in the first message queue? It contains ad click event data as shown in Table 6.13.
+
+\begin{tabular}{|p{2cm}|p{3cm}|p{2cm}|p{2cm}|p{2cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_timestamp| & \lstinline|user_id| & \lstinline|ip| & \lstinline|country| \\
+\hline
+\end{tabular}
+
+What is stored in the second message queue? THe second message queue contains two-types of data:
+
+\begin{itemize}
+\item
+Ad click counts aggregated at per-minute granularity
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_minute| & \lstinline|count| \\
+\hline
+\end{tabular}
+
+Table 6.14: Data in the second message queue
+
+\item
+Top N most clicked ads aggregated at per-minute granularity
+
+
+\begin{tabular}{|p{4cm}|p{4cm}|}
+\hline
+\lstinline|update_time_minute| & \lstinline|most_clicked_ads| \\
+\hline
+\end{tabular}
+\end{itemize}
+
+You might be wonderin why we don't write the aggregated results to the database directly. THe short answer is that we need the second message queue lik Kafka to achieve end-to-end exactly once semantics (atomic commit) [9].
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Next, let's dig into the details of the aggregation service
+
+\subsection{Aggregation service}
+
+The MapReduce framework is a good option to aggregate ad click evets
+\begin{itemize}
+\item
+The directed acyclic graph (DAG) is a good model for it [10].
+\item
+The key to the DAG model is to break down the system into small computing units, like the MAP/Aggregate/Reduce nodes, as shown in Figure 6.5
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Each node is responsible for one single task, and it sends the processing result to its downstream nodes.
+
+\subsection{Map node}
+
+A Map node reads data from a data source, and then filters, and transforms the data.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+YOU might be wondering why nwe need the Map node.
+
+\begin{itemize}
+\item
+An alternative option is to set up Kafka parittions or tags and let the aggregate nodes subscribe to Kfa direclty
+\item
+This works, but the input data may need to be cleaned or normalized , and these operations can be done by the Map node
+\item
+Another reason is that we may not have control over how data is produced and therefor events with ethe same \lstinline|ad_id| might land in different Kafka partitions
+\end{itemize}
+
+\subsection{Aggregate node}
+
+An aggregate node counts ad click events by \lstinline|ad_id| in memory every minute
+
+In the MapReduce paradigm, the AAggregate node is part of the Reduce.
+
+So the map aggregate reduce process really means map-reduce-reduce.
+
+\subsection{Reduce node}
+
+\begin{itemize}
+\item
+A Reduce node reduces aggregated results from all ``Aggregate'' nodes to the final result
+\item
+For example, as shown in Figure 6.7, there are three aggregation nodes and each contains the top 3 most clicked ads within the node
+\item
+The Reduce node reduces the total number of most clicked ads to 3
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The DAG model represents the well-known MapReduce paradigm,
+
+\begin{itemize}
+\item
+It is designed to take big data and use paralllel distributed computing to turn big data into little or regular-sized data
+\item
+In the DAG model, intermediate data can be stored in memory and fiferent nodes communicate with each other through either TCP (nodes running in different processes) or shared memory (nodes running in different threads)
+\end{itemize}
+
+\subsubsection{Main use cases}
+
+Now that we understand how MapReduce works at the high level, let's take a look at how it can be utlized to support the main use cases:
+
+\begin{itemize}
+\item
+Aggregate the number of clicks \lstinline|ad_id| in the last \lstinline|M| mins
+\item
+Return the top \lstinline|N| most clicked \lstinline|ad_ids| in the last \lstinline|M| minutes
+\item
+Data filtering
+\end{itemize}
+
+
+\subsection{Use case 1: aggregate the number of clicks}
+
+As shown in FIgure 6.8, input events are partitioned by \lstinline|ad_id (ad_d % 3)| in Map nodes and are then aggregated by Aggregation nodes.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Use case 2: return top N most clicked ads}
+
+\begin{itemize}
+\item
+Figure 6.9 shows a simplified design of getting the top 3 most clicked ads, which can be exteneded to top N.
+\item
+Input events are mapped using \lstinline|ad_id| and each Aggregate node maintains a heap data structure to get the top 3 ads within the node efficiently.
+\item
+In the last step, the Reduce node reduces 9 ads (top 3 from each aggregate node) to the top 3 most clicked ads every minute
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Use case 3: data filtering}
+
+\begin{itemize}
+\item
+To support data filtering like ``show me the aggregated click count for ad001 within the USA only'', we can pre-define filtering criteria and aggregate based on them.
+
+For example, the aggregation results look like this for \lstinline|ad001| and \lstinline|ad002|.
+\end{itemize}
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{2cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_minute| & \lstinline|country| & \lstinline|count| \\
+\hline
+ad001 & 20210101001 & USA & 100 \\
+\hline
+ad001 & 20210101001 & GPB & 200 \\
+\hline
+ad001 & 20210101001 & others & 3000 \\
+\hline
+ad002 & 20210101001 & USA & 10 \\
+\hline
+ad002 & 20210101001 & GPB & 25 \\
+\hline
+ad002 & 20210101001 & others & 12 \\
+\hline
+\end{tabular}
+
+Table 6.16: Aggregation results (filter by country)
+
+This technique is called the star schema [11], which is widely used in data warehouses. THe filtering fields are called dimensions.
+
+This approach has the following benefits:
+
+\begin{itemize}
+\item
+It is simple to understand and build
+\item
+The current aggregation service can be reused to create more dimensions in the star schema. No additional component is needed.
+\item
+Accessing data based on filtering criteria is fast because the result is pre-calculated
+\end{itemize}
+
+A limitation with this approach is that it creates many more buckets and records, especially when we have a lot of filtering criteria.
+
+\subsection{Step 3: Design Deep Dive}
+
+In this section, we will dive deep in the following:
+
+\begin{itemize}
+\item
+Steaming vs batching
+\item
+Time and aggregation window
+\item
+Delivery guarantees
+\item
+Scale the system
+\item
+Data monitoring and correctness
+\item
+Final design diagram
+\item
+Fault tolerance
+\end{itemize}
+
+\subsubsection{Streaming vs batching}
+
+The high-level architecture we proposed in Fgiure 6.3 is a type fo stream processing syste. Table 6.17 shows the comparison of three types of systems [12]:
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+       & Services (online system) & Batch system (offline system) & Streaming system (near real-time system) \\
+\hline
+\textbf{Responsiveness} & Respond to the client quickly & No response to the client needed & NO response to the client needed\\
+\hline
+\textbf{Input} & User requests & Bounded input with finite size. A large amount of data & Input has no boundary (infinite streams)\\
+\hline
+\textbf{Output} & Responses to clients & Materialized views, aggregated metrics, etc. & Materialized views, aggregated metrics, etc.\\
+\hline
+\textbf{Performance measurement} & Availability. latency & Throughput & Throughput, latency\\
+\hline
+\textbf{Example} & Online shopping & MapReduce & Flink [13]\\
+\hline
+\end{tabular}
+
 
 \end{document}
