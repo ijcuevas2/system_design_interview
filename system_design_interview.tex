@@ -7057,4 +7057,44 @@ For example, 10 entries might be aggregated to 1 entry
 
 Table 6.12: Raw data vs aggregated data
 
+Should we store raw data or aggregated data? Our recommendation is to store both. Let's take a look at why.
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+It's a good idea to keep the raw data
+\item
+If something goes wrong, we could use the raw data fordebugging
+\item
+If the aggregated data is corrupted due to a bad bug, we can recalculate the aggregated data from the raw data, after the bug is fixed
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+Aggregated data should be stored as well
+\item
+The data size of the raw data is huge
+\item
+The large size makes querying raw data directly very ineffcieint
+\item
+To mitigate this problem, we run read queries on aggregated data
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+Raw data served as backup data
+\item
+We usually don't need to query raw data unless recalculation is needed
+\item
+Old raw data could be moved to cold storage to reduce costs
+\end{itemize}
+\item
+Aggregated data serves as active data. It is tune for query performance.
+\end{itemize}
+
+
 \end{document}
