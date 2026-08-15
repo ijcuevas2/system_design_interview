@@ -6941,4 +6941,119 @@ Below shows what the raw data looks like in log files:
 
 \lstinline|[AdClickEvent] ad001, 2021-01-01 00:00:01, user 1, 207.148.22.22, USA|
 
+Table 6.7 lists what the data fields look like in a structured way.
+
+Data is scattered in different application servers.
+
+\begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{2cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_timestamp| & \lstinline|user_id| & \lstinline|ip| & \lstinline|country| \\
+\hline
+ad001 & 2021-01-01 00:00:01 & user1 & 207.148.22.22 & USA \\
+\hline
+ad001 & 2021-01-01 00:00:02 & user1 & 207.148.22.22 & USA \\
+\hline
+ad002 & 2021-01-01 00:00:02 & user2 & 209.153.56.11 & USA \\
+\hline
+\end{tabular}
+
+\subsection{Aggregated data}
+
+Assume that ad lick events are aggregated every minut. Table 6.8 shows the aggregated result.
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_minute| & count \\
+\hline
+ad001 & 202101010000 & 5 \\
+\hline
+ad001 & 202101010001 & 7 \\
+\hline
+\end{tabular}
+
+Table 6.8: Aggregated data
+
+To support ad filtering, we add an additional field called \lstinline|filter_id| to the table. Records with the same \lstinline|ad_id| and \lstinline|click_minute| are grouped by
+\lstinline|filter_id| as shown in Table 6.9, and filters are defined in table 6.10.
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\lstinline|ad_id| & \lstinline|click_minute| & \lstinline|filter_id| & count \\
+\hline
+ad001 & 202101010000 & 0012 & 2 \\
+\hline
+ad001 & 202101010000 & 0023 & 3 \\
+\hline
+ad001 & 202101010001 & 0012 & 1 \\
+\hline
+ad001 & 202101010001 & 0023 & 6 \\
+\hline
+\end{tabular}
+Table 6.9: Aggregated data with filters
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+\lstinline|filter_id| & region & ip & \lstinline|user_id| \\
+\hline
+0012 & US & 0012 & * \\
+\hline
+0013 & * & 0023 & 123.1.2.3 \\
+\hline
+\end{tabular}
+
+To support the query to return the top N most clicked ads in the last M minutes, the following structure is used.
+
+\lstinline|Most_clicked_ads|
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|window_size| & integer & The aggregation window size (M) in minutes \\
+\hline
+\lstinline|update_time_minute| & timestamp & Last updated timestamp in (1-minute granualy) \\
+\hline
+\lstinline|most_clicked_ads| & array & List of ad IDs in JSON format \\
+\hline
+\end{tabular}
+
+Table 6.11: Support top N most clicked ads in the last M minutes
+
+\subsection{Comparison}
+
+The comparison between storing raw data and aggregated data is shown below.
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+ & Raw data only & Aggregated data only \\
+\hline
+ Pros &
+\begin{itemize}
+\item full data set
+\item support data filter and recalculation
+\end{itemize} &
+\begin{itemize}
+\item
+Smaller data set
+\item
+Fast query
+\end{itemize} \\
+\hline
+Cons
+&
+\begin{itemize}
+\item
+Huge data storage
+\item
+Slow query
+\end{itemize}
+&
+\begin{itemize}
+\item
+Data loss. This is derived data.
+For example, 10 entries might be aggregated to 1 entry
+\end{itemize}
+\\
+\hline
+\end{tabular}
+
+
 \end{document}
