@@ -7774,6 +7774,50 @@ We have already sicussed how to scale the message queue extensively in the ``Dis
 
 When there are hundreds of Kafka consumers in the system, consumer rebalance can be quite slow and could take a few minutes or even more.
 
-  Therefore, if more consumers need to be added, try to do it during off-peak hours to minimize impact.
+Therefore, if more consumers need to be added, try to do it during off-peak hours to minimize impact.
+
+\subsubsection{Brokers}
+
+\begin{itemize}
+\item
+\textbf{Hashing key}
+
+\begin{itemize}
+\item
+
+Using \lstinline|ad_id| as hashing key for Kafka parttion to store
+events from the same \lstinline|ad_id| in the same Kafka partition.
+\item
+In this case an aggregation service can subscribe to all events of the same \lstinline|ad_id| from one single partition.
+\end{itemize}
+
+\item
+\textbf{The number of partitions}
+\item
+
+\begin{itemize}
+\item
+If the number of partitions changes, events of the same \lstinline|ad_id| might be mapped to a different partition
+\item
+Therefore it's recommended to pre-allocate enough partitions in advance, to avoid dynamically incre4asing the number of partitions in production.
+\end{itemize}
+
+\textbf{Topic physical sharding}
+
+\begin{itemize}
+\item
+One single topic is not enough. We can split the data by geography (\lstinline|topic_north_america, topic_europe, topic_asia|, etc.) or by business type (\lstinline|topic_web_ads, topic_mobile_ads|, etc.)
+\end{itemize}
+
+\begin{itemize}
+\item
+Pros: slicing data to different topics can help increase the system throughput. WIth fewer consumers for a single topic, the time to rebalance consumer groups is reduced
+\item
+Cons: It introduces extra complexitiy and increases maintenance costs.
+\end{itemize}
+
+\end{itemize}
+
+
 
 \end{document}
