@@ -8325,9 +8325,152 @@ From the back-of-the-envelope estimation, we know the scale of the system is not
 
 With these requirements in mind, we choose a relational database because:
 
-\begin{itemize}
+\begin{enumerate}
 \item
 
+\begin{itemize}
+\item
+A relational database works well with read-heavy and write less frequently workflow
+\item
+This is because the number of users who visti the hotel webiste/apps is a few orders of magnitude higher than those who actually make reservations
+\item
+NoSQL databses are generally optimized for writes and the relational databse works well enough for read-heavy workflow
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+A relational database provides ACID (atomicity, consistency, isolation, durability) guarantees
+\item
+ACID properties are important for a reservation system
+\item
+With those properties, it's not easy to prevent problems such as negative balance, double charge, double reservations, etc.
+\item
+ACID properties make application code a lot simpler and make the whole system easier to reason about that
+\item
+A relational databse usually provides these guarantees
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+A relational database can easily model the data
+\item
+The structure of the business data is very clear and the relationship between different entities (\lstinline|hotel|, \lstinline|room|, \lstinline|room_type|, etc) is stable
+\item
+This kind of data model is easily modeled by a relational database
+\end{itemize}
+\end{enumerate}
+
+Now that we have chosen the relational database as our data store, let's explore the schema design. Figure 7.2 shows a striaghtforward schema design and it is the most natural way for many candidates to model the hotel reservation system.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Most attributes are self-explanatory and we will only explain the \lstinline|status| field in the reservation table. The \lstinline|status| field can be in one fo these states: \lstinline|pending|, \lstinline|paid|, \lstinline|refunded|, \lstinline|canceled|, \lstinline|rejected|.
+
+The state machine is shown in Figure 7.3.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This schema design has a major issue.
+
+\begin{itemize}
+\item
+This data model works for compnaies like Airbnb as \lstinline|room_id| (might be called \lstinline|listing_id|) is given when users make reservations
+\item
+However, this isn't the case for hotels
+\item
+A user actually reservers a \textbf{a type of room} in a given hotel instread of a specific room
+\item
+For instance, a room type can be a standard room, king-size room, queen-size room with two queen beds, etc.
+\item
+Room numbers are given when the guest checks in and not at the time of the reservation
+\item
+We need to update our data model to reflect this new requirement.
+\item
+See ``Improved data model'' in the deep dive section
+\end{itemize}
+
+\subsection{High-level design}
+
+We use the microservice architecture for this hotel reservation system.
+
+\begin{itemize}
+\item
+Over the past few years, microservice architecture has gained great popularity
+\item
+Companies that use microservice include Amazon, Netflix, Uber, Airbnb, Twitter, etc.
+\item
+If you want to learn more about the benefits of a microservice architecture, you can checkout some good resources
+\end{itemize}
+
+Our design is modeled with the microservice architecture and the high-level design diagram is shown in Figure 7.4.
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+We will briefly go over each component of the system from top to bottom:
+
+\begin{itemize}
+\item
+User: a user books a hotel room on their mobile phone or computer
+\item
+Admin (hotel staff): authorized hotel staff perform administrative operations such as refunding a customer, canceling a reservation, updating room information, etc.
+\item
+CDN (content delivery network): for better load time, CDN is used to cache all static assets, including javascript bundles, images, videos, HTML, etc.
+\item
+Public API Gateway:
+
+\begin{itemize}
+\item
+this is a fully managed service that supports rate limiting, authentication, etc.
+\item
+The API gateway is configured to direct requests to specific services based on the endpoints
+\item
+For example, requests to load the hotel homepage are directed to the hotel service and requests to book a hotel room are routed to the reservation service
+\end{itemize}
+\item
+Internal APIs: those APIs are only available for authorized hotel staff. They are accessible through internal software or websites. They are usually further protected by a VPN (virtual private network)
+\item
+Hotel Service: this provides detailed information on hotels and rooms. Hotel and room data are generally static, so can be easily cached
+\item
+
+\begin{itemize}
+\item
+Rate service: this provides room rates for different future dates
+\item
+An interesting fact about the hotel industry is that the price of a room depends on how full the hotel is expected to be for a given day
+\end{itemize}
+
+\item
+Reservation Service:
+
+\begin{itemize}
+\item
+receives reservation requests and reserves the hotel rooms
+\item
+This service also tracks rooom inventory as rooms are reserved or reservations are canceled
+\end{itemize}
+
+\item
+Payment Service: executes payment from a customer and updates the reservation status to \lstinline|paid| once a payment trasacation succeeds, or \lstinline|rejected| if the transaction fails
 \end{itemize}
 
 
