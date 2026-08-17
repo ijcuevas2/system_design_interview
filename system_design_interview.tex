@@ -7836,6 +7836,234 @@ Here is an interesting question; how do we increase the throughput of the aggreg
 
 There are two options.
 
+Option 1: allocate events with different \lstinline|ad_ids| to different threads, as shown in Figure 6.23.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_23}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+Option 2: Deploy aggregation service nodes on resource provides like Apache Hadoop YARN [20]. YOu can think of this approach as utilizing multi-processing.
+
+Option 1 is easier to implement and doesn't depend on resource providers. In reality, however, option 2 is more widely used because we can scale the system by adding more computing resources.
+
+\subsection{Scale the database}
+
+Cassandra natively supports horizontal scaling in a way similar to consistent hashing.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Data is evenly distributed to every node with a proper replication factor.
+
+\begin{itemize}
+\item
+Each node saves its own part of the ring based on a hashed value and also saves copies from other virtual nodes
+\item
+If we add a new node to the cluster, it automatically rebalances the virtual nodes among all nodes.
+\item
+If we add a new node to the cluster, it autmatically rebalances the virtual nodes among all nodes
+\item
+No manual resharding is required
+\item
+See Cassandra's official documentation for more details [21]
+\end{itemize}
+
+\subsection{Hotspot issue}
+
+A shard or service that receives much more data than the others is called a hotspot
+
+\begin{itemize}
+\item
+This occurs because major compnaies have advertising budgeets in the millions of dollars and their ads are clicked more often
+\item
+Since events are partitioned by \lstinline|ad_id|, some aggreation service nodes might receive man more ad click events than others, potentially causing server overload
+\end{itemize}
+
+This problem can be mitigated by allocating more aggregation nodes to process popular ads. Let's take a look at an example as shown in Figure 6.25. Assume each aggregation node can handle only 100 events.
+
+\begin{enumerate}
+\item
+Since there are 300 events in the aggregatino node (beyond the capacity of a node can handle), it applies for extra resources throught he resource mananger
+\item
+The resource mamanger allocates more resources (for example, add two more aggregation nodes) so the original aggregation node isn't overloaded
+\item
+The original aggregation node split events into 3 groups and each aggregation node handles 100 events
+\item
+The result is written back to the original aggregate node.
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_25}
+    \caption{}
+  \end{center}
+\end{figure}
+
+There are more sophisticated ways to handle this problem, such as Global-Local Aggregation or Split Distinct Aggregation. For more information, please refer to [22].
+
+\subsubsection{Fault tolerance}
+
+Let's discuss the fault tolerance of the aggregation service.
+
+\begin{itemize}
+\item
+Since aggregation happens in memory, when an aggregation node goes down, the aggregated result is lost as well
+\item
+We can rebuild the count by replaying events from upstream Kafka brokers
+\item
+Replaying data from the beginning of Kafka is slow
+\item
+A good practice is to save the ``system status'' like upstream offset to a snapshot and reover from the last saved status
+\item
+In our design, the ``system status'' is more than just the upstream offset because we need to store data like top \lstinline|N| most cliekd ads in the past \lstinline|M| minutes.
+\end{itemize}
+
+Figure 6.26 shows a simple example of what the data looks like in a snapshot.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_26}
+    \caption{}
+  \end{center}
+\end{figure}
+
+With a snapshot, the failover process of the aggregation service is quite simple.
+
+\begin{itemize}
+\item
+If the aggregation service node fails, we bring up a new node and recover data form the latest snapshot (Figure 6.27)
+\item
+If there are new events that arrive after the last snapshot was taken, the new aggregation node will pull those data from the Kafka broker for replay
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_27}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Data monitoring and correctness}
+
+As mentioned earlier, aggregation results can be used for RTB and billing purposes. It's critical to monitor the system's health and to ensure correctness.
+
+\subsubsection{Continouous monitoring}
+
+Here are some metrics we might want to monitor:
+
+\begin{itemize}
+\item
+Latency.
+
+\begin{itemize}
+\item
+Since latency can be introduced at each stage, it's invaluable to track timestamps as events flow through different parts of the system
+\item
+The differences between those timestamps can be exposed as latency metrics
+\end{itemize}
+
+\item
+Message queue size.
+
+\begin{itemize}
+\item
+If there is a sudden increase in queue size, we may need to add more aggregation nodes
+\item
+Notice that Kafka is a message queue implemented as a distributed commit log, so we need to monitor the records-lag metrics instead
+\item
+System resources on aggregation nodes: CPU, disk, JVM, etc.
+\end{itemize}
+\end{itemize}
+
+
+\subsection{Reconciliaton}
+
+Reconciliation means comparing different sets of data in order to ensure data integrity.
+
+\begin{itemize}
+\item
+Unlike reconciliation in the baking industry, where you can compare your records with the bank's records, teh result of ad click aggregation has no thiird-party result to reconcile with.
+\item
+WHat we can do is sort the ad click events by event time in every partition at the end of the day, by using a batch job and reconciling witht the real-time aggregation result.
+\item
+If we have higher accuracy requirements, we can use a smaller aggregation window; for example, one hour
+\item
+Please note, no matter which aggregation window is used, the result from the batch job might not match exactly with the real-time aggregation result, since some events might arrive late (see ``Time'' section on page 175)
+\end{itemize}
+
+Figure 6.28 shows the final design diagram with reconciliation support.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_28}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Alternative design}
+
+In a generalist system design interview, you are not execpted to know the internals of different pieces of specialized software used in a big data pipeline.
+
+\begin{itemize}
+\item
+Explaining your though process and discussing trade-offs is very important, which is why we propose a generic solution
+\item
+Another option is to store ad lick data in Hive, with an ElasticSearch layer built for faster queries
+\item
+Aggregation is usually done in OLAP databases such as CLickHOuse [23] or Druid [24]. Figure 6.29 shows the architecture.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_29}
+    \caption{}
+  \end{center}
+\end{figure}
+
+For more detail on this, please refer to reference material [25].
+
+\subsection{Step 4: Wrap Up}
+
+In this cahpter, we went through the process of desining an ad click event aggregation system at the scale of Facebook or Google. We covered:
+
+\begin{itemize}
+\item
+Data model and API design
+\item
+Use MapReduce paradigm to aggregate ad lick events
+\item
+Scale the message queue, aggregation service, and database
+\item
+Mitigate hotspot issue
+\item
+Monitor the system continuously
+\item
+Use reconciliation to ensure correctness
+\item
+Fault tolerance
+\end{itemize}
+
+The ad click event aggregation system is a typical big data processing system.
+
+\begin{itemize}
+\item
+It will be easier to undertsna dnd esign if you have prior knowledge or experience with industr standard solutions such as Apache Kafka, Apache Flink, or Apache Spark
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_6_summary}
+    \caption{}
+  \end{center}
+\end{figure}
 
 
 \end{document}
