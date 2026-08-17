@@ -8511,4 +8511,54 @@ There are many benefits to using such frameworks.
 
 To learn more about gPRC in particular, check out [3].
 
+\subsection{Step 3: Design Deep Dive}
+
+Now we've talked about the high-level design, let's go deeper into the following:
+
+\begin{itemize}
+\item
+Improved data model
+\item
+Concurrency issues
+\item
+Scaling the system
+\item
+Resolving data inconsistency in the microservice architecture
+\end{itemize}
+
+\subsection{Improved data model}
+
+As mentioned in the high-level design, when we reserve a hotel room, we actually reserve a type of room, as opposed to a specific room.
+
+What do we need to change about the API and schema to accommodate this?
+
+For the reservat  on API, \lstinline|roomID| is replaced by \lstinline|roomTypeID| in the request parameter.
+
+THe API to make a sreservation looks like this:
+
+\lstinline|POST /v1/reservations|
+
+Request parameters
+\begin{lstlisting}
+{
+  "startDate": "2021-04-28",
+  "endDate": "2021-04-30",
+  "hotelID": "245",
+  "roomTypeId": "12354673389",
+  "reservationID": "13422445",
+}
+\end{lstlisting}
+
+The updated schema is shown in Figure 7.6.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+We'll briefly go over some of the most important tables.
+
+\textbf{room}: contains information regarding a room.
 \end{document}
