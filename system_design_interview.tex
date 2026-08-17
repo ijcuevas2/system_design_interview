@@ -8149,7 +8149,52 @@ The price of a hotel room depends on how full the hotel is expected to be on a g
 For this interview, we can assume the price could be different each day
 \end{itemize}
 
+\textbf{Candidate}: I'll keep this in mind
 \end{enumerate}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Support high concurrency. During peak season or big events, some popular books may have a lot of customers trying to book the same room
+\item
+Moderate latency. It's ideal to have a fast response time when a user makes the reservation, but it's acceptable if the system takes a few seconds to process a reservation request.
+\end{itemize}
+
+\subsection{Back-of-the-envelope estimation}
+
+\begin{itemize}
+\item
+5000 hotels and 1 million hotels in total
+\item
+Assume 70\% of the rooms are occupied and the average stay duration is 3 days
+\item
+Estimated daily reservations: $\frac{1 \text{ million} \times 0.7}{3}$ = 233,333 (rounding up to $\sim$ 240,000)
+\item
+Rservations per second = $\frac{240000}{10^{5} \text{ seconds in a day}} = \sim 3$. As we can see, the average reservation transaction per second (TPS) is not high.
+\end{itemize}
+
+Next, let's do a rough calculation of the QPS of all pages in the system. There are three steps in a typical customer flow:
+
+\begin{enumerate}
+\item
+View hotel/room detail page. Users browse this page (query).
+\item
+View the booking page. Users can confirm the booking details, such as dates, number of guests, payment information before booking (query)
+\item
+Reserve a room. Users click on the ``book'' button to book the room and the room is reserved (transaction)
+\end{enumerate}
+
+Let's assume around 10\% of the users reach the next step and 90\% of users drop off the flow before reaching the final step.
+
+\begin{itemize}
+\item
+We can also assume that no prefetching feature (prefetching the content before the user reachces the next step is implemented figure 7.1 shows a rough esimation of waht the QPS looks like for different steps)
+\item
+We know the final reservation TPS is 3 so we can work backward along the funnel
+\item
+The QPS of the order confirmation page is 30 and the QPS for the detail page is 300
+\end{itemize}
 
 
 \end{document}
