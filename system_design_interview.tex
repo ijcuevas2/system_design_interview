@@ -8081,4 +8081,75 @@ Design a flight reservation system
 Design a movie ticket boooking system
 \end{itemize}
 
+\subsection{Step 1: Understand the Problem and Establish DEsign Scope}
+
+The hotel reservation system is complicated and its component vary based on business use cases. Before diving into the design, we should ask the itnerviewer clarification questions to narrow down the scope.
+
+\begin{enumerate}
+\item
+\textbf{Candidate}: WHat is the scale of the system?
+
+\textbf{Interviewer}: Let's assume we are building a website for a hotel chain that has 5000 hotels and 1 million rooms in total.
+
+\item
+\textbf{Candidate}: Do customers pay when they make reservations or when they arrive at the hotel?
+
+\textbf{Interviewer}: For simplicity, they pay in full when they make reservations.
+\item
+\textbf{Candidate}: Do customers book hotel rooms through the hotel's website only? Do we need to support other reservation options such as phone calls?
+
+\textbf{Interviewer}: Let's assume people could book a hotel room through the hotel website or app?
+
+\item
+\textbf{Candidate}: Can customers cancel their reservations?
+
+\textbf{Interviewer}: Yes.
+
+\item
+\textbf{Candidate}: Are there any other thigns we need to consider?
+
+\textbf{Interviewer}:
+\begin{itemize}
+\item
+Yes, we allow 10\% overbooking
+\item
+In case you do not know, overbooking means the hotel will sell more rooms than they actually have
+\item
+Hotels do this in anticipation that some customers will cancel their reservations
+\end{itemize}
+
+\item
+
+\textbf{Candidate}: SInce we have limited time, I assume the hotel room search is not in scope. We focus in the following features.
+
+\begin{itemize}
+\item
+Show the hotel-related page
+\item
+Show the hotel room-related detail page
+\item
+Reserve a room
+\item
+Admin panel to add/remove/update hotel or room infor
+\item
+Support the overbooking feature.
+\end{itemize}
+
+\textbf{Interviewer}: Sounds good.
+
+\item
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+One more thign, hotel prices change dynamically
+\item
+The price of a hotel room depends on how full the hotel is expected to be on a given day
+\item
+For this interview, we can assume the price could be different each day
+\end{itemize}
+
+\end{enumerate}
+
+
 \end{document}
