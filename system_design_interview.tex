@@ -8471,7 +8471,44 @@ This service also tracks rooom inventory as rooms are reserved or reservations a
 
 \item
 Payment Service: executes payment from a customer and updates the reservation status to \lstinline|paid| once a payment trasacation succeeds, or \lstinline|rejected| if the transaction fails
+
+\item
+Hotel Management Service:
+
+\begin{itemize}
+\item
+only available to authorized hotel staff
+\item
+Hotel staff are eligible to use the follow features: view the record of an upcoming reservation, reserve a room for a customer, cancel a reservation, etc.
+\end{itemize}
 \end{itemize}
 
+For clarity, Figure 7.4 omits many arrows of interactions between microservices.
+
+\begin{itemize}
+\item
+FOr example, as shown in Figure 7.5, there should be an arrow between Reservation service and Rate service
+\item
+Rservation service queries Rate service for room rates
+\item
+THis is used to compute the total room charge for a reservation
+\item
+ANother example is that there should be many arrows connecting the Hotel Management Service with most o fthe other services
+\item
+When an admin makes changes via Hotel Management Service, the requests are forwarded to the actual service woning the data, to handle the changes
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+For production systems, inter-service communication often eomploys a modern and high-performance rmote produce call (RPC) framework like gPRC.
+
+There are many benefits to using such frameworks.
+
+To learn more about gPRC in particular, check out [3].
 
 \end{document}
