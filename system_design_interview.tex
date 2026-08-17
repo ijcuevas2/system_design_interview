@@ -7682,4 +7682,98 @@ If an aggregation service node goes down in the middle of aggregation and the up
 
 Figure 6.17 shows how the aggregation service node (Aggregator) outage introduces duplicate data. The Aggregator managers the status of data consumption by storing the offset in upstream Kafka.
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+If step 6 fails, perhaps due to Aggregator outage, events from 100 to 110 are already sent to the downstream, but the new offset 110 is not persisted in upstream Kakfa.
+\item
+In this case, a new Aggregator would consume again from offset 100, even if those events are already processed, causing duplicate data
+\item
+The most straightforward data solution (Figure 6.18) is to use external file storage, such as HDFS or S3, to record the offset
+\item
+However, this solution has issues as well.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In step 3, the aggregator will process events from offset 100 to 110, only if the last offset stored in external storage is 100.
+
+\begin{itemize}
+\item
+If the offset stoored in the storage is 110, the aggregator ignores events before offset 110
+\item
+But this design has a major problem: the offset is saved to HDFS or S3 (step 3.2) before the aggregation result is sent downstream
+\item
+If step 4 fails due to Aggregator outage, events from 100 to 110 wil never be processed ba newly brought up aggregator node, since the offset stored in external storage is 110
+\item
+To avoid data loss, we need to save the offset once we get an acknowledgment back from downstream
+\item
+The updated design is shown in Figure 6.19
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this design, if the Aggregator is down before step 5.1 is executed, events from 100 to 110 will be sent downstream again.
+
+\begin{itemize}
+\item
+TO achieve exactly once processing, we need to put operations between step 4 to step 6 in one distributed transaction
+\item
+A distributed transaction is a transaction that works across sveveral nodes
+\item
+If an of the operations fails, the whole transaction is rolled back
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+As you can see it's not easy to dedupe data in large-scale systems. How to achieve exactly-once processing is an advanced topic. If you are interested in the details, please refer to reference material [9].
+
+\subsection{Scale the system}
+
+From the back-of-the-envelope estimation, we know the business grows 30\% per year, which doubles traffic every 3 years.
+
+How do we handle this growth? Let's take a look.
+
+Our system consits of three independent components: message queue, aggregation service, and database. Since these components are decoupled, we can scale each one idependently.
+
+\subsection{Scale the message queue}
+
+We have already sicussed how to scale the message queue extensively in the ``Distributed Message Queue'' chapter, so we'll only briefly touch on a few points.
+
+\textbf{Producers}: We don't limit the number of producer instances, so the scalability orf producers can be easily achieved.
+
+\textbf{Consumers}: Inside a consumer group, the rebalancing mechanism helps to scale the consumers by adding or removing nodes. As shown in FIgure 6.21, by adding two more consumers, each consumer only processes events form one partition.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+When there are hundreds of Kafka consumers in the system, consumer rebalance can be quite slow and could take a few minutes or even more.
+
+  Therefore, if more consumers need to be added, try to do it during off-peak hours to minimize impact.
+
 \end{document}
