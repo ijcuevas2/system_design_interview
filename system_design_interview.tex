@@ -7815,8 +7815,26 @@ Pros: slicing data to different topics can help increase the system throughput. 
 \item
 Cons: It introduces extra complexitiy and increases maintenance costs.
 \end{itemize}
-
 \end{itemize}
+
+\subsection{Scale the aggregation service}
+
+In the high-level design, we talked about the aggregation service being a map/reduce operation. Figure 6.22 shows how thigns are wired together.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_6_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+If you are interested in the details, please refer to reference material [19].
+
+Aggregation service is horizontally scalable by adding or removing nodes.
+
+Here is an interesting question; how do we increase the throughput of the aggregation service?
+
+There are two options.
 
 
 
