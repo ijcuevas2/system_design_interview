@@ -8196,5 +8196,118 @@ We know the final reservation TPS is 3 so we can work backward along the funnel
 The QPS of the order confirmation page is 30 and the QPS for the detail page is 300
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+IN this section, we'll discuss:
+
+\begin{itemize}
+\item
+API design
+\item
+Data models
+\item
+High-level design
+\end{itemize}
+
+\subsection{API design}
+
+We explore the API design for the hotel reservation system. The most important APIs are listed below using RESTful conventions.
+
+\begin{itemize}
+\item
+Note that this chapter focuses on the design of a hotel reservation system.
+\item
+For a complete hotel website, the design needs to provide intuitive features for customers to search for rooms based on a large array of criteria
+\item
+The APIs for these search features, while important are not technically challenging
+\item
+They are out of scope for this chapter
+\end{itemize}
+
+\subsection{Hotel-related APIs}
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+API & Detail \\
+\hline
+GET \lstinline|/v1/hotels/ID| & Get detailed information about a hotel \\
+\hline
+POST \lstinline|/v1/hotels| & Add a new hotel. This API is only available to hotel staff\\
+\hline
+PUT \lstinline|/v1/hotels/ID| & Update hotel information. This API is only available to hotel staff\\
+\hline
+DELETE \lstinline|/v1/hotels/ID| & Delete a hotel. This API is only available to hotel staff\\
+\hline
+\end{tabular}
+
+Table 7.1: Hotel-related APIs
+
+\subsection{Room-related APIs}
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+API & Detail \\
+\hline
+GET \lstinline|/v1/hotels/ID| & Get detailed information about a room \\
+\hline
+POST \lstinline|/v1/hotels/ID/rooms| & Add a room. This API is only available to hotel staff\\
+\hline
+PUT \lstinline|/v1/hotels/ID/rooms/ID| & Update room information. This API is only available to hotel staff\\
+\hline
+DELETE \lstinline|/v1/hotels/ID/rooms/ID| & Delete a room. This API is only available to hotel staff\\
+\hline
+\end{tabular}
+
+Table 7.2: Hotel-related APIs
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+API & Detail \\
+\hline
+GET \lstinline|/v1/reservations| & Get the reservation history of the logged-in user \\
+\hline
+GET \lstinline|/v1/reservations/ID| & Get detailed information about a reservation\\
+\hline
+POST \lstinline|/v1/reservations| & Make a new reservation\\
+\hline
+DELETE \lstinline|/v1/reservations/ID| & Cancel a reservation\\
+\hline
+\end{tabular}
+
+Table 7.3: Reservation-related APIs
+
+Making a new reservation  is a very important feature. THre request parameters of making a new reservation (\lstinline|POST /v1/reservations|) could look like this.
+
+\begin{lstlisting}
+{
+  "startDate": "2021-04-28",
+  "endDate": "2021-04-30",
+  "hotelID": "245",
+  "roomID": "U12354673389",
+  "reservationID": "13422445"
+}
+\end{lstlisting}
+
+\begin{itemize}
+\item
+Please note \lstinline|reservationID| is used as the idempotency key to prevent double booking
+\item
+Double booking means multiple reservations are made for the same room on the same day
+\item
+The details are explained in the ``Concurrency issue'' section on page 206
+\end{itemize}
+
+\subsection{Data model}
+
+Before we decide which database to use, let's take a close look at the data access patterns.
+
+For the hotel reservation system, we need to support the following queries.
 
 \end{document}
