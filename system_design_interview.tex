@@ -9219,4 +9219,41 @@ FOr a hotel reservation syste, the volume of read operations (check room invento
 Most of the read operations are answered by the cache.
 
 \textbf{Inventory DB}: stores invetory data as the source of truth.
+
+\subsection{New challenges posed by the cache}
+
+Adding a cahce layer significantly increases the system scalability and throughput, but it also introduces a new challenge: how to maintain data consistency between the database and the cache.
+
+When a user boooks a room, two operations are executed in the happy path:
+
+\begin{enumerate}
+\item
+
+Query room invetory to find out if there are enough rooms left. THe query runs on the Inventory cache.
+
+\item
+
+\begin{itemize}
+\item
+Update inventory data
+\item
+The inventory DB is updated first
+\item
+The change is tehn propagated to the cache asynchronously
+\item
+This asynchrnous cache update could be invoked by the application code, which updates the invetory cache after data is saved to the database
+\item
+It could also be propagated using change data capture (CDC) [8]
+\item
+CDC is a mechnaism that reads data changes fomr the database and applies the changes to another data system
+\item
+One common solution is Debezium [9]
+\item
+It uses a source connector to read changes from a database and applies them to cache solutions such as Redis [10]
+\end{itemize}
+
+
+\end{enumerate}
+
+
 \end{document}
