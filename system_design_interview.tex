@@ -8687,5 +8687,34 @@ ONe of the requirements is to support 10\% overbooking. With the new schema, it 
 if ((total_reserved + ${numberOfRoomsToReserve} <= 100% * total_inventory))
 \end{lstlisting}
 
+\end{itemize}
+
+At this point, the interviewer might ask a follow-up question: ``if the reservation data is too large for a single database, what would you do?''
+
+There are a few strategies:
+
+\begin{itemize}
+\item
+Store only current and future reservation data. Reservation history is not frequently accessed. SO they can be archived and some can even be moved to cold storage.
+\item
+
+\begin{itemize}
+\item
+Database sharding
+
+\begin{itemize}
+\item
+The most frequent queries include making a reservation or looking up a reservation by name
+\item
+In both queries include making a reservation or looking up a reservation by name
+\item
+In both queries, we need to choose the hotel first, meaning \lstinline|hotel_id| is a good sharding key
+\item
+The data can be sharded by \lstinline|hash(hotel_id) % number_of_servers|
+\end{itemize}
+
+\end{itemize}
+
+
 
 \end{document}
