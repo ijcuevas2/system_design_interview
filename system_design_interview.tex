@@ -9253,7 +9253,48 @@ It uses a source connector to read changes from a database and applies them to c
 \end{itemize}
 
 
+Because the inveotry data is updated on the database first, there is a possibility that the cache does not reflect the latest invetory data.
+
+\begin{itemize}
+\item
+For example, the cache may report there is still an empty room when the database says there is no room left or vice versa
+\item
+If you think carefully, you find that the inconsistentcy between invoetyr cache and database actually  does not matter, as long as the databse does the final inventory validation check
+\end{itemize}
+
+\item
+Let's take a look an example.
+
+\begin{itemize}
+\item
+Let's say the cache says there is still an emtpy room, but the database says no
+\item
+IN this case, when the user queries the room inventory, they find there is still room available, so they try to reserve it
+\item
+When the request reaches the inveotry databse, the database does the validation and finds that there is no room left
+\item
+In this case, the client receives an error, indicating someone else just booked the last room before them
+\item
+WHen a user refreshes the website, they probably see there i sno room left because the databse has synchronized invetory data to the cache, before they click the refresh button
+\end{itemize}
 \end{enumerate}
+
+\subsection{Pros}
+
+\begin{itemize}
+\item
+Reduced database load. Since read queries are answered by the cache layer, database load is significnatly reduced
+\item
+High performance: Read quries are very fast because reuslts are fetched from memory.
+\end{itemize}
+
+\subsection{Cons}
+
+\begin{itemize}
+\item
+Maintaining data consistency between the database and cache is hard. We need to think carefully about how this incosistency affects user experience.
+\end{itemize}
+
 
 
 \end{document}
