@@ -8881,5 +8881,25 @@ Transaction 1 succesfully commits the change
 Transaction 2 successfully commits the change
 \end{enumerate}
 
+The solution to this problem generally requires some form of locking mechanism. We explore the following techniques:
+
+\begin{itemize}
+\item
+Pessimistic locking
+\item
+Optimistic locking
+\item
+Database constraints
+\end{itemize}
+
+Before jumping into a fix, let's take a look at the SQL pseudo-code utlized to reserve a room. The SQL has two parts:
+
+\begin{itemize}
+\item
+Check room inventory
+\item
+Reserve a room
+\end{itemize}
+
 
 \end{document}
