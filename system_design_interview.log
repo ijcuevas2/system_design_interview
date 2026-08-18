@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  17 AUG 2026 16:51
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  17 AUG 2026 22:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1517,18 +1517,6 @@ Overfull \hbox (21.63303pt too wide) in paragraph at lines 5819--5830
  []
 
 [147 <./images/figure_5_3.jpg>]
-./system_design_interview.tex:5865: Undefined control sequence.
-\A ->\ERROR 
-            
-l.5865 \A
-          metric name & String \\
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-
 Overfull \hbox (21.63303pt too wide) in paragraph at lines 5861--5872
 [][] 
  []
@@ -1683,39 +1671,14 @@ File: images/figure_5_19.jpg Graphic file (type jpg)
 <use images/figure_5_19.jpg>
 Package pdftex.def Info: images/figure_5_19.jpg  used on input line 6555.
 (pdftex.def)             Requested size: 276.00105pt x 112.78915pt.
-
-./system_design_interview.tex:6566: Missing $ inserted.
-<inserted text> 
-                $
-l.6566 - name: instance_
-                        down
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-./system_design_interview.tex:6567: Missing $ inserted.
-<inserted text> 
-                $
-l.6567 
-       
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-./system_design_interview.tex:6569: You can't use `macro parameter character #'
- in horizontal mode.
-l.6569 #
-         Alert for any instance that is unreachable for >5 minutes
-Sorry, but I'm not programmed to handle this case;
-I'll just pretend that you didn't ask for it.
-If you're in the wrong mode, you might be able to
-return to the right one by typing `I}' or `I$' or `I\par'.
-
-[166 <./images/figure_5_19.jpg>]
+ [166 <./images/figure_5_19.jpg>]
 <images/figure_5_21.jpg, id=654, 5015.98969pt x 4560.53813pt>
 File: images/figure_5_21.jpg Graphic file (type jpg)
 <use images/figure_5_21.jpg>
 Package pdftex.def Info: images/figure_5_21.jpg  used on input line 6624.
 (pdftex.def)             Requested size: 276.00105pt x 250.93475pt.
- [167] [168 <./images/figure_5_21.jpg>]
+ [167]
+[168 <./images/figure_5_21.jpg>]
 <images/figure_5_22.jpg, id=661, 5916.35344pt x 3072.22781pt>
 File: images/figure_5_22.jpg Graphic file (type jpg)
 <use images/figure_5_22.jpg>
@@ -1727,15 +1690,13 @@ File: images/chapter_5_summary.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/chapter_5_summary.jpg  used on input line 6665.
 
 (pdftex.def)             Requested size: 276.00105pt x 367.9362pt.
-
-[169 <./images/figure_5_22.jpg>] [170 <./images/chapter_5_summary.jpg>]
+ [169 <./images/figure_5_22.jpg>] [170 <./images/chapter_5_summary.jpg>]
 <images/figure_6_1.jpg, id=670, 5612.97pt x 1093.08376pt>
 File: images/figure_6_1.jpg Graphic file (type jpg)
 <use images/figure_6_1.jpg>
 Package pdftex.def Info: images/figure_6_1.jpg  used on input line 6691.
 (pdftex.def)             Requested size: 276.00105pt x 53.74004pt.
-
-[171
+ [171
 
  <./images/figure_6_1.jpg>]
 Overfull \hbox (8.21272pt too wide) in paragraph at lines 6725--6726
@@ -1758,22 +1719,6 @@ Overfull \hbox (21.63303pt too wide) in paragraph at lines 6858--6865
 Overfull \hbox (34.03304pt too wide) in paragraph at lines 6868--6879
 [][] 
  []
-
-./system_design_interview.tex:6888: Missing $ inserted.
-<inserted text> 
-                $
-l.6888 ad_
-          id & The identifier of the ad & string \\
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-./system_design_interview.tex:6888: Missing $ inserted.
-<inserted text> 
-                $
-l.6888 ad_id &
-               The identifier of the ad & string \\
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
 
 
 Overfull \hbox (34.03304pt too wide) in paragraph at lines 6884--6893
@@ -2086,4 +2031,135 @@ Package pdftex.def Info: images/figure_6_28.jpg  used on input line 8006.
 File: images/figure_6_29.jpg Graphic file (type jpg)
 <use images/figure_6_29.jpg>
 Package pdftex.def Info: images/figure_6_29.jpg  used on input line 8026.
-(
+(pdftex.def)             Requested size: 276.00105pt x 115.1469pt.
+ [205 <./images/figure_6_28.jpg>]
+<images/chapter_6_summary.jpg, id=811, 3733.95pt x 6071.43282pt>
+File: images/chapter_6_summary.jpg Graphic file (type jpg)
+<use images/chapter_6_summary.jpg>
+Package pdftex.def Info: images/chapter_6_summary.jpg  used on input line 8063.
+
+(pdftex.def)             Requested size: 276.00105pt x 448.76021pt.
+ [206 <./images/figure_6_29.jpg>]
+[207 <./images/chapter_6_summary.jpg>] [208
+
+] [209]
+<images/figure_7_1.jpg, id=824, 4168.32281pt x 2612.25937pt>
+File: images/figure_7_1.jpg Graphic file (type jpg)
+<use images/figure_7_1.jpg>
+Package pdftex.def Info: images/figure_7_1.jpg  used on input line 8201.
+(pdftex.def)             Requested size: 276.00105pt x 172.95174pt.
+ [210]
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 8236--8249
+[] 
+ []
+
+[211 <./images/figure_7_1.jpg>]
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 8254--8267
+[] 
+ []
+
+
+Underfull \hbox (badness 2401) in paragraph at lines 8274--8275
+[]|\OT1/cmr/m/n/10 Get the reser-va-tion his-tory of the
+ []
+
+
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 8270--8283
+[][] 
+ []
+
+[212] [213]
+<images/figure_7_2.jpg, id=838, 4392.66093pt x 3394.43156pt>
+File: images/figure_7_2.jpg Graphic file (type jpg)
+<use images/figure_7_2.jpg>
+Package pdftex.def Info: images/figure_7_2.jpg  used on input line 8371.
+(pdftex.def)             Requested size: 276.00105pt x 213.23914pt.
+<images/figure_7_3.jpg, id=839, 4470.95343pt x 2557.30406pt>
+File: images/figure_7_3.jpg Graphic file (type jpg)
+<use images/figure_7_3.jpg>
+Package pdftex.def Info: images/figure_7_3.jpg  used on input line 8382.
+(pdftex.def)             Requested size: 276.00105pt x 157.84102pt.
+ [214 <./images/figure_7_2.jpg>]
+<images/figure_7_4.jpg, id=843, 3804.71437pt x 2496.32625pt>
+File: images/figure_7_4.jpg Graphic file (type jpg)
+<use images/figure_7_4.jpg>
+Package pdftex.def Info: images/figure_7_4.jpg  used on input line 8424.
+(pdftex.def)             Requested size: 276.00105pt x 181.08377pt.
+ [215 <./images/figure_7_3.jpg>]
+Overfull \hbox (0.11171pt too wide) in paragraph at lines 8437--8439
+\OT1/cmr/m/n/10 cache all static as-sets, in-clud-ing javascript bun-dles, im-a
+ges, videos, HTML,
+ []
+
+[216 <./images/figure_7_4.jpg>]
+Overfull \hbox (0.69977pt too wide) in paragraph at lines 8473--8474
+\OT1/cmr/m/n/10 reser-va-tion sta-tus to [][][][] once a pay-ment trasaca-tion 
+suc-ceeds, or []
+ []
+
+<images/figure_7_5.jpg, id=850, 4604.20125pt x 1684.79437pt>
+File: images/figure_7_5.jpg Graphic file (type jpg)
+<use images/figure_7_5.jpg>
+Package pdftex.def Info: images/figure_7_5.jpg  used on input line 8503.
+(pdftex.def)             Requested size: 276.00105pt x 100.98047pt.
+[217 <./images/figure_7_5.jpg>]
+<images/figure_7_6.jpg, id=855, 3186.65532pt x 2708.61937pt>
+File: images/figure_7_6.jpg Graphic file (type jpg)
+<use images/figure_7_6.jpg>
+Package pdftex.def Info: images/figure_7_6.jpg  used on input line 8556.
+(pdftex.def)             Requested size: 276.00105pt x 234.58994pt.
+ [218]
+Overfull \hbox (6.64368pt too wide) in paragraph at lines 8582--8583
+[][][][][]\OT1/cmr/m/n/10 : the to-tal num-ber of rooms booked for the spec-i-f
+ied []
+ []
+
+[219 <./images/figure_7_6.jpg>]
+Overfull \hbox (8.80612pt too wide) in paragraph at lines 8601--8603
+[]\OT1/cmr/m/n/10 That's $5000[] \OMS/cmsy/m/n/10 ^^B \OT1/cmr/m/n/10 20[] \OMS
+/cmsy/m/n/10 ^^B \OT1/cmr/m/n/10 2[] \OMS/cmsy/m/n/10 ^^B \OT1/cmr/m/n/10 365[]
+ = 73[]$ 
+ []
+
+
+Overfull \hbox (92.97621pt too wide) in paragraph at lines 8612--8633
+[][] 
+ []
+
+[220]
+Overfull \hbox (2.91682pt too wide) in paragraph at lines 8662--8663
+[]|\OT1/cmr/m/n/10 total[]reserved| 
+ []
+
+[221] (./system_design_interview.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-01-19>
+ ***********
+ ) 
+Here is how much of TeX's memory you used:
+ 27166 strings out of 467533
+ 631532 string characters out of 5422138
+ 1099504 words of memory out of 5000000
+ 55731 multiletter control sequences out of 15000+600000
+ 631566 words of font info for 54 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 116i,12n,121p,516b,1706s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
+hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
+Output written on system_design_interview.pdf (221 pages, 596077678 bytes).
+PDF statistics:
+ 931 PDF objects out of 1000 (max. 8388607)
+ 530 compressed objects within 6 object streams
+ 0 named destinations out of 1000 (max. 500000)
+ 753 words of extra memory for PDF output out of 10000 (max. 10000000)
+

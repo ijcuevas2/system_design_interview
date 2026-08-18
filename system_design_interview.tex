@@ -5862,7 +5862,7 @@ Every time series consists of the following [9]:
 \hline
 \textbf{Name} & \textbf{Type} \\
 \hline
-\A metric name & String \\
+metric name & String \\
 \hline
 A set of tags/labels & List of \lstinline|<key:value>| pairs \\
 \hline
@@ -6563,10 +6563,10 @@ The alert flow works as follows:
 
 Here is an example of alert rules:
 
-- name: instance_down
+- name: \lstinline{instance_down}
 
 rules:
-# Alert for any instance that is unreachable for >5 minutes
+Alert for any instance that is unreachable for >5 minutes
 -alert: instance down
   expr: up == 0
   for: 5m
@@ -6885,7 +6885,7 @@ Response:
 \hline
 \textbf{Field} & \textbf{Description} & \textbf{Type} \\
 \hline
-ad_id & The identifier of the ad & string \\
+ad\_id & The identifier of the ad & string \\
 \hline
 count & The aggregated count between the start and end minutes & long \\
 \hline
@@ -8561,4 +8561,131 @@ The updated schema is shown in Figure 7.6.
 We'll briefly go over some of the most important tables.
 
 \textbf{room}: contains information regarding a room.
+
+
+\lstinline{room_type_rate}: stores price data for a specifc room type, for future dates
+
+\textbf{reservation}: records guest reservation data
+
+\lstinline{room_type_inventory}:  stores inventory data about hotel rooms. This table is very important for the reservation system, so let's take a close look at each column.
+
+\begin{itemize}
+\item
+\lstinline|hotel_id|: ID of the hotel
+\item
+\lstinline|room_type_id|: ID of a room type
+\item
+\lstinline|date|: a single data
+\item
+\lstinline|total_inventory|: the total number of rooms minus those that are teporarily takes off the inventory. SOMe rooms might be taken off from the market for maintenance
+\item
+\lstinline|total_reserved|: the total number of rooms booked for the specified \lstinline|hotel_id|, \lstinline|room_type_id|, and \lstinline|date|
+\end{itemize}
+
+There are other ways to design the \lstinline|room_type_inventory| table, but having one row per data makes mananging reservations within a data range and queries easy.
+
+\begin{itemize}
+\item
+As shown in FIgure 7.6, (\lstinline|hotel_id|, \lstinline|room_type_id|, \lstinline|data|) is the composite primary key
+\item
+The rows of the table are pre-populated by querying the inveotry data across all future dates within 2 years
+\item
+We have a scheduled daily job that pre-populates inventory data when the dates advance further
+\item
+Now that we've finalized the scema design, let's do some estimation about the storage volume
+\item
+As mentioned in the back-of-the-envelope estimation, we have 5000 hotels
+\item
+Assume each hotel has 20 types of rooms
+\item
+That's $5000 \text{ hotels} \times 20 \text{ types of rooms} \times 2 \text{ years} \times 365  \text{ days} = 73 \text{ million rows}$
+\item
+73 million is not a lot of data and a single database is enough to store the data
+\item
+However, a single server means a single point of failure
+\item
+To acheive high availability, we could set up database replications across multiple regions or availability zones.
+\end{itemize}
+
+Table 7.4 shows the sample data of the \lstinline|room_type_inventory| table.
+
+\begin{tabular}{|p{2cm}|p{3cm}|p{2.2cm}|p{3cm}|p{3cm}|}
+\hline
+\textbf{hotel\_id} & \textbf{room\_type\_id} & \textbf{date} & \textbf{total\_inventory} & \textbf{total\_reserved} \\
+\hline
+211 & 1001 & 2021-06-01 & 100 & 80 \\
+\hline
+211 & 1001 & 2021-06-02 & 100 & 82 \\
+\hline
+211 & 1001 & 2021-06-03 & 100 & 86 \\
+\hline
+211 & 1001 & ... & ... & \\
+\hline
+211 & 1001 & 2023-05-31 & 100 & 0 \\
+\hline
+211 & 1002 & 2023-06-01 & 100 & 0 \\
+\hline
+2210 & 101 & 2021-06-01 & 30 & 23 \\
+\hline
+2210 & 101 & 2021-06-02 & 30 & 25 \\
+\hline
+\end{tabular}
+
+Table 7.4: Sample data of the \lstinline|room_type_inventory| table
+
+The \lstinline|room_type_inventory| table is utilized to check if a customer can reserve a specific type of room or not. THe input and ouput for a reservation might look like this:
+
+\begin{itemize}
+\item
+Input: \lstinline|startData| (2021-07-01), \lstinline|endDate| (2021-07-03), \lstinline|roomTypeId|, \lstinline|hotelId|, \lstinline|numberOfRoomsToReserve|
+\item
+Output: \lstinline|True| if the specified type of room has inventory and users can book it. Otherwise, it returns \lstinline|False|
+\end{itemize}
+
+From the SQL perspective, it contains the following two steps:
+
+\begin{enumerate}
+\item
+Select rows within a data range
+
+\begin{lstlisting}
+SELECT data, total_inventory, total_reserved
+FROM room_type_inveotry
+WHERE room_type_id = ${roomTypeId} and hotel_id = ${hotelId}
+AND data between ${startDate}$ and ${endDate}
+\end{lstlisting}
+
+This query returns data like this:
+
+\begin{tabular}{|p{3cm}|p{3cm}|p{2cm}|}
+\hline
+date & total\_inventory & total\_reserved \\
+\hline
+2021-07-01 & 100 & 97 \\
+\hline
+2021-07-02 & 100 & 96 \\
+\hline
+2021-07-03 & 100 & 95 \\
+\hline
+\end{tabular}
+
+Table 7.5: Hotel inventory
+
+\item
+For each entry, the application checks the condition below:
+
+\begin{lstlisting}
+if ((total_reserved + ${numberOfRoomsToReserve}) <= total_inventory)
+\end{lstlisting}
+\end{enumerate}
+
+If the condition returns \lstinline|True| for all entires, it means there are enough rooms for each data within the data range.
+
+ONe of the requirements is to support 10\% overbooking. With the new schema, it is easy to implement:
+
+\begin{lstlisting}
+if ((total_reserved + ${numberOfRoomsToReserve} <= 100% * total_inventory))
+\end{lstlisting}
+
+
 \end{document}
