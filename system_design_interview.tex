@@ -8961,4 +8961,48 @@ In Figure 7.12, the ``\lstinline|SELECT ... FOR UPDATE|'' statement of transacti
 
 After transaction 1 finishes, \lstinline|total_reserved| becomes 100, which means there is no room for user 2 to book.
 
+\textbf{Pros:}
+
+\begin{itemize}
+\item
+Prevents applications from updating data that is being or has been changed
+\item
+It is easy to implement and it avoids conflict by serializing updates. Pessimistic locking is useful when data contention is heavy.
+\end{itemize}
+
+\textbf{Cons:}
+\begin{itemize}
+\item
+Deadlocks may occur when multiple resrouces are locked. Writing deadlock-free applicaton code could be challenging
+\item
+\begin{itemize}
+\item
+This approach is not scalable
+
+\begin{itemize}
+\item
+If a transaction is locked for too long, other transactions cannot access the resource
+\item
+This has a significant impact on database performance, especially when transactions are long-lived or involve a lot of entities
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+Due to these limitations, we do not recommend pessimistic locking for the reservation system.
+
+\subsection{Option 2: Optimistic locking}
+
+Optimistic locking [7]m, also referred to as optimistic concurrency control, allows multipel concurrent users to attemp to update the same resource.
+
+\begin{itemize}
+\item
+There are two common ways to implement optimistic lcoking: version number and timestamp
+\item
+Version number is generally considered to be a better option because the server clock can be inaccurate over time
+\item
+We explain how optimistic locking works with version number
+\end{itemize}
+
+Figure 7.13 shows a successful case and a failure case.
+
 \end{document}
