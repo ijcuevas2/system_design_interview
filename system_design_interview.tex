@@ -9100,7 +9100,7 @@ It works well when data contention is minimal
 \textbf{Cons}
 
 \begin{itemize}
-
+\item
 \begin{itemize}
 \item
 Similar to optimistic lockign, when data contention is ehavy, it can result in a high volume of failures
@@ -9118,6 +9118,49 @@ Not all databases support constraints . It might cause problems when we migrate 
 
 Since this approach is easy to implement and the data contention for a hotel reservation is usually not high (low QPS), it is another good option for the hotel reservation system.
 
+\subsection{Scalability}
+
+Usually, the load of the hotel reservation system is not high
+\begin{itemize}
+\item
+However, the interviewer might have a follow-up question: ``what if the hotel reservation system is used not jsut for ahotel chain but for a popular travel site such as booking.com or expedia.com?''
+\item
+In this case, the QPS could be 1000 times higher.
+\item
+When the system load is high, we need to udnerstand what might become the bottleneck
+\item
+All our services are stateless, so they can be easily expanded by adding more servers
+\item
+THe database, however, contains all the states and cannot be scaled up by simply adding more databases. Let's explore how to scale the database
+\end{itemize}
+
+\subsection{Database sharding}
+
+One way to scale the database is to apply database sharding.
+
+\begin{itemize}
+\item
+THe idea is to split the data into multiple databases so that each of them only contains a portion of data
+\item
+When we shard a databse, we need to consider how to distribute the data
+\item
+As we see from the data model section, most queries need to filter by \lstinline|hotel_id|
+\item
+So a natural conclusion is we shard data by \lstinline|hotel_id|
+\item
+IN Figure 7.15, the load is spread among 16 shards
+\item
+Assume the QPS is 30,000
+\item
+After database sharding, each shard handles $\frac{30,000}{16}$ = 1,875 QPS, which is within a single MySQL server's load capacity
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_15}
+    \caption{}
+  \end{center}
+\end{figure}
 
 
 \end{document}
