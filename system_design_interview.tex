@@ -9382,9 +9382,53 @@ If a step fails, the saga executes compenstating transactions to undo the change
 \item
 2PC works as a single commit to perform ACID transactions while Saga consists of multiple steps and relies on eventual consistency
 \end{itemize}
-
 \end{itemize}
 
 \end{itemize}
+
+It is worth nothing that addressing data inconsistency between microservices requires some complicated  mechanisms that greatly incease the complexity of the overall design.
+
+\begin{itemize}
+\item
+It is up to you as an architect to decide if the added complexity is worth it
+\item
+For this proble, we decided that it was not worth it and so went with the more pragmatic approach of storing reservation and ivnetory data under the same relational database
+\end{itemize}
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we presented a design for a hotel reservation system.
+
+We started by gathering requirements and calculating a back-of-the-envelope estimation to understand the scale
+
+\begin{itemize}
+\item
+In the high level design , we presente d the API design, the first draft of the data model, and the system architecture diagram
+\item
+In the deep dive, we explored alternative database schema design as we realized reservations should be made at the room type level, as opposed to specific rooms
+\end{itemize}
+
+We discussed race conditions in depth and proposed a few potential solutions:
+
+\begin{itemize}
+\item
+pessimistic locking
+\item
+optimistic locking
+\item
+database constraints
+\end{itemize}
+
+We then discussed different approaches to scale the system, includign databse sharding and using Redis cache.
+
+Lastly, we wen through data consistency issues in microservice architecture and briefly went through a few solutions.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_7_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+
 
 \end{document}
