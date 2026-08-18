@@ -9005,4 +9005,116 @@ We explain how optimistic locking works with version number
 
 Figure 7.13 shows a successful case and a failure case.
 
+\begin{itemize}
+\item
+A new column called \lstinline|version| is added to the database table
+\item
+Before a user modifies a database row, the application reads the version number of the row
+\item
+When the user updates the row, the application increases the version number by 1 and writes it back to the database
+\item
+
+\begin{itemize}
+\item
+A database validation check is put in place; the next version number should exceed the current version number by 1.
+\item
+The transaction aborts if the validation fails and the user tries again from step 2
+\end{itemize}
+\end{itemize}
+
+Optimisitc locking is usually faster than pessimistic locking because we do not lock the database.
+
+\begin{itemize}
+\item
+However, the performance of optimistic locking drops dramatically when concurrency is high
+\item
+To understand why, consider the case when many clients try to reserve a hotel room at the same time
+\item
+Because there is no limit on how many lcients can read the available room count, all of them read back the same available room count and the current version number
+\item
+When different clients make reservations and write back the results to the database, only one of them will succeed, and the reset of the clients receive a version check failure message
+\item
+These clients have to retry
+\item
+In the subsequent round of retries, there is only one successful client again, and the reset have to retry
+\item
+ALthough the end result is cocrect, repeated retries cause a very unpleasant user experience
+\end{itemize}
+
+Pros:
+
+\begin{itemize}
+\item
+It prevents applications from editing stale data
+\item
+
+\begin{itemize}
+\item
+We don't need to lock the database reousrce
+\item
+THere's actually no locking from the database point of view
+\item
+It's entirely up to the application to handle the logic with the version number
+\item
+Optimistic locking is generally used when the data contention is low. When conflicts are rare, transactions can complete wihtout the expense of managing locks
+\end{itemize}
+\end{itemize}
+
+Cons:
+
+\begin{itemize}
+\item
+Perofmrance is poor when data contention is heavy
+\end{itemize}
+
+Optimisitc locking is a good option for a hotel reservation system since the QPS for reservations is usually not high.
+
+\subsection{Option 3 : Database constraints}
+
+This approach is very similar to optimistic locking.
+
+Let's explore how it works. In the \lstinline|room_type_inventory| table, add the following constraint:
+
+\begin{lstlisting}
+CONSTRAINT `check_room_count` CHECK((`total_inveotry - total_reserved`) >= 0)
+\end{lstlisting}
+
+Using the same example as shown in FIgure 7.14, when user 2 tries to reserve a room, \lstinline|total_reserved| becomces 101, which violates the \lstinline|total_inventory| (100) - \lstinline|total_reserved| (101) $\geq$ 0 constraint. The transaction is then rolled back.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\textbf{Pros}
+
+\begin{itemize}
+\item
+Easy to implement
+\item
+It works well when data contention is minimal
+\end{itemize}
+
+\textbf{Cons}
+
+\begin{itemize}
+
+\begin{itemize}
+\item
+Similar to optimistic lockign, when data contention is ehavy, it can result in a high volume of failures
+\item
+Users could see there are rooms available, but when they try to book one, they get the ``no rooms available'' response
+\item
+The experience can be frustraing to users
+\end{itemize}
+\item
+
+The database constraints cannot be version-controlled easily like the application code
+\item
+Not all databases support constraints . It might cause problems when we migrate from one database solution to another
+\end{itemize}
+
+
 \end{document}
