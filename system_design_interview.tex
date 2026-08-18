@@ -9297,5 +9297,14 @@ Maintaining data consistency between the database and cache is hard. We need to 
 
 \subsection{Data inconsistency among services}
 
+In a traditional monlithic architecture [11], a shared relational database is used to ensure data consitency.
+
+\begin{itemize}
+\item
+In our microservice design, we chose a hybrid approach by having Reservation SErvice handle both reservation and invetory APIs so that the invotry and reservation database tables are stored in the same relational databse
+\item
+As explained in the ``Concurrency issues'' section on page 206, this arrangement allows us to leverage the ACID  properties of the relational databse to elegantly handle many concurrency issues that arise during the reservation flow.
+\end{itemize}
+
 
 \end{document}
