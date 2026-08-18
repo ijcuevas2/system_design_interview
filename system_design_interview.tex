@@ -8923,4 +8923,42 @@ AND data between ${startDate} and ${endDate}
 Commit
 \end{lstlisting}
 
+\subsection{Option 1: Pessimistic locking}
+
+The pessimistic locking [6], also called psessimistic concurrency control, prevents simulateneous updates by placing a lock on a record as soon as one user starts to update it
+
+\begin{itemize}
+\item
+Other users who attempt to update the recaord have to wait until the first user has released the lock (committed the changes)
+\item
+For MySQL, the ``\lstinline{SELECT ... FOR UPDATE}''tement works by locking the row retruend by a selection query
+\item
+Let's assume a transcation is started by ``transaction 1''.
+
+\item
+Other transactions have to wait for transaction 1 to finish before beginning another transaction.
+\end{itemize}
+
+A detailed explanation is shown in Figure 7.12.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Figure 7.12: Pessimistic locking
+
+In Figure 7.12, the ``\lstinline|SELECT ... FOR UPDATE|'' statement of transaction 2 waits for transaction 1 to finish because 1 locks the rows.
+
+After transaction 1 finishes, \lstinline|total_reserved| becomes 100, which means there is no room for user 2 to book.
+
 \end{document}
