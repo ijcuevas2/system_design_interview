@@ -9162,5 +9162,61 @@ After database sharding, each shard handles $\frac{30,000}{16}$ = 1,875 QPS, whi
   \end{center}
 \end{figure}
 
+\subsection{Caching}
 
+The hotel inveotry data has an interestin characteristic; only current and future hotel inveotry data are menaingful because  customers can only book rooms in the near future.
+
+So for the storage choice, ideally we want to have a time-to-live (TTL) mechanism to expire old data automatically.
+
+\begin{itemize}
+\item
+Historical data can be queried on a different database
+\item
+Redis is a good choice because TTL and Least Recently Used (LRU) cache eviction policy help us make optimal use of memory
+\item
+If the loading speed and database scalbility become an issue (for instance, we are designing at booking.com or Expedia's scale), we can add a cache layer on top of the database and move the check room inventory and reserve room logic to the cache layer, as shown in Figure.16
+\item
+In this design, only a small percentage of the requests hit the inventory databse as most ineligible requests are blocked by the invetory cache
+\item
+One thing worth mentioning is that even when there is enough inventory shown in Redis, we still need to recheck the inveotry at the database side as a precaution
+\item
+The database is the source of truth for the inventory data
+\end{itemize}
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's first go over each component in this system.
+
+\textbf{Reservation service}: supports the following inventory management APIs:
+
+\begin{itemize}
+\item
+Query the number of available rooms for a given hotel, room type, and date range
+\item
+Reserve a room by executin \lstinline|total_reserved + 1|
+\item
+Update inveotry when a user cancels a reservation
+\end{itemize}
+
+\textbf{Inventory Cache}: all invetory management query operations are moved to the inventory cache (Redis) and we need to pre-populate inveotry data to the cache.
+
+The cache is a key-value store with the following structure:
+
+\begin{lstlisting}
+key: hotel-D_roomTypeID_{date}
+value: the number of available rooms for the given hotel ID,
+room type ID and date.
+\end{lstlisting}
+
+FOr a hotel reservation syste, the volume of read operations (check room inventory) is an order of magnitude higher than write operations.
+
+Most of the read operations are answered by the cache.
+
+\textbf{Inventory DB}: stores invetory data as the source of truth.
 \end{document}
