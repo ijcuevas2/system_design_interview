@@ -9430,5 +9430,58 @@ Lastly, we wen through data consistency issues in microservice architecture and 
   \end{center}
 \end{figure}
 
+\chapter*{Chapter 8}
+
+In this chapter, we design a large-scale email service, such as Gmail, Outlook, or Yahoo Mail.
+
+The growth of the internet has led to an explosing in the volume of emails.
+
+In 2020, Gmail had over 1.8 billion active users and Outlook had over 400 million useres worldwide [1] [2].
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+Over the years, email services have changed significantly in complexity and scale.
+
+A modern email service is a complex system with many features.
+
+There is no way we can design a real-world system in 45 minutes.
+
+So before juping into the design we definitely want to ask clarifying questions to narrow down the scope.
+
+\begin{enumerate}
+\item
+
+\textbf{Candidate:} How many people use the product?
+\textbf{Interviewer:} One billion Users.
+
+\item
+
+\textbf{Candidate:} I think the following features are important.
+
+\begin{itemize}
+\item
+Authentication
+\item
+Send and receive emails
+\item
+Fetch all emails
+\item
+Filter emails by read and unread status
+\item
+Search emails by subject, sender, and body
+\item
+Anti-spam and anti-virus
+\end{itemize}
+
+\textbf{Interviewer}: That's a good idea. We don't need to worry about authenticaion. Let's focus on the other features you mentioned.
+\end{enumerate}
+
 
 \end{document}
