@@ -9306,5 +9306,85 @@ In our microservice design, we chose a hybrid approach by having Reservation SEr
 As explained in the ``Concurrency issues'' section on page 206, this arrangement allows us to leverage the ACID  properties of the relational databse to elegantly handle many concurrency issues that arise during the reservation flow.
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This pure design introduces many data consistency issues.
+
+\begin{itemize}
+\item
+Since this is the first time we cover microservices, let's explain how and why it happens
+\item
+To make it easier to understand, only two services are used in this discussion
+\item
+In the real world, there could be hundereds of microservices within a company
+\item
+In a monolithic architecture, as shown in Figure 7.18, different operations can be wrapped in a single transaction to ensure ACID properties
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+However, in a microservice architecture, each service has its own database.
+
+\begin{itemize}
+\item
+ONe logically atomic operation can span multiple services
+\item
+THis means we cannot use a single transaction to ensure data consistency
+\item
+As shown in Figure 7.19, if the update operations fails in the reservation database, we need to roll back the reserved room count in the inveotry database
+\item
+Generally, there is only one happy path, but many failure cases that could cause data inconsistency.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_7_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+To address the data inconsistency, here is high-level summary of industry-proven techniques. If you want to read the details, please refere to the reference materials.
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+Two-phase commit (2PC) [12], 2PC is a databse protocol used to guarantee atomic transaction commit across multiple nodes, i.e., either all nodes succeeded or all nodes failed
+\item
+Because 2PC is a blocking protocol, a single nod efailure blocks the progress until the node has recovered. It's not performant.
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Saga.
+
+\begin{itemize}
+\item
+A Saga is a sequence of local transactions
+\item
+Each transaction updates and publishes a message to trigger the next transaction step
+
+\item
+If a step fails, the saga executes compenstating transactions to undo the changes that were made by prceding transactions [13]
+\item
+2PC works as a single commit to perform ACID transactions while Saga consists of multiple steps and relies on eventual consistency
+\end{itemize}
+
+\end{itemize}
+
+\end{itemize}
 
 \end{document}
