@@ -9526,8 +9526,35 @@ Traditional email protocols such as POPI and IMAP have very limited functionalit
 \item
 Therefore, we amy need custom protocols to satisy the flexibility and extensibility requirements
 \end{itemize}
-
 \end{itemize}
+
+\subsection{Back-of-the-envelope-estimation}
+
+Let's do a back-of-the-evenolpe calculation to determine the scale and to disccover some challenges our solution will need to address. By design, emails are storage heavy applications.
+
+\begin{itemize}
+\item
+1 billion users
+\item
+Assume the average number of emails a person sends per day is 10. QPS for sending emails = \[\frac{10^{9}}{10^{5}} = 100,000 \]
+\item
+
+\begin{itemize}
+\item
+Assume the average number of emails a person receives in a day is 40 [3] and the average size of email metadata is 50KB
+\item
+Metadata refers to everything related to an email, exlcuding attachment files
+\end{itemize}
+
+\item
+Assume metadata is stored in a database. Storage requirement for maintaining metadata in 1 year: \[ 1 \text{ billion users} \times 40 \text{ emails/day} \times 365 \text{ days} \times 50 \text{ KB} = 730 \text{ PB}\]
+\item
+Assume 20\% of emails contain an attachment and the average attachment size is 500 KB.
+\item
+Storage for attachments in 1 year is: \[ 1\text{ billion users} \times 40 \text{ emails/day} \times 365 \text{ days} \times 20\% \times 500 \text{ KB} = 1,460 \text{ PB}\]
+\end{itemize}
+
+From this back-of-the-envelope calculation, it's clear we would deal with a lot of data. SO it's likely that we need a distributed database solution.
 
 
 \end{document}
