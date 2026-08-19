@@ -9501,6 +9501,33 @@ For this interview, let's assume HTTP is used for client and server communicatio
 \textbf{Interviewer}: Yes.
 \end{enumerate}
 
+\subsection{Non-functional requirements}
+
+Next, let's go over the most important non-functional requirements.
+
+\begin{itemize}
+\item
+\textbf{Reliability.} We should not lose email data.
+
+\item
+\textbf{Availability.} Email  and user data should be automatically replicated across multiple nodes to ensure availability. Besides, the system should continue to function despite partial system failures.
+
+\item
+\textbf{Scalability.} As the number of users grows, the system should be able to handle the increasing number of users and emails. The performance of this system should no degrade with more users or emails.
+
+\item
+\textbf{Flexibility and extensibility.}
+
+\begin{itemize}
+\item
+A flexible/extensible system allows us to add new features or improve performance easily by adding new components
+\item
+Traditional email protocols such as POPI and IMAP have very limited functionality (more on this in high-level design)
+\item
+Therefore, we amy need custom protocols to satisy the flexibility and extensibility requirements
+\end{itemize}
+
+\end{itemize}
 
 
 \end{document}
