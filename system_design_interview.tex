@@ -9556,5 +9556,85 @@ Storage for attachments in 1 year is: \[ 1\text{ billion users} \times 40 \text{
 
 From this back-of-the-envelope calculation, it's clear we would deal with a lot of data. SO it's likely that we need a distributed database solution.
 
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+In this section, we first discuss some bascis about email servers and how email servers evolve over time. Then we look at the high-level design of distributed email servers.
+
+The content is structured as follows:
+
+\begin{itemize}
+\item
+Email knowledge 1010
+\item
+Traditional mail servers
+\item
+Distributed mail servers
+\end{itemize}
+
+\subsubsection{Emails protocols}
+
+\begin{itemize}
+\item
+\textbf{SMTP}: SImple Mail Transfer Protocol (SMTP) is the standard protocol for \textbf{sending} emails from one mail server to another.
+
+To most popular protocols for \textbf{retrieving} emails are known as Post Office Portocol (POP) and the Internet Mail Access Portocol (IMAP)
+
+\item
+\textbf{POP}
+
+\begin{itemize}
+\item
+This is a standard mail protocol to receive and download emails from a remote mail server to a local email client
+\item
+Once emails are downloaded to your computer or phone, they are deleted from the email server, which means you can only access emails on one computer or phone
+\item
+The details of POP are covered in RFC 1939 [4]
+\item
+POP requires mail clients to download the entire email
+\item
+This can take a long time if an email contains a large attachment.
+\end{itemize}
+\item
+\textbf{IMAP}
+
+\begin{itemize}
+\item
+This is also a standard mail protocol for receiving emails for a local email client
+\item
+When you read an email, you are connected to an external mail server, and data is transferred to your local device, IMAP only downloads a message when you click it, and emails are not deleted from mail servers, meaning thtat you can access emails from multiple devices
+\item
+IMAP is the most widely used protocol for individual email accounts
+\item
+It works well when the connection is slow because only the email header information is downloaded until opened
+\end{itemize}
+
+\item
+\textbf{HTTPS}: is not technically a mail protocol, but it can be used to access your mailbox, particularly for web-based email FOr example, it's common for Microsoft Outlook to talk to mobile devices over HTTPS, on a custom-made portocol called ActiveSync [5].
+\end{itemize}
+
+\subsection{Domain name service (DNS)}
+
+A DNS server is used to look up the mail exchanger record (MX record) for the recipient's domain. If you run DNS lookup for gmsil.com from the command line, you may get MX records as shon in Figure 8.2.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The priority numbers indicate preferences, where the mail server with a lower priority number is more preferred.
+
+\begin{itemize}
+\item
+In Figure 8.2, \lstinline|gmail-smtp-in.l.google.com| is used first (priority 5)
+\item
+A sending mail server will attempt to connect and send messages to this mail server first
+\item
+If the connection fails, the sending mail server will attempt to connect to the mail server with the next lowest priorty, which is \lstinline|alt1.gmail-smtp-in.l.google.com| (priorty 10).
+\end{itemize}
+
+\subsection{Attachment}
+
 
 \end{document}
