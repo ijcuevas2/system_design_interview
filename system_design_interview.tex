@@ -9636,5 +9636,100 @@ If the connection fails, the sending mail server will attempt to connect to the 
 
 \subsection{Attachment}
 
+An email attachment is sent along with an email message, commonly with Base64 encoding [6].
+
+\begin{itemize}
+\item
+There is usually a size limit for an email attachment
+\item
+FOr example. Outloook and Gmail limit the size of attachments to 20MB and 25MB respectively as of JUne 2021
+\item
+This number is highly configurable and varies from idividual to coporate accounts
+\item
+Multi-purpose Internet Mail Extension (MIKE) [7] is a specification that allows the attachment to be sent over the internet
+\end{itemize}
+
+\subsection{Traditional mail servers}
+
+Before we deive into distributed mail servers, let's dig a little bit through the history and see how traditional mail servers work, as doing so provides good lessons about how to scale an email server system.
+
+You can consider a traditional mail server as a systems that works when there are limited email users, usually on a single server.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The process consists of 4 steps:
+
+\begin{itemize}
+\item
+\begin{itemize}
+\item
+Alice logs in to her Outlook client, composes an email, and preses the ``send'' button.
+\item
+The email is sent to the Outlook mail server.
+\item
+The communication protocol betwee the Outlook client and the mail server is SMTP
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Outlook mail server queries the DNS (not shown in the diagram) to fin dthe address of the recipient's SMTP server
+\item
+IN this case, it is Gmail's SMTP server
+\item
+Next, it transfers the email to the Gmail mail server
+\item
+The communication portocol between the mail servers is SMTP
+\end{itemize}
+
+\item
+The Gmail server stores the email and makes it available to Bob, the recipient
+\item
+Gmail client fetches new emails through the IMAP/POP server when Bob logs in to Gmail.
+\end{itemize}
+
+\subsection{Storage}
+
+In a traditional mail server, emails were stored in local file directories and each email was stored in a separate file with a unique name.
+
+Easch user maintained a user directory to store configuration data and mailboxes
+
+Maildir was a popular way to store email messages on the mail server (Figure 8.4).
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+File directories worked well when the user base was small, but it was challenging to retrieve and backup billions of emails.
+
+\begin{itemize}
+\item
+As the email volume grew and the file structure became more complex, disk I/O because a bottleneck
+\item
+The local directoreis also don't satisfy our high availability and reliability requirements
+\item
+The disk can be damanged and servers can go down
+\item
+We need a more reliable distributed storage layer
+\item
+Email functionality has come a long way since it was invented in the 1960s, from tet-based format to rich features such as multimedia, threading [8], searhc labels, and more
+\item
+But email portocols (POP, IMAP, and SMTP) were invented a long time ago and they were not designed to support these new features, nor were they scalable to support billions of users
+\end{itemize}
+
+\subsection{Distributed mail esrvers}
+
+Distributed mail servers are designed to support modern use cases and solve the problems of scale and resiliency. This sect on covers email APIs, distributed email servers, architecture, email sending, and email receiving flows.
+
+
 
 \end{document}
