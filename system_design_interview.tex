@@ -9730,6 +9730,342 @@ But email portocols (POP, IMAP, and SMTP) were invented a long time ago and they
 
 Distributed mail servers are designed to support modern use cases and solve the problems of scale and resiliency. This sect on covers email APIs, distributed email servers, architecture, email sending, and email receiving flows.
 
+\subsection{Email APIs}
 
+Email APIs each mean very different things for different mail clients, or at different stages of an email's life cycle. FOr example:
+
+\begin{itemize}
+\item
+SMTP/POP/IMAP APIs for native mobile clients
+\item
+SMTP communications between sender and receiver mail servers
+\item
+RESTful API over HTTP for full-featured and itneractive we-based email applications
+\end{itemize}
+
+DUe to the length limitations of this book, we cover only some of the most important API s for web mail. A common way for webmail to communicate is through the HTTP protocol.
+
+\begin{enumerate}
+\item
+\textbf{Endpoint: POST /v1/messages}
+
+Sends a message to the recipients in the TO, Cc, and Bcc headers
+\item
+\textbf{Endpoint: GET /v1/folders}
+
+Returns all folders of an email account.
+
+\textbf{Response}:
+
+A message's object.
+
+\begin{lstlisting}
+{
+  user_id: string                   // Reference to the account owner
+  from: name: string, email: string // <name, email> pair of the sender
+  to: [name: string, email: string] // <A list of <name, email> paris
+  subject: string                   // Subject of an email
+  body: string                      // Message body
+  is_read: boolean                  // Indicate if amessage is read or not.
+}
+\end{lstlisting}
+
+
+\end{enumerate}
+
+\subsection{Distributed mail server architecture}
+
+While it is easy to set up an email server tha naldes a small number of users, it is difficult to scale byound one server.
+
+\begin{itemize}
+\item
+This is mainly because traditional email servers were designed to work with a single server only
+\item
+Synchronizaing data across servers can be difficult, and keeping emails from being misclassified as span by recipients' mail servers is very challenging
+\item
+In this section, we explore how to leverage cloud technologies to make it easier
+\item
+The high-level design is shown in Figure 8.5
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let us take a close look at each component.
+
+\begin{enumerate}
+\item
+
+\textbf{Webmail.}: Users use web browsers to receive and send emails
+
+\item
+\textbf{Web servers.}:
+
+\begin{itemize}
+\item
+Web servers are public-facing request/response services, used to manage features such as login, singup, user profile, etc.
+\item
+In our design, all email API reuests, such as sending ean email, loading mail folders, loading all mails in a folder, etc.., go through web servers
+\end{itemize}
+
+\item
+
+\textbf{Real-time servers.}
+
+\begin{itemize}
+\item
+Real-time servers are responsible for pushing new email updates to clients in real-time.
+\item
+Real-time servers are stateful servers because they need to maintina persisten connections
+\item
+TO support real-time communication, we have a few options, such as long polling and WebSocket
+\item
+WebSocket is a more elegant solution but one drawback of it is browser compatibility
+\item
+A possible solution is to establish a WebSocket connection whenever possible and to use long-ppolling as a fallback
+\item
+Here is an example of a real-world mail server (Apache James [10]) that implements the JSON Meta APplication Protocol (JMAP) subprotocol over WebSocket [11]
+\end{itemize}
+
+\item
+\textbf{Metadata databse.}
+
+This database stores mail metadata including mail subject, body, from user, to users, etc. We discuss the databse choice in the deep dive section
+\item
+\textbf{Attachment store.}
+
+\begin{itemize}
+\item
+We choose object stores such as Amazon Simple Storage Service (S3) as the attachment store.
+\item
+S3 is a scalable storage infrastructure that's suitable for sotring large files such as images, videos, files,etc.
+\item
+Attachments can take up to 25 MB in size
+\item
+\end{itemize}
+\end{enumerate}
+
+NoSQL column-family databases like Cassandra might not be a good fit for the following two reasons:
+
+\begin{itemize}
+\item
+Even though Cassandra supports blobl data type and its maximum theorectical size for a blob is 2GB, the practical imit is less than 1MB [12].
+\item
+Another problem with putting attachments in Cassandra is that we can't use a row cache as attachments take too much memory space
+\end{itemize}
+
+\textbf{Distributed cache.}
+
+\begin{itemize}
+\item
+Since the most recent emails are repeatedly loaded by a client, caching recent emails in memory significantly improves the load time
+\item
+We can use Redis here because it offers rich features such as lists and it is easy to scale.
+\end{itemize}
+
+\textbf{Search store.}
+
+\begin{itemize}
+\item
+The search store is a distributed document store
+\item
+It uses a data structure called inverted inex [13] that supports very fast full-text searches
+\item
+We will discuss this in more detail in the deep dive section
+\end{itemize}
+
+Now that we have discussed some of the most important components to build distributed mail servers, let's assemble together two main workflows.
+
+\begin{itemize}
+\item
+Email sending flow
+\item
+Email receiving flow
+\end{itemize}
+
+\subsection{Email sending flow}
+
+The email sending flow is shown in Figure 8.6.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+A user writes an email on webmail and presses the send button.
+\item
+The load balancer makes sure it doesn't exceed the rate limit and routes traffic to web servers.
+\item
+Web servers are responsible for:
+
+\begin{itemize}
+\item
+Basic email validation. Each incoming email is checked against pre-defined rules such as email size limit
+\item
+
+\begin{itemize}
+\item
+Checking if the domian of the recipient's email address is the same as the sender
+\item
+If it is the same, the web server ensures the email data is spam and virus free
+\item
+If so, email data is inserted into the sender's ``Sent Folder'' and recipient's ``Inbox Folder''
+\item
+The recipeint can fetch the email directly via the RESTful API
+\item
+There is no need to go to step 4
+\end{itemize}
+
+\item
+
+Message queries
+
+\begin{itemize}
+\item[4.1]
+
+\begin{itemize}
+\item
+If basic email validation succeeds, the email data is passed to the outgoing queue
+\item
+If the attachment is too large to fit in the queue, we could store the attachment in the object store and save the object reference in the queued message
+\end{itemize}
+
+\item[4.2]
+If basic email validation fails, the email is put in the error queue
+\end{itemize}
+
+\item
+SMPTP outgoing workers pull messages from the outgoing queue and make sure emails are spam and virus free.
+\item
+The outgoing email is stored in the ``Sent Folder'' of the storage layer
+\item
+SMTP outgoing workers send the email to the recipient mail server.
+\end{itemize}
+\end{enumerate}
+
+Each message in the outgoing queue contains all the metadata required to create an email
+
+\begin{itemize}
+\item
+A distributed message queue is a critical component that allows aysnchronous mail porcessing
+\item
+By decoupling SMTP outgoing workers from the webservers, we can scale SMTP outoing workers independently
+\end{itemize}
+
+We monitor the size of the outgoing queue very closely. If there are many emails stuc in the queue, we need to analyze the cuase of the issue. Here are some possibilities:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The recipient's mail server is unavailable.
+\item
+In this case, we need to retry sending the email at a later time.
+\item
+Exponential backoff [14] might be a good retry strategy
+\end{itemize}
+
+\item
+Not enough consumers to send emails. In this case, we may need more consumers to reduce the processing time.
+\end{itemize}
+
+\subsection{Email receiving flow}
+
+The following diagram demonstrates the email receiving flow.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Incoming emails arrive at the SMTP load balancer
+\item
+
+\begin{itemize}
+\item
+The load balancer distributes traffic among SMTP servers
+\item
+Email acceptance policy can be configured and applied at the SMTP-connection level
+\item
+For example, invalid emails are bounced to avoid unnecessary email processing
+\end{itemize}
+
+\item
+If the attachment of an email is too large to put into the queue, we can put it into the attachment store (S3)
+\item
+Emails are put in the incoming email queue. The queue decouples mail processing workers from SMTP servers so they can be scaled independently MOreover, the queue serves as a buffer in case the email volume surges
+\item
+Mail processing workers are responsible for a lot of tasks, including filtering out spam mails, stopping viruses, etc. THe following steps assume an email passed the validation.
+\item
+The email is stored in the mail storage, cache, and object data store
+\item
+If the receiver is currently online, the email is pusehd to real-time servers
+\item
+Real-time servers are WebSocket servers that allow clients to receive new emails in real-time
+\item
+For offline users, emails are stored in the storage layer
+\item
+Web servers pull new emails from storage layer and return them to the client
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+Now that we have talked about all the parts of the email server, let's go deeper into some key components and examine how to cale the system
+
+\begin{itemize}
+\item
+Metadata database
+\item
+Search
+\item
+Deliverability
+\item
+Scalability
+\end{itemize}
+
+\subsection{Metadata database}
+
+In this section, we discuss the characteristics of email metadata, choosing the right database, data model, and conversation threads (bonus point).
+
+\subsubsection{Characteristics of email metadata}
+
+\begin{itemize}
+\item
+Email headers usually small and frequently acccessed
+\item
+Email body sizes can range from small to big but are infrequently accessed. You normally only read an email. You normally only read an email once.
+\item
+
+\begin{itemize}
+\item
+Most of the mail operations, such as fetching mails, marking an email as read, and searching are isolated to an individual user
+\item
+In other words, mails owned by a user are only accessible by that user and all the mail operations
+\end{itemize}
+
+\item
+Data recency impacts data usage. User usually only read the most recent emails.
+\end{itemize}
+
+\subsection{Choosing the right database}
+
+At Gmail or Outlook scale, the database system is usually custom-made to redunce input/output operations per second (IOPS) [16], as this can easily become a major constraint in the system.
+
+Choosing the right database is not easy.
+
+It is helpful to consider all the options we have on the table bgefore deciding the most suitable one.
 
 \end{document}
