@@ -10352,5 +10352,57 @@ In the event of a failover, the mailbox isn't accessible by clients,  so their s
 It trades availability in favor of consistency
 \end{itemize}
 
+\subsection{Email deliverability}
 
+It is easy to setup a mail server and start sending emails
+
+\begin{itemize}
+\item
+The hard part is to get emails actually delivered to a user's inbox
+\item
+I an email ends up in the spam folder, it means there is a very high chance a receipient won't read it
+\item
+Email span is a huge issue
+\item
+According to research done by Statista [19], more than 50\% of all emails sent are spam
+\item
+If we set up a new mail server, most likely our emails will end up in the spam folder because a new email server has no reputation
+\item
+There are couple of factors to consider to improve email deliverability
+\end{itemize}
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Delivered IPs
+\item
+It is recommended to have dedeicated IP addresses for sending emails
+\item
+Email providers are less likely to accept emails from new IP addresses that have no history
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+Classify emails
+\item
+Send different categories of emails from different IP addresses
+\item
+FOr example, you may want to avoid sending marketing and other important emails from the same servers because it might make ISPs mark all emails as promotional
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+Email sender reputation
+\item
+Warm up new email server IP addresses slowly to build a good reputation, so big providers such as Office365, Gmail, Yahoo Mail, etc. are less likely to put our emails in the spam folder
+\item
+According to Amazon Simple Email Service [20], it takes about 2 to 6 weeks to warmp up a new IP address
+\item
+
+\end{itemize}
+\end{enumerate}
 \end{document}
