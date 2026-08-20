@@ -10249,5 +10249,52 @@ One way to get around this limitation is to fetch the entire folder for a user a
 This could work for a small email service, but at our design scale, this does not work well.
 \end{itemize}
 
+This problem is commonly solved with denormalization in NoSQL. To support the read/unread queries,
+we denormalize the \lstinline|emails_by_folder| data into two tables as shown in Table 8.4.
+
+\begin{itemize}
+\item
+\lstinline|read_emails|: it stores all emails that are in read status
+\item
+\lstinline|unread_emails|: it stores all emails that are in unread status.
+\end{itemize}
+
+To mark an \lstinline|UNREAD| email as \lstinline|READ|, the email is deleted from \lstinline|unread_emails| and then inserted to \lstinline|read_emails|
+
+To fetch all unread emails for a specific folder, we can run a query like this:
+
+Table 8.4: Read and unread emails
+
+\begin{lstlisting}
+SELECT * FROM UNREAD_EMAILS
+WHERE user_id = <user_id> and folder_id = <folder_id>
+ORDER BY email_id;
+\end{lstlisting}
+
+\lstinline|read_emails|
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|user_id| & UUID & K \\
+\lstinline|folder_id| & UUID & K \\
+\lstinline|email_id| & TIMEUUID & C $\downarrow$ \\
+from & TEXT & \\
+subject & TEXT & \\
+preview & TEXT & \\
+\hline
+\end{tabular}
+
+\lstinline|unread_emails|
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|user_id| & UUID & K \\
+\lstinline|folder_id| & UUID & K \\
+\lstinline|email_id| & TIMEUUID & C $\downarrow$ \\
+from & TEXT & \\
+subject & TEXT & \\
+preview & TEXT & \\
+\hline
+\end{tabular}
+
+Denormalization as shown above is a common practice. It amesk the applicatoin code more complicated and harder to maintain, but it imporves the read performance of these queries at scale.
 
 \end{document}
