@@ -10209,8 +10209,6 @@ preview & TEXT &  \\
 
 \subsection{Query 4: create/delete/get an email}
 
-Table 8.3: Emails by user
-
 \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
 \hline
 \lstinline|user_id| & \lstinline|UUID| & \lstinline|K| \\
@@ -10223,6 +10221,33 @@ attachments & LIST$<$filename|size$>$ &  \\
 \hline
 \end{tabular}
 
+Table 8.3: Emails by user
+
+\subsection{Query 4: fetch all read or unread emails}
+
+If our domain model was for a relational databse, the query to fetch all read emails would look like this:
+
+\begin{lstlisting}
+SELECT * FROM emails_by_folder
+WHERE user_id = <user_id and folder_id = <folder_id> and
+  is_read = true
+ORDER BY email_id;
+\end{lstlisting}
+
+THe query to fetch all unread emails woud look very similar. We just need to change \lstinline|is_read = true| to \lstinline|is_read = false| in the above query.
+
+Our data model, however, is design for NoSQL.
+
+\begin{itemize}
+\item
+A NoSQL databse normally only supports queries on parittion and cluster keys
+\item
+Since \lstinline|is_read| inthe \lstinline|emails_by_folder| table is neither of those, most NOSQL datbases will reject this query.
+\item
+One way to get around this limitation is to fetch the entire folder for a user and perform the filtering in the application
+\item
+This could work for a small email service, but at our design scale, this does not work well.
+\end{itemize}
 
 
 \end{document}
