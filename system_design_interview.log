@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  20 AUG 2026 01:22
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  20 AUG 2026 02:12
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2316,16 +2316,16 @@ st NOSQL
  []
 
 [259]
-Overfull \hbox (88.22964pt too wide) in paragraph at lines 10274--10285
-[][][][][] [] 
+Overfull \hbox (34.03304pt too wide) in paragraph at lines 10276--10286
+[][] 
  []
 
 
-Overfull \hbox (97.67953pt too wide) in paragraph at lines 10286--10297
-[][][][][] [] 
+Overfull \hbox (34.03304pt too wide) in paragraph at lines 10289--10299
+[][] 
  []
 
-[260] (./system_design_interview.aux)
+[260] [261] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -2350,10 +2350,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (260 pages, 693989768 bytes).
+Output written on system_design_interview.pdf (261 pages, 693990370 bytes).
 PDF statistics:
- 1077 PDF objects out of 1200 (max. 8388607)
- 616 compressed objects within 7 object streams
+ 1080 PDF objects out of 1200 (max. 8388607)
+ 618 compressed objects within 7 object streams
  0 named destinations out of 1000 (max. 500000)
  853 words of extra memory for PDF output out of 10000 (max. 10000000)
 

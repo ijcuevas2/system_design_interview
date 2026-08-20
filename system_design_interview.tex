@@ -10272,6 +10272,7 @@ ORDER BY email_id;
 \end{lstlisting}
 
 \lstinline|read_emails|
+
 \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
 \hline
 \lstinline|user_id| & UUID & K \\
@@ -10284,6 +10285,7 @@ preview & TEXT & \\
 \end{tabular}
 
 \lstinline|unread_emails|
+
 \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
 \hline
 \lstinline|user_id| & UUID & K \\
@@ -10297,4 +10299,20 @@ preview & TEXT & \\
 
 Denormalization as shown above is a common practice. It amesk the applicatoin code more complicated and harder to maintain, but it imporves the read performance of these queries at scale.
 
+\subsubsection{Bonus point: converstaion threads}
+
+Threads are a feature support by many email clients.
+
+\begin{itemize}
+\item
+It groups email replies with their original emssage [8].
+\item
+This allows users to retrieve all emails associated with one conversation
+\item
+Traditionally, a thread is implemented using algorithms such as JWZ algorithm [18]
+\item
+We will not go into detail about the algorithm, but just epxlina the core idea behind it
+\item
+
+\end{itemize}
 \end{document}
