@@ -10402,7 +10402,181 @@ Warm up new email server IP addresses slowly to build a good reputation, so big 
 \item
 According to Amazon Simple Email Service [20], it takes about 2 to 6 weeks to warmp up a new IP address
 \end{itemize}
+\item
+
+\begin{itemize}
+\item
+Ban spammers quickly
+\item
+Spammers should be banned quickly before they have a significant impact on the server's reputation.
+\end{itemize}
+
+\item
+
+\textbf{Feedback processing}: It's very important to setup feedback loops with ISPs so we can keep the complaint rate low and ban spam accounts quickly. If an email fails to deliver or a user complains, one of the following outcomes occurs:
+
+\begin{itemize}
+\item
+Hard bounce. This means an email is rejected by ISP because the recipient's email address is inavlid
+\item
+Soft bounce. A soft bounce indicates an email failed to deliver due to temporary conditions, such as ISPs being too busy.
+\item
+Complaint. This means a receipient clicks the ``report spam'' button
+\end{itemize}
+
+Figure 8.8 shows the process of collecting and processing bounces/complaints.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Email authentication
+\item
+According to the 2018 data breach investigation report provided by Verizon, phishing and pretexting represent 93\% of breaches [21]
+\item
+Some of the common techniques to combat phishing are: Sender Policy Framework (SPF) [22], DomainKeys Identified Mail (DKIM) [23], and Domain-based Message Authenication, Reporting and Conformance (DMARC) [24]
+\item
+Figure 8.9 shows an example header of a Gmail message
+\item
+As you can see, the sender \lstinline|@info6.citi.com| is authenticaed by SPF, DKIM, and DMARC
+\end{itemize}
 \end{enumerate}
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+You don't need to remember all those terms. The important thing to keep in mind is that getting emails to work as inteded is hard. It requires not only domain knowledge, but good relationships with ISPs.
+
+\subsection{Search}
+
+Basic mail search refers to searching for emails that contain any of the entered keywords in the subject or body.
+
+\begin{itemize}
+\item
+More advanced features include filtering by ``From'', ``Subject'', ``Unread'', or other attributes
+\item
+On one hand, whever an email is sent, received or deleted, we need to perform reindexing
+\item
+On the other hand, a search query is only run when a user presses th search button
+\item
+This means the search feature in email systems has a lot more writes than reads
+\item
+By comparison with Google search, email search ahs quite different characteristics, as shown in Table 8.6
+\end{itemize}
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+& Scope & Sorting & Accuracy \\
+\hline
+Google search & The whole internet & Sort by relevance & Indexing generally takes time, so some items may not show in the search immediately \\
+\hline
+Email search & User's own email box & Sort by attirbutes such as time, has attachment, data within, is unread, etc. & Indexing should be near real-time, and the result has to be accurate \\
+\hline
+\end{tabular}
+
+Table 8.6: Google search vs email search
+
+To support search functionality, we compare two approaches: Elasticsearch nad navtive search embedded in the datastore.
+
+\subsection{Option 1: Elasticsearch}
+
+The high-level design for email search using Elastic search is shown in FIgure 8.10. Becuase queries are mostly performed on the user's own email server, we can group underlying documents to the same node using \lstinline|user_id| as the primary key.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+When a user clicks the search button, the user waits until the search response is received.
+
+\begin{itemize}
+\item
+A search request is synchronous
+\item
+Wehn events sucha s ``send email'', ``receive email'' or ``delete email'' are tiggered, nothing related to search needs to be returned to the client
+\item
+Reindexing is needed and it can be done with offline jobs
+\item
+Kafka is used in the design to decouple services that rigger reindexing, from services that actually perform reindexing
+\item
+Elastic search is the most ppoular search-engine databse as of JUne 2021 [25] and it supports full-text search of meails very well
+\item
+One challenge of adding Elasticsearch is to keep our primary email store in sync with it
+\end{itemize}
+
+\subsection{Option 2: Custom search solution}
+
+Large-scale email providers usually develop their own custom search engines to meet their specific requirements.
+
+\begin{itemize}
+\item
+Designing an email search engine is a very complicated task and is out of the scope of this chapter
+\item
+Here we only briefly touch on the disk I/O bottleneck, a primary challenge we will face for a custom search engine
+\item
+As shown in the back-of-the-envelope calculation, the size of the metadata and attacfhments added dialy is at the petabyte (PB) level
+\item
+Meanwhile, an email account can easily have over half a million emails
+\item
+The main bottleneck of the index server is usually disk I/O.
+\end{itemize}
+
+Since the process of building the idnex is write-heavy, a good stragey might be to use Log-Structured Merge-Tree (LSM) [26] to structure th idnex data on disk (Figure 8.11).
+
+\begin{itemize}
+\item
+The write path is optimized by only performign sequential writes
+\item
+LSM trees are the core data structure behind databses such as Bigtable, Cassandra, and RocksDB
+\item
+When a new email arrives, it is first added to level 0o in-memory cache , and when data size inmoemory reached the predefined threshold, data is merge ot the next level
+\item
+Another reason to use LSM is to seperate data that change frequently from those that don't
+\item
+For example, email dataq usually doens't change, but folder infomration tends to change more often due to different filter rules
+\item
+In this case we can separate them into two different sections, so that if a request is related to a folder change, we change only the rolder and leave the email data alone
+\item
+If you are interested in reading more about email search, it is highly recommended you take a look at how search works in Microsoft Exchange servers [27]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_11}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Each approach has pros and cons:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|Feature| & \lstinline|Elasticsearch| & \lstinline|Custom search engine| \\
+\hline
+Scalability & Scalable to some extent & Easier to scale as we can optimize the system for the email use case \\
+\hline
+System complexity & Need to maintian two different system: datastore and Elasticsearch & One system \\
+\hline
+Data consistency & Two copies of data. One in the metadata dastore, and the other in Elasticsearch. Data consistency is hard to maintain & A single copy of data in the metadata datastore \\
+\hline
+Data loss possible & NO. Can rebuild the ELasticsearch index from the primary storage, in case of failure & A single copy of data in the metadata datastore \\
+\hline
+Development effort & Easy to integrate. To support large scale email search, a dedicate Elasticsearch team might be needed & Significant engineering effort is needed to develop a custom email search engine \\
+\hline
+\end{tabular}
+
+Table 8.7: Elastic search vs custom search engine
+
 
 
 \end{document}
