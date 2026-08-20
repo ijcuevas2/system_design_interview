@@ -10066,6 +10066,133 @@ At Gmail or Outlook scale, the database system is usually custom-made to redunce
 
 Choosing the right database is not easy.
 
-It is helpful to consider all the options we have on the table bgefore deciding the most suitable one.
+It is helpful to consider all the options we have on the table before deciding the most suitable one.
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+Relational database.
+
+\begin{itemize}
+\item
+The main motivation behind this is to search though emails efficiently
+\item
+We can build indexes for email header and body
+\item
+With indexes, simple search queries are fast
+\item
+However, relational datbases are typically opitmized for small chunks fo dataentires and are not dieal for large ones
+\item
+A typical email is usually larger than a few KB and can easily be over 100KB when HTML is involved
+\item
+You might argue that the BLOB data type is designed to support large data entires
+\item
+However, search quieries over unstructured LBOB data type are not efficient
+\item
+So relational datbases such as MySQL, or PostgreSQL are not good fits
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Distributed object storage
+\item
+Another potential solution is to store raw emails in cloud storage such as Amzon S3,  which can be a good option for backup storage, but it's hard to efficiently support features such as marking emails as read, searching emails based on keywords, threading emails, etc.
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+NoSQL datbases
+\item
+Google Bigtable is used by Gmail, so it's definitely a viable solution
+\item
+However, Bigtable is not open sourced and how email search is implemented remains a mystery
+\item
+Cassandra might be a good option as well, but we haven't seen any large meail providers use it yet
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+Based on the above analysis, very few existing solutions seem to fit our needs perfectly. Large email service providers tend to build their own highly customized databsaes.
+
+However, in an interview setting, we won't have time to design a new distributed database,  though it's important to explain the folllowing characteristics that the databse should have.
+
+\begin{itemize}
+\item
+A single column can be a single-digit of MB.
+\item
+Strong data consistency
+\item
+Designed to reduce disk I/O
+\item
+It should be highly available and fault-tolerant
+\item
+It should be easy to create incremental backups
+\end{itemize}
+
+\subsection{Data Model}
+
+One way to store the data is to use \lstinline|user_id| as a parittion key so data for one user is stored on a single shard.
+
+\begin{itemize}
+\item
+One limitation of this data model is that messages are not shared among multiple users
+\item
+Since this is not a requirement for us in this interview, it's not something we need to worry about
+\item
+Now let us define the tables
+\item
+The primary key contains two components, the partition key, and the clustering key
+\item
+Partition key: reponsible for distributing data across nodes. As a general rule, we want to srpread the data evenly
+\item
+Clustering key: responsible for sorting data within a partition
+\end{itemize}
+
+At a high level, an email service needs to support the following queries at the data layer:
+
+\begin{itemize}
+\item
+The first query is to get all folders for a user
+\item
+The second query is to display all emails for a specific folder
+\item
+THe third query is to create/delete/get a specific email
+\item
+The fourth query is to fetch all read or unread emails
+\item
+Bonus point: get conversation threads
+\end{itemize}
+
+Let's take a look at them one by one.
+
+\subsection{Query 1: get all folders for a user.}
+
+As shown in Table 8.1, \lstinline|user_id|, is the partition key, so folders owned by the smae user are located in one partition
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+K & Partition Key \\
+C $\uparrow$ & Clustering Key (ascending) Key \\
+C $\downarrow$ $\mathbf{\genfrac{}{}{0pt}{}{\uparrow}{\downarrow}}$ & Clustering Key (descending) Key \\
+\hline
+\end{tabular}
+
+\subsection{Query 2: display all emails for a specific folder.}
+
+When a user loads their inbox, emails are usually sorted by timestamp, showing the most recent ones at the top.
+
+In order to store all emails for the same folder in one partition, componsite partition key \lstinline|<user_id, folder_id>| is used.
+
+Another column to note is \lstinline|email_id|
+
+Its data type is \lstinline|TIMEUUID| [17], and it is the clustering key used to sort emails in chronological order.
+
+
 
 \end{document}
