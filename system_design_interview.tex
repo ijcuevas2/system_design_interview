@@ -10197,9 +10197,32 @@ Its data type is \lstinline|TIMEUUID| [17], and it is the clustering key used to
 
 \begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
 \hline
-cell1 & cell2 & cell3 \\
+\lstinline|user_id| & \lstinline|UUID| & \lstinline|K| \\
+\lstinline|folder_id| & \lstinline|UUID| & \lstinline|K| \\
+\lstinline|email_id| & \lstinline|TIMEUUID| & \lstinline|C| $\downarrow$ \\
+from & TEXT &  \\
+subject & TEXT &  \\
+preview & TEXT &  \\
+\lstinline|is_read| & BOOLEAN &  \\
 \hline
 \end{tabular}
+
+\subsection{Query 4: create/delete/get an email}
+
+Table 8.3: Emails by user
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|user_id| & \lstinline|UUID| & \lstinline|K| \\
+\lstinline|email_id| & \lstinline|TIMEUUID| & \lstinline|C| $\downarrow$ \\
+from & TEXT & \\
+to & LIST$<$TEXT$>$ &  \\
+subject & TEXT &  \\
+body & TEXT &  \\
+attachments & LIST$<$filename|size$>$ &  \\
+\hline
+\end{tabular}
+
 
 
 \end{document}
