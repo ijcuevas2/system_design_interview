@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  20 AUG 2026 14:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  22 AUG 2026 00:17
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2413,17 +2413,45 @@ Overfull \hbox (34.03304pt too wide) in paragraph at lines 10562--10577
 [][] 
  []
 
-[267 <./images/figure_8_11.jpg>] (./system_design_interview.aux)
+[267 <./images/figure_8_11.jpg>]
+<images/figure_8_12.jpg, id=1040, 5982.35pt x 5779.5925pt>
+File: images/figure_8_12.jpg Graphic file (type jpg)
+<use images/figure_8_12.jpg>
+Package pdftex.def Info: images/figure_8_12.jpg  used on input line 10604.
+(pdftex.def)             Requested size: 276.00105pt x 266.59645pt.
+ [268 <./images/figure_8_12.jpg>]
+<images/chapter_8_summary.jpg, id=1044, 3980.8725pt x 7580.32pt>
+File: images/chapter_8_summary.jpg Graphic file (type jpg)
+<use images/chapter_8_summary.jpg>
+Package pdftex.def Info: images/chapter_8_summary.jpg  used on input line 10658
+.
+(pdftex.def)             Requested size: 276.00105pt x 525.47165pt.
+ [269]
+[270 <./images/chapter_8_summary.jpg>] [271
+
+]
+Overfull \hbox (0.88945pt too wide) in paragraph at lines 10725--10727
+[]\OT1/cmr/m/n/10 Conceptually, the network-attached bloock stor-age still pres
+ents raw blocks 
+ []
+
+[272]
+<images/figure_9_1.jpg, id=1058, 3282.2625pt x 1495.5875pt>
+File: images/figure_9_1.jpg Graphic file (type jpg)
+<use images/figure_9_1.jpg>
+Package pdftex.def Info: images/figure_9_1.jpg  used on input line 10774.
+(pdftex.def)             Requested size: 276.00105pt x 125.7426pt.
+ [273 <./images/figure_9_1.jpg>] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 27508 strings out of 467533
- 639876 string characters out of 5422138
- 1099504 words of memory out of 5000000
- 56071 multiletter control sequences out of 15000+600000
+ 27550 strings out of 467533
+ 640987 string characters out of 5422138
+ 1099502 words of memory out of 5000000
+ 56113 multiletter control sequences out of 15000+600000
  632185 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -2438,10 +2466,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (267 pages, 705689140 bytes).
+Output written on system_design_interview.pdf (273 pages, 717163004 bytes).
 PDF statistics:
- 1103 PDF objects out of 1200 (max. 8388607)
- 631 compressed objects within 7 object streams
+ 1125 PDF objects out of 1200 (max. 8388607)
+ 644 compressed objects within 7 object streams
  0 named destinations out of 1000 (max. 500000)
- 873 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 888 words of extra memory for PDF output out of 10000 (max. 10000000)
 

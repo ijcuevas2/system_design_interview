@@ -10577,6 +10577,205 @@ Development effort & Easy to integrate. To support large scale email search, a d
 
 Table 8.7: Elastic search vs custom search engine
 
+A general rule of thumb is that for a smaller scale email system, Elasticsearch is a good option as it's easy to integrate and doesn't require significant engineering effort.
 
+\begin{itemize}
+\item
+For a larger scale, Elasticsearch might work, but we may need a dedicated team to develop and maintain the email search infrastructure.
+\item
+To support an email system at Gmail or OUtlook scale, it might be a good idea to have a native search embedded in the database as opposed to the separate indexing approach
+\end{itemize}
+
+\subsection{Scalability and availability}
+
+Since data access patterns of individual users are independent of one another, we expect most components in the system are horizontally scalable.
+
+\begin{itemize}
+\item
+For better availability, data is replicated across multiple data centers.
+\item
+Users communicate with a mail server that is physically closer to them in the network topology
+\item
+During a network partition, users can access messages from other data centers (Figure 8.12)
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_8_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we have presented a design for building large-scale email servers.
+
+\begin{itemize}
+\item
+We start by gathering requirements and doing some back-of-the-envelope calculations to get a good idea of the scale
+\item
+In the high-level design, we discussed how traditional email servers were designed and why they cannot satisfy modern use cases
+\item
+We also discussed email APIs and high-level designs for sending and receiving flows
+\item
+Finally, we devied deep into metadata database design, email deliverability, search, and scalability
+\end{itemize}
+
+If there is extra time at the end of the interview, here are a few additional talking points:
+
+\begin{itemize}
+\item
+Fault tolerance. Many parts of the system can fail, and you can talk about how to handle node failures, network issues, event delays, etc.
+\item
+Compliance.
+\begin{itemize}
+\item
+Eamil service works all around the world and there are legal regulations to comply with
+\item
+For instance, we need to handle and store personally identifiable information (PII) from Europe in a way that complies with General Data Portection Regulation (GDPR) [28]
+\item
+Legal intercept is another typical feature in this area [29]
+\end{itemize}
+
+\item
+Security. Email security is important because emails contain sensitive information.
+
+Gmail provides safety features such as phishing protections, safe browsing, proactive alerts, account safety, confidential mode, and email encryption [30]
+
+\item
+Optimizations
+
+\begin{itemize}
+\item
+Sometimes, the same email is sent to multiple reciepients, and the same email attachment is stored several times in the object store (S3)
+\item
+One optimization we could do is to check the existence of the attachment in storage, before performing the expensive save operation.
+\end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_8_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\chapter*{Chapter 9: S3-like Object Storage}
+
+In this chapter, we design an object storage service similar to Amazon Simple Storage Service (S3). S3 is a service offered by Amazon Web Services (AWS) that provides object storage through a RESTful API-based interface.
+
+Here are some facts about AWS S3:
+
+\begin{itemize}
+\item
+Launched in June 2006
+\item
+S3 added versioning, bucket policy, and multipart upload upload in 2010
+\item
+S3 added server-side encryption, multi-object delete, and object expiration in 2011
+\item
+Amazon reported 2 trillion objects stored in S3 by 2013
+\item
+Life cycle policy, event notification, and cross-region replication support were introduced in 2014 and 2015
+\item
+Amazon reported over 100 trillion objects stored in S3 by 2021
+\end{itemize}
+
+Before we dig into object storage, let's first review storage systems in general and efine some terminologies.
+
+\subsection{Storage System 101}
+
+At a high-level, storage systems fall into three broad categorties:
+
+\begin{itemize}
+\item
+Block storage
+\item
+File storage
+\item
+Object storage
+\end{itemize}
+
+\subsection{Block storage}
+
+Block storage came first, in the 1960s.
+
+\begin{itemize}
+\item
+Common storage devices like hard disk drives (HDD) and soli-state drives (SSD) that are physically  attached to servers are all considered as block storage
+\item
+Block storage presents the raw blocks to the server as a volume
+\item
+This is the most flexible and versatile form of storage
+\item
+The server can format the raw blocks and use them as a file system, or it can hand control of those blocks to an application
+\item
+Block storage presents the raw blocks to the server as a volume
+\item
+This is the most flexible and versatile form of storage
+\item
+The server can format the raw blocks and use them as a file system, or it can hand control of those blocks to an application
+\item
+Some applications like a database or a virtual machine engine manage these blocks directly in order to squeeze every drop of performance out of them
+\item
+Block storage is not limited to physically attached storage
+\item
+Block storage could be connected to a server over a high-speed network or over industry-standard connectivity protocols like Fibre Channel (FC) [1] and iSCSI [2]
+\item
+Conceptually, the network-attached bloock storage still presents raw blocks
+\item
+TO the servers, it works the same as physically attached block storage
+\end{itemize}
+
+\subsection{File storage}
+
+File storage is built on top of block storage.
+
+\begin{itemize}
+\item
+It provides a higher-level abstraction to make it seasier to handle files and directories
+\item
+Data is torage as files under a hierarchical directory structure
+\item
+File storage is the most common general-purpose storage solution
+\item
+File storage could be made accessible by a large number of servers using common file-level network protocols like SMB/CIFS [3] and NFS [4]
+\item
+The servers accessing file storage do not need to deal with the complexity of managing the blocks, formatting volume, etc.
+\item
+The simplicity of file storage makes it a great solution for sharing a large number of files and folders within an organization
+\end{itemize}
+
+\subsection{Object storage}
+
+Object storage is new.
+
+\begin{itemize}
+\item
+It makes a very deliverate trade off to sacrifice performance for high durability, vast scale, and low cost
+\item
+It targets relatively ``cold'' data, and is mainly used for achival and backup
+\item
+Object storage stores all data as objects in a flat structure
+\item
+There is non hierarchical directory structure
+\item
+Data access is nromally provided via a RESTful API
+\item
+It is relatively slow compared to other storage types
+\item
+Most public cloud service providers have an object storage offereing, such as AWS S3, Google object storage, and Azure blob storage
+\end{itemize}
+
+\subsection{Comparison}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Table 9.1 compares block storage, file storage, and object storage.
 
 \end{document}
