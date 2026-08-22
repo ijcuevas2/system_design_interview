@@ -10937,6 +10937,51 @@ IOPS.
 Let's assume one hard disk (SATA interface, 7200 rpm) is capable of doing 100 ~ 150 random seeks per second (100 ~ 150 IOPS).
 \end{itemize}
 
+With those assumptions, we can estimate the total number of objects the system can persist.
 
+To simplify the calculation, let's use the median size for each object type (0.5MB for small objects, 32MB for medium objects, and 200MB for large objects)
+
+A 40\% storage usage ratio gives us:
+
+\begin{itemize}
+\item
+100 PB = $100 \times 1000 \times 1000 \times 1000 \text{MB } = 10^{11} \text{ MB}$
+\item
+$\frac{10^{11} \times 0.4}{(0.2 \times 0.5 \text{ MB} + 0.6 \times 32 \text{ MB} + 0.2 \times 200 \text{ MB})}$ = 0.68 billion objects.
+\item
+If we assume the metadata of an object is about 1KB in size, we need 0.68TB space to store all metadata information
+\end{itemize}
+
+Even though we may not use those numbers, it's good to have a general idea about the scale and constraint of the system.
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+Before diving into the design, let's explore a few interesting properties of object storage, as they may influence it.
+
+\subsubsection{Object immutability}
+
+\begin{itemize}
+\item
+One of the main differences between object storage and the other two types of storage system is that the objects stored in side of object storage are immutable.
+\item
+We may delete them or replace them entirely  with a new version, but we cannot make incremental changes.
+\end{itemize}
+
+\subsubsection{Key-value store}
+
+We could use object URI to retrieve object data (Listing 9.1). The object URI is the key and object data is the value.
+
+\begin{lstlisting}
+Request:
+GET /bucket1/object1.txt HTTP/1.1
+
+Response:
+HTTP/1.1 200 OK
+Content-Length: 4567
+
+[4567 bytes of object data]
+\end{lstlisting}
+
+Listing 9.1: Use object URI to retrieve object data
 
 \end{document}
