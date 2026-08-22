@@ -10984,4 +10984,167 @@ Content-Length: 4567
 
 Listing 9.1: Use object URI to retrieve object data
 
+\subsubsection{WRite once, read many times}
+
+The data access pattern for object data is written once and read many times.
+
+According to the research done by LinkedIn, 95\% of requests are read operations [9].
+
+\subsubsection{Support both small and large objects}. Object size may very and we need to support both.
+
+The design philosophy of objec storage is very similar to that of the UNIX file system.
+
+\begin{itemize}
+\item
+In UNIX,  when we save a file in the local file system, it does not save the filename and file data toegether.
+
+INstead, the file name is stored in a data structure called ``inode'' [10], and the file data is store din different disk locations
+\item
+The inode contains a list of file block pointers that point to the disk locations of the file data
+\item
+When we access a local file, we first fetch the metadata in the inode
+\item
+We then read the file data by following the file block pointers to the actual disk locations
+\item
+The object storage works similarly
+\item
+The inode becomes the mdetdata store that stores all the object metadata
+\item
+The hard disk becomes the data store that stores the object data
+\item
+In the UNIX file system, the inode uses the file block pointer to record the location of data on the hard disk
+\item
+In object storage, the metadata store uses the ID of the object to find the corresponding object data in the data store, via a network request
+\item
+Figure 9.2 shows the UNIX file system and the object storage.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Separating metadata and object data simplifies the design
+
+\begin{itemize}
+\item
+The data store contains immutable data while the metadata store contains mutable data
+\item
+This separation enables us to implement and optimize these two components independently
+\item
+Figure 9.3 shows what the bucket and object look like
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{High-level design}
+
+Figure 9.4 shows the high-level design.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's go over the components one by one.
+
+\textbf{Load balancer}. Distributes RESTful API requests across a number of API servers
+
+\textbf{API service}.
+\begin{itemize}
+\item
+Orchestrates remote procedure calls to the identity an access managment service, metadata service, and storage stores.
+\item
+This service is stateless so it can be horizontally scaled
+\end{itemize}
+
+\textbf{Identity and access management (IAM)}
+
+\begin{itemize}
+\item
+The central place the handle uathentication, autorization and access control.
+\item
+Authentication verfies who you are, and authorization validates what operations you could perform based on who you are.
+\end{itemize}
+
+\textbf{Data store.} Stores and retrieves the actual data. All data-related operations are based on object ID (UUID).
+
+\textbf{Metadata store}. Stores the metadata of the objects.
+
+\begin{itemize}
+\item
+Note that the metadata and data store share just logical components, and there are different ways to implement them.
+\item
+For example, in Ceph's Rados Gateway [11], there is no standalone metadata store.
+\item
+Everything, including the object bucket, is ppersisted as one or multiple Rados objects.
+\end{itemize}
+
+Now we have a basic understanding of the high-level design, let's explore some of the most important workflows in object storage.
+
+\begin{itemize}
+\item
+Uploading an object
+\item
+Downloading an object
+\item
+Object versioning and listing objects in a bucket. They will be explained in the ``design deep dive'' section on page 263.
+\end{itemize}
+
+\subsection{Uploading an object}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+An object hast to reside in a bucket. In this example, we first create a bucket named \lstinline|bucket-to-share| and then upload a file named \lstinline|script.txt| to the bucket.
+
+Figure 9.5 explains how this flow works in 7 steps.
+
+\begin{itemize}
+\item
+The client sends an \lstinline|HTTP PUT| request to create a bucket named \lstinline|bucket-to-share|, The request is forwarded to the API service.
+\item
+The API service calls the IAM to ensure the user is authorized and has \lstinline|WRITE| permission
+\item
+The API service calls the metadata store to create an entry with the bucket info in the metadata database. Once the entry is created, a success mesage is returned to the client.
+\item
+After the bucket is created, the client sends an \lstinline|HTTP PUT| request to create an object named \lstinline|script.txt|
+\item
+The API service verifies the user's identity and ensures the user has \lstinline|WRITE| permission on the bucket
+\item
+Once validation succeeds, the API service sends the object data in the \lstinline|HTTP PUT| pyalod to the data store. The data store persists the payload as an object and returns the UUID of the object.
+\item
+
+\begin{itemize}
+\item
+The API service calls the metadata sotre to create a new entry in the metadata database.
+\item
+ It contains important metadata such as the \lstinline|object_id| (UUID), \lstinline|bucket_id| (which bucket th eobject belongs to), \lstinline|object_name|, etc.
+\item
+A sample entry is shown in Table 9.2.
+\end{itemize}
+\end{itemize}
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|object_name| & \lstinline|object_id| & \lstinline|bucket_id| \\
+\hline
+\lstinline|script.txt| & \lstinline|239D5866-0052-00F6-014E-C914E61ED42B| & \lstinline|82AA1B2E-F599-2590-B5E4-1F51AAE5F7E4| \\
+\hline
+\end{tabular}
+
+
 \end{document}
