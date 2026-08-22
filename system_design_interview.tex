@@ -10871,4 +10871,72 @@ Designed for 99.9\% availability
 
 The following questions help to clarify the requirements and narrow down the scope.
 
+\begin{enumerate}
+\item
+
+\textbf{Candidate}: Which features should be included in the design?
+\textbf{Interviewer} We would like you to design an S3-like object storage system with the following functionalities:
+
+\begin{itemize}
+\item
+Bucket creation
+\item
+Object uploading and downloading
+\item
+Object versioning
+\item
+Listing objects in a bucket. It's similar to the \lstinline|aws S3 ls| command [8]
+\end{itemize}
+
+\item
+\textbf{Candidate}: What is the typical data size?
+\textbf{Interviewer}: We need to store both massive objects (a few GBs or more) and a large number of small objects (tens of KBs,) efficiently
+
+\item
+\textbf{Candidate}: How much data do we need to store in one year?
+\textbf{Interviewer}: 100 petabytes (PB)
+
+\item
+\textbf{Candidate}: Cn we assume data durability is 6 nines (99.9999\%) and service availability is 4 nines (99.99\%)
+\textbf{Interviewer}: Yes, that sounds reasonable.
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+100PB of data
+\item
+Data durability is 6 nines
+\item
+Service availability is 4 nines
+\item
+Storage efficiency. Reduce storage costs while maintaining a high degree or reliability and performance
+\end{itemize}
+\end{enumerate}
+
+\subsection{Back-of-the-envelope estimation}
+
+Object storage is likely to have bottlnecks in either disk capacity or disk IO per second (IOPS). Let's take a look.
+
+\begin{itemize}
+\item
+Disk capacity. Let's assume objects follow the distribution listed below.
+
+\begin{itemize}
+\item
+20\% of all objects are small objects (less than 1MB)
+\item
+60\% of objects are medium-sized objects (1 MB ~ 64MB)
+\item
+20\% are large objects (larger than 64MB)
+\end{itemize}
+
+\item
+IOPS.
+
+Let's assume one hard disk (SATA interface, 7200 rpm) is capable of doing 100 ~ 150 random seeks per second (100 ~ 150 IOPS).
+\end{itemize}
+
+
+
 \end{document}
