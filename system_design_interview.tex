@@ -11146,5 +11146,430 @@ A sample entry is shown in Table 9.2.
 \hline
 \end{tabular}
 
+Table 9.2: Sample entry
+
+The API to upload an object could look like this:
+
+\begin{lstlisting}[caption={Uploading an object}, label={lst:uploading-object}]
+PUT /bucket-to-share/script.txt HTTP/1.1
+Host: foo.s3example.org
+Date: Sun, 12 Sept 2021 17:51:00 GMT
+Authorization: authorization string
+Content-Type: text/plain
+Content-Length: 4567
+x-amz-meta-author: Alex
+
+[4567 bytes of object data]
+\end{lstlisting}
+
+\subsection{Downloading an object}
+
+A bucket has no directory hierarchy.
+
+However, we can create a logical hierarchy by concatenating the bucket name and the object name to simulate a folder structure.
+
+\begin{itemize}
+\item
+For example, we name the object \lstinline|bucket-to-share/script.txt| instead of \lstinline|script.txt|
+\item
+To get an object, we specify the object name in the \lstinline|GET| request
+\item
+The API to download an object looks like this:
+
+\begin{lstlisting}
+GET /bucket-to-share/script.txt HTTP/1.1
+Host: foo.s3example.org
+Date: Sun, 12 Sept 2021 18:30:01 GMT
+Authorization: authorization string
+\end{lstlisting}
+\end{itemize}
+
+Listing 9.3: Downloading an object
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+As mentioned earlier, the data store does not store the name of the object and it only supports object operations via \lstinline|object_id| (UUID).
+
+In order to download the object is shown below:
+
+\begin{enumerate}
+\item
+The client sends an \lstinline|HTTP GET| request to the load balancer: \lstinline|GET /bucket-to-share/script.txt|
+\item
+The API services queries the IAM to verify that the user has \lstinline|READ| accesss to the bucket
+\item
+Once validated, the API service fetches the corresponding object's UUID from the metadata store
+\item
+Next, the API service fetches the object data from the data store by its UUID
+\item
+The API service returns the object data to the client in HTTP GET response.
+\end{enumerate}
+
+\subsection{Step 3: Design Deep Dive}
+
+In this section, we dive deep into a few areas:
+
+\begin{itemize}
+\item
+Data store
+\item
+Metadata data model
+\item
+Listing object s in a bucket
+\item
+Object versioning
+\item
+Optimizing uploads of large files
+\item
+Garbage collection
+\end{itemize}
+
+\subsection{Data store}
+
+Let's take a closer look at the design of the data store.
+
+\begin{itemize}
+\item
+As discussed previously, the API service handles external requests from users and calls different internal services to fulfill those requests.
+\item
+To persist or retrieve an object, the API service calls the data store
+\item
+Figure 9.7 shows the interactiosn between the API service and the datastore for uploading and downloading an object.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{High-level design for the data store}
+
+The data store has three main components as shown in Figure 9.8.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Data routing service}
+
+The data routing service provides RESTful or gRPC [12] APIs to access the data node cluster.
+
+It is a stateless service that can scale by adding more servers.
+
+This service has the following responsibilities:
+
+\begin{itemize}
+\item
+Query the placement service to get the best data node to store data
+\item
+Read data from data nodes and return it to the API service
+\item
+Write data to data nodes
+\end{itemize}
+
+\subsubsection{Placement service}
+
+The placement service determines which data nodes (primary and replicas) should be chosen to store an object.
+
+\begin{itemize}
+\item
+It maintains a virtual cluster map, which provides the physical topology of the cluster
+\item
+The virtual cluster map contains location information for each data node which the placement service uses to make sure the replicas are physically separated
+\item
+This separation is key to high durability
+\item
+See the ``Durability'' section on page 270 for details
+\item
+An example of the virtual cluster map is shown in Figure 9.9.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The pacement service continuously monitors all data nodes through heartbeats.
+
+The placement service continulously monitors all data nodes through heartbeats.
+
+\begin{itemize}
+\item
+If a data node doesn't send a heartbeat within a configurable 15-second grace period, the placement service marks the node as ``down'' in the virtual cluster map.
+
+\item
+This is a critical service, so we suggest building a cluster of 5 or 7 placement service nodes with Paxos [13] or Raft [14] consensus protocol
+\item
+The consensus protocol ensures that as long as more than half of the nodes are healthy, the service as a whole continues to work.
+\item
+For example, if the placement service cluster has 7 nodes, it can tolerate a 3 node failure
+\item
+To learn more about consensus protocols, refer to the reference materials [13] [14]
+\end{itemize}
+
+\subsection{Data node}
+
+The data node stores the actual object data.
+
+\begin{itemize}
+\item
+It ensures reliability and durability by replicating data to multiple data nodes, also called a replication group.
+\item
+Each data node has a data service daemon reunning on it
+\item
+The data service daemon continuously sends heartbeats ot the placement service.
+\end{itemize}
+
+The heartbeat message includes the following essnetial information:
+
+\begin{itemize}
+\item
+How many disk drives (HDD OR SSD) does the data node manage?
+\item
+How much data is stored on each drive?
+\end{itemize}
+
+WHen the placement service receives the heartbeat for the first time, it assigns an ID for this data node, adds it to the virtual cluster map, and returns the following information:
+
+\begin{itemize}
+\item
+a unique ID of the data node
+\item
+the virtual cluster map
+\item
+where to replace data
+\end{itemize}
+
+\subsubsection{Data persistence flow}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Now let's take a look at how data is persisted in the data node.
+
+\begin{enumerate}
+\item
+The API service forwards the object data to the data store.
+\item
+The data routing service generates a UUID for this object and queries the placement service for the data node to store this object. The placement service checks the virtual cluster map and returns the primary data node
+\item
+The data routing service sends data directly to the primary data node, together with its UUID
+\item
+\begin{itemize}
+\item
+The primary data node saves the data locally and replicates it to two secondary data nodes
+\item
+The primary node responds to the data routing service when data is successfully replicated to all secondary nodes
+\end{itemize}
+\item
+The UUID of the object (ObjId) is returned to the API service
+\end{enumerate}
+
+In step 2, given a UUID for the object as an input, the placement service returns the replication group for the object.
+
+\begin{itemize}
+\item
+How does the placement service do this?
+\item
+Keep in mind that this lokup ne4eds to be deterministic, and it must survive the addition or removal of replication groups
+\item
+COnsisten hashing is a common implementation of such a lookup function
+\item
+Refer to [15] for more information
+\item
+In step 4, the primary data node replicates data to all secondary nodes before it returns a response
+\item
+This makes data strongly consistent among all data nodes
+\item
+This consistency comes with latency costs because we have to wait until the slowest replica finishes
+\item
+Figure 9.11 shows the trade-offs between consistency and latency
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_11}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+Data is considered as successfully saved after all three nodes store the data. This approach has the best consistency but the highest latency
+\item
+
+\begin{itemize}
+\item
+Data is considered as successfully saved after the primary and one of the secondaries store the data.
+\item
+This approach has a medium consistency and medium latency
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Data is considered as successfully save d after the primary persists the data
+\item
+This approach has the worst consistency but the lowest latency
+\end{itemize}
+\end{itemize}
+
+Both 2 and 3 are forms of eventual consistency.
+
+\subsubsection{How data is organized}
+
+Now let's take a look at how each data node manages the data.
+
+\begin{itemize}
+\item
+A simple solution is to store each object in a stand-alone file
+\item
+This works, but the performance suffers when there are many small files
+\item
+Two issues arise when having too many small files on a file system
+\item
+First, it wastes many data blocks
+\item
+A file system stores files in discrete disk blocks
+\item
+Disk blocks have the same size, and the size is fixed when the volume is initialized
+\item
+The typical block size is around 4KB
+\item
+For a file smaller than 4KB, it would still consume the entire disk block
+\item
+If the file system holds a lot of small files, it wastes a lot of disk blocks, with each one only lightly filled with a small file
+\end{itemize}
+
+Second, it could exceed the sytem's inode capacity.
+
+\begin{itemize}
+\item
+The file system stores the location and other information about afile in a special type of block called inode
+\item
+For most file systems, the number of inodes is fixed when the disk is initialized
+\item
+With millions of small files, it runs the risk of consuming all inodes
+\item
+Also, the operating system does not handle a large number of inoes very well, even with aggresive caching of file system metadata
+\item
+For these reasons, storing small objects as individual files does not work well in practice
+\item
+TO addresss these issues, we can merge many small objects into a larger file
+\item
+It works concetually like a write-ahead log (WAL)
+\item
+WHen we save an object, it is appnded to an existing read-write file
+\item
+WHen the read-write file reaches its capacity thredhold (usually set to a few FGBs), the read-write file is marked as read-only and a new read-write file is created to receive new objects
+\item
+Once a file is marked as read-only, it can only serve read requests.
+\item
+Figure 9.12 explains how this process works
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Note that write access to the read-write file must be serialized.
+
+\begin{itemize}
+\item
+As shown in Figure 9.12, objects are stored in order, one after the other, in the read-write file.
+\item
+To maintain this on-disk layout, multiple cores processing incoming write requests in parallel must take their turns to write to the read-write file
+\item
+For a modern server with a large number of cores processing many incoming requests in parallel, this seriously restricts write throughput
+\item
+To fix this, we could provide deicated read-write files, one for each core processing incoming requests
+\end{itemize}
+
+\subsection{Object lookup}
+
+With each data file holding many small objects, how does the data node locate an object by UUID? The data node needs the following information:
+
+\begin{itemize}
+\item
+The data file that contains the objecjt
+\item
+The straing offset of the object in the data file
+\item
+The size of the object
+\end{itemize}
+
+The database schema to support this lookup is shown in Table 9.3.
+
+\begin{tabular}{|p{6cm}|}
+\hline
+\lstinline|object_mapping| \\
+\hline
+\lstinline|object_id| \\
+\lstinline|file_name| \\
+\lstinline|start_offset| \\
+\lstinline|object_size| \\
+\hline
+\end{tabular}
+
+Table: \lstinline|Object_mapping| table
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{table_9_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+We considered two options for storing this mapping: a file-based key-value store such as RocksDB [16] or a relational database.
+
+\begin{itemize}
+\item
+RocksDB is based on SSTable [17], and it is fast for writes but slower for reads
+\item
+A relational database usually uses a B+ tree [18] based storage engine, and it is fast for reads but slower for writes
+\item
+As mnetioned earlier, the data access pattern is write once and read multiple times
+\item
+Since a relational database provides better read performance, it is a better choice than RocksDB
+\end{itemize}
+
+\begin{itemize}
+\item
+How should we deploy this relational database?
+\item
+At our scale, the data volume for the mapping table is massive
+\item
+Deploying a single large cluster to support all data nodes could work, but is difficult to manage
+\item
+Note that this mapping data is isolated within each data node
+\item
+There is no need to share this across data nodes
+\item
+To take advantage of this property, we could simply deploy a simple relational database on each data node
+\item
+SQLite [19] is a good choice here
+\item
+It is a file-based relational database with a solid reputation
+\end{itemize}
 
 \end{document}

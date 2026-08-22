@@ -41,7 +41,8 @@
     "oldsubparagraph")
    (LaTeX-add-labels
     "tab:label"
-    "tab:storage-options")
+    "tab:storage-options"
+    "lst:uploading-object")
    (LaTeX-add-environments
     '("defbox" 1))
    (LaTeX-add-array-newcolumntypes
