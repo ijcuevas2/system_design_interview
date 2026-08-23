@@ -11665,4 +11665,29 @@ Note that the choice of failure domain level doesn't directly increase the durab
   \end{center}
 \end{figure}
 
+\subsubsection{Erasure coding}
+
+Making three full copies of data gives us roughly 6 nines of data durability.
+
+\begin{itemize}
+\item
+Are there other options to further increase durability?
+\item
+Yes, erasure coding is one option
+\item
+Erasure coding [22] deals with data durability differently
+\item
+It chunks data into smaller pieces (placed on different servers) and creates parities for redundancy
+\item
+In the event of failures, we can use chunk data and parities to reconstruct the data
+\item
+Let's take a look at a concrete example (4 + 2 erasure coding) as shown in Figure 9.15
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_15}
+    \caption{}
+  \end{center}
+\end{figure}
 \end{document}
