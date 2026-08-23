@@ -12378,8 +12378,75 @@ Figure 10.1 shows an example of a mobile game leaderboard. The leaderboard shows
   \end{center}
 \end{figure}
 
-\subsection{Step 1: UNderstand the Problem and Establish Design Scope}
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
 
 Leaderboards can be pretty straighforward, but there are a number of different matters that can add complexity. We should clarify the requirements.
+
+\begin{enumerate}
+\item
+
+\textbf{Candidate}: How is the score calculate for the leaderboard?
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+The user gets a point when they win a match
+\item
+We can go with a simple point system in which each user has a score associated with them
+\item
+Each time the user wins a match we should add a point to their total score
+\end{itemize}
+
+\item
+
+\textbf{Candidate}: Are all players included in the leaderboard?
+
+\textbf{Interviewer}: Yes.
+
+\item
+\textbf{Candidate}: Is there a time segment associated with the leaderboard?
+
+\textbf{Interviewer}: Each month a new tournament kicks off which starts a new leaderboard.
+
+\item
+\textbf{Candidate}: Cn we assume we only care about the top 10 users?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+We want to display the top 10 users as well as the position of a specifc user on the leaderboard
+\item
+If time allows, let's also discuss how to return users who are four places above and below a specific user
+\end{itemize}
+
+\item
+\textbf{Candidate}: How many users are in a tournament?
+
+\textbf{Interviewer}: Average of 5 million dialy active users (DAU) and 25 million monthly active users (MAU)
+
+\item
+\textbf{Candidate}: How many matchecs are plyaed on average during a tournamnet?
+
+\textbf{Interviewer}: In this case, their ranks are the smae. If tiem allows, we can talk about ways to break ties
+
+\item
+\textbf{Candidate}: Does the learboard need to be real-time?
+
+\textbf{Interviewer}: Yes, we wan to present real-time results, or as close as possible. It is not okay to present a batched history of results.
+\end{enumerate}
+
+Now that we've gathered all the requirements, let's list the functional requirements.
+
+\begin{itemize}
+\item
+Display top 10 players on the leaderboard
+\item
+Show a user's specific rank
+\item
+Display players who are four places above and below the desired user (bonus)
+\end{itemize}
+
+Other than clarifying functional requirements, it's important to understand non-functional requirements.
 
 \end{document}
