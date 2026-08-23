@@ -12261,4 +12261,89 @@ The data store reassembles the object from its parts based on the part number. S
 One potential problem with this approach si that old aprts are no longer useful after the object has ben reassembled from them.
 
 To solve this porlbem we can introduce a garbage collection service responsible for freeing up space from parts that are no longer needed.
+
+\subsection{Garbage collection}
+
+Garbage ccollection is the process of autmatically recaliming storage space that is no longer used. There are a few ways that data might become garbage:
+
+\begin{itemize}
+\item
+Lazy object deletion. An object is marked as deleted at delete time without actually being deleted
+\item
+Orphaned data. For example, half uploaded data or abondoned multipart uploads
+\item
+Corruped data. Data that failed the checksum verification.
+\end{itemize}
+
+The garbage collector does not remove objects from the data store, right away. Dleted objects will be periodically cleaned up with a compaction metchanism.
+
+\begin{itemize}
+\item
+The garbage collector is also responsible for reclaming unused space in replicas.
+\item
+For replication, we delete the object from both primary and backup nodes.
+\item
+For erasure coding, if we use (8 + 4) setup, we delete the object from all 12 nodes.
+\end{itemize}
+
+
+
+Figure 9.26 shows an example of how compaction works.
+
+\begin{enumerate}
+\item
+The garbage collector copies objects from \lstinline|/data/b| to a new file named \lstinline|/data/d|. Note the garbage collector ksips ``Object 2'' and ``Object 5'' because the delete flag is set to true for both of them.
+\item
+
+\begin{itemize}
+\item
+After all objects are copied, the garbage collector updates the \lstinline|object_mapping| table
+\item
+For example, the \lstinline|obj_id| and \lstinline|object_size| fields of ``Object 3'' remain the same, but \lstinline|file_name| and \lstinline|start_offset| are updated to refelect its new location
+\item
+To ensure data consistency, it's a good idea to wrap the update operations to \lstinline|file_name| and \lstinline|start_offset| in a database transaction
+\end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_26}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{itemize}
+\item
+As we can see from FIgure 9.26, the size of the new file after compaction is smaller than the old file.
+\item
+To avoid creating lot of small files, the garbage collector usually waits until there are a large number of read-only files to compact, and the compaction process appends objects from many read-only files into a few large new files.
+\end{itemize}
+
+\subsection{Step 4: Wrap Up}
+
+In this cahpter, we described the high-level design for S3-like object storage. We compared the differences between block storage, file storage, and object storage.
+
+\begin{itemize}
+\item
+The focus of this interview is on the design of object storage, so we listed how the uploading, downloading, listing objects in a bucket, and versioining of objects are typically done in object storage.
+\item
+Then we dived deeper into the design
+\item
+Object storage is composed of a data store and a metadata store
+\item
+We explained how the data is persisted into the data store and discussed two methods for increasing realiability and ruability: replication and reasure coding
+\item
+FOr the metadata store, we explained how the multipart upload is executed and how to design the database schema to support typical use cases
+\item
+Lastly, we explained how to shard the metadata store to support even larger data volume!
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_9_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
 \end{document}
