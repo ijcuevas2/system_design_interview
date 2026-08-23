@@ -11746,4 +11746,106 @@ While in 3-copy replication, the storage overhead is 200\% (Figure 9.17)
   \end{center}
 \end{figure}
 
+Does erasure coding increase data durability?
+
+\begin{itemize}
+\item
+Let's assume a node has a 0.81\% annual failure rate.
+
+\begin{itemize}
+\item
+According to the calculation done by   Backbalze [20], erasure coding can achieve 11 nines durability
+\item
+THe calculation requires complicated math
+\item
+If you're interested, refer to [20] for details
+\end{itemize}
+\end{itemize}
+
+Table 9.5 compares the proces and cons of replication and erasure coding.
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+      & \textbf{Replication} & \textbf{Erasure coding} \\
+\hline
+Durability & 6 nines of durability (data copied 3 times) & 11 nines of durability (8 + 4 erasure coding) \textbf{Erasure coding wins} \\
+\hline
+Storage efficiency & 200\% storage overhead & 50\% storage overhead. \textbf{Erasure coding wins} \\
+\hline
+Compute resource & No computation. \textbf{Replication wins.}
+ & Higher usage of computation resources to calculate parities \\
+\hline
+Write performance & Replicating data to multiple nodes. No calculation is needed. \textbf{Replication wins.}
+ & Increased write latency because we need to calculate parities before data is written to disk\\
+\hline
+Read performance & In normal operation, reads are served from the same replica. Reads under a failure mode are not impacted because reads can be served from a non-fault replica. \textbf{Replication wins}
+ & In normal operation, every read has to come from multiple nodes in the cluster. Reads under a faulire mode are slower because the missing data must be reconstructed first.\\
+\hline
+\end{tabular}
+
+In summary, replication is widely adopted in latency-sensitive applications while erasure coding is often used to minimize storage cost.
+
+Erasure coding is attractive for its cost efficiency and druability, but it greatly complicates the data node design.
+
+Therefore, for this design, we mainly focus on replication.
+
+\subsection{Correctness verfication}
+
+Erasure coding increases data durability at comparable storage costs.
+
+\begin{itemize}
+\item
+Now we can move on to solve another hard challenge: data corruption
+\item
+If a disk fails completely and the failure can be detected, it can be treated as a data node failure
+\item
+In this case, we can reconstrcut data using erasure coding
+\item
+However, in-memory data corruption is a regular occurrence in large-scale systems
+\item
+This problem can be addressed by verifying checksums [25] between process boundaries
+\item
+A checksum is a small-size block of data that is used to detect data errors
+\item
+Figure 9.18 illustrates how the checksum is generated
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+If we know the checksum of the original data, we can compute the checksum of the data after transmission:
+
+\begin{itemize}
+\item
+If they are different, data is corrupted
+\item
+If they are the same, there is a very high probability the data is not corrupted. THe probability is not 100\%, but in practice, we could assume they are the same
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+There are many checksum algorithms, such as MD5 [26], SHA1 [27], HMAC [28], etc.
+
+\begin{itemize}
+\item
+A good checksum algorithm usually outputs a significantly different value even for a small change made to the input
+\item
+For this chapter, we choose a simple check sum algorithym such as MD5
+\item
+On our design, we append the checksum at the end of each object
+\item
+Before a file is marked as read-only, we added a checksum of the entire file at the end
+\item
+FIgure 9.20 shows the layout
+\end{itemize}
+
 \end{document}
