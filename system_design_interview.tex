@@ -11845,7 +11845,49 @@ On our design, we append the checksum at the end of each object
 \item
 Before a file is marked as read-only, we added a checksum of the entire file at the end
 \item
-FIgure 9.20 shows the layout
+Figure 9.20 shows the layout
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+With (8 + 4) erasure coding and checksum verification, this is what happens when we read data:
+
+\begin{enumerate}
+\item
+Fetch the objecfvt data and the checksum
+\item
+Compute the checksum against the data received
+
+\begin{itemize}
+\item
+If the two checksums match, the data is error-free
+\item
+If the checksums are different, the data is corrupted We will try to recover by reading the data from other failure domains
+\end{itemize}
+\item
+Repeat steps 1 and 2 until all 8 pieces of data are returned. We then reoncstruct the data and send it back to the client.
+\end{enumerate}
+
+\subsection{Metadata data model}
+
+In this section, we first discuss the database schema and then dive into scaling the database.
+
+\subsubsection{Schema}
+
+The database schema needs to support the following 3 queries:
+
+\begin{itemize}
+\item
+Query 1: Find the object ID by ocject name
+\item
+Query 2: Insert and dlete an object based on the object name
+\item
+Query 3: List objects in a bucket sharing the same prefix
 \end{itemize}
 
 \end{document}
