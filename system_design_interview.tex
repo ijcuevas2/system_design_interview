@@ -12121,7 +12121,7 @@ We have a solution that can solve the problem but there are some tradeoffs
 \item
 Since object storage is tuned for vast scale and high durability, object listing performance is rarely a priority
 \item
-Infact, all commerical object storage supports object listing with sub-optimal performance.
+In fact, all commerical object storage supports object listing with sub-optimal performance.
 \item
 To take advantage of this, we coulddenormalize the listing data into a separate tablesharded by bucket ID
 \item
@@ -12131,4 +12131,134 @@ With this setup, even tbuckets with billlions of objects would offer acceptable 
 \item
 This isolates the listing query to a single database which greatly simplifies the implementation
 \end{itemize}
+
+\subsection{Object versioning}
+
+Versioning is a feature that keeps multiple versions of an object in a bucket.
+
+\begin{itemize}
+\item
+With versioning, we can restore object s that are accidentally deleted or overwritten
+\item
+For example, we may modify a document and save it under the same name, inside the same bucket
+\item
+Without versioning, the old version of the document metadata is replaced by the new version in the metadata store
+\item
+The old version of the doucment is marked as deleted, so its storage space will be reclaimed by the garbage collector
+\item
+With versioning, the object storage keeps all previous versions of the document int he metadata store, and the old versions of the document are never marked as deleted in the object sotre
+\item
+Figure 9.22 explains how to upload a versioned object
+\item
+For this to work, we first need to enable versioning on the bucket
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+The client sends an \lstinline|HTTP PUT| request to upload an object named \lstinline|script.txt|.
+\item
+The API service verifies the user's identity and ensures that the user has WRITE permission on the bucket
+\item
+Once verified, the API service uploads the data ot the data store. The data store persists the data as a new object and returns a enw UUID to the API service
+\item
+The API service calls the metadata store to store the metadata information of this object
+\item
+
+\begin{itemize}
+\item
+Tos upport versioning, the object table for the metadata store has a column called \lstinline|object_version| that is only used if versioning is enabled
+\item
+Instead o f overwriting the existing record, a new record is inserted with the same \lstinline|bucket_id| and \lstinline|object_name| as the old record, but with a new \lstinline|object_id| and \lstinline|object_version|
+\item
+The \lstinline|object_id| is the UUID for the new object retuned in step 3
+\item
+The \lstinline|object_version| is a \lstinline|TIMEUUID| [29] generated when the new row is inserted
+\item
+No matter which database we choose for the metadata store, it should be efficinet to look up the current version of an object
+\item
+The current version has the largest has the largest \lstinline|TIMEUUID| of all the entires with the same \lstinline|object_name|
+\item
+See Figure 9.23 for an illlustration of how we store versioned metadata
+\end{itemize}
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_23}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In addition to uploading a versioned object, it can also be deleted. Let's take a look.
+
+When we delete an object, all versions remain in the bucket and we insert a delete marker, as shown in FIgure 9.24.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+A delete marker is a new version of the object, and it becomes the current version of the object once inserted.
+
+Performing a \lstinline|GET| request when the current version of the object is a delete marker returns a \lstinline|404 Object Not Found| error.
+
+\subsection{Optimizing uploads of large files}
+
+In the back-of-the-envelope esitmation, we estimated that 20\% of the objects are larger tha a few GBs.
+
+\begin{itemize}
+\item
+It is possible to upload such a large object file direclty, but it could take a logn time
+\item
+If the network connection fails in the middle of the upload, we have to start over
+\item
+A better solution is to slice a large object into smaller parts and upload them indepdently
+\item
+After all the parts are uploaded, the object store re-assmbles the object form the parts. This process is called multipart upload.
+\end{itemize}
+
+Figure 9.25 illustrates how multipart upload works:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_25}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+The client calls the object storage to initaate a multipart upload
+\item
+The data store retunrs an \lstinline|uploadId|, which uniqely identifies the upload
+\item
+
+\begin{itemize}
+\item
+The client splits the large file into small objects and starts uploading
+\item
+Let's assume the size of the file is 1.6GB and the client splits it into 8 parts, so each part is 200MB in size
+\item
+The client uploads the first part to the data store teogether with the uploadID it received in step 2
+\end{itemize}
+\item
+When a part is uploaded, the data store returns an \lstinline|ETag|, which is essnially the md5 checksum of that part. It is used to verify multipart uploads
+\item
+After all parts are uploaded, the client sends a complete multiplart upload request, which includes the \lstinline|uploadID|, part numbers, and \lstinline|ETags|
+\item
+The data store reassembles the object from its parts based on the part number. Since the object is really large, this process may take a few minutes. After reassembly is complete, it returns a success message to the client.
+\end{enumerate}
+
+One potential problem with this approach si that old aprts are no longer useful after the object has ben reassembled from them.
+
+To solve this porlbem we can introduce a garbage collection service responsible for freeing up space from parts that are no longer needed.
 \end{document}

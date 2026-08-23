@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  23 AUG 2026 02:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  23 AUG 2026 03:35
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2688,18 +2688,41 @@ File: images/figure_9_21.jpg Graphic file (type jpg)
 <use images/figure_9_21.jpg>
 Package pdftex.def Info: images/figure_9_21.jpg  used on input line 11897.
 (pdftex.def)             Requested size: 276.00105pt x 141.56871pt.
- [302 <./images/figure_9_21.jpg>] [303] [304] [305] [306] (./system_design_inte
-rview.aux)
+ [302 <./images/figure_9_21.jpg>] [303] [304] [305] [306]
+<images/figure_9_22.jpg, id=1188, 3372.6pt x 2619.7875pt>
+File: images/figure_9_22.jpg Graphic file (type jpg)
+<use images/figure_9_22.jpg>
+Package pdftex.def Info: images/figure_9_22.jpg  used on input line 12158.
+(pdftex.def)             Requested size: 276.00105pt x 214.38425pt.
+ [307 <./images/figure_9_22.jpg>]
+<images/figure_9_23.jpg, id=1193, 7791.1075pt x 3625.545pt>
+File: images/figure_9_23.jpg Graphic file (type jpg)
+<use images/figure_9_23.jpg>
+Package pdftex.def Info: images/figure_9_23.jpg  used on input line 12194.
+(pdftex.def)             Requested size: 276.00105pt x 128.40071pt.
+<images/figure_9_24.jpg, id=1194, 7528.125pt x 4129.4275pt>
+File: images/figure_9_24.jpg Graphic file (type jpg)
+<use images/figure_9_24.jpg>
+Package pdftex.def Info: images/figure_9_24.jpg  used on input line 12205.
+(pdftex.def)             Requested size: 276.00105pt x 151.3498pt.
+ [308 <./images/figure_9_23.jpg>]
+<images/figure_9_25.jpg, id=1198, 5155.26pt x 6674.9375pt>
+File: images/figure_9_25.jpg Graphic file (type jpg)
+<use images/figure_9_25.jpg>
+Package pdftex.def Info: images/figure_9_25.jpg  used on input line 12233.
+(pdftex.def)             Requested size: 276.00105pt x 357.29407pt.
+ [309 <./images/figure_9_24.jpg>] [310 <./images/figure_9_25.jpg>] [311] (./sys
+tem_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 27905 strings out of 467533
- 649143 string characters out of 5422138
+ 27961 strings out of 467533
+ 650531 string characters out of 5422138
  1100703 words of memory out of 5000000
- 56466 multiletter control sequences out of 15000+600000
+ 56522 multiletter control sequences out of 15000+600000
  632185 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -2714,10 +2737,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (306 pages, 756708591 bytes).
+Output written on system_design_interview.pdf (311 pages, 774017606 bytes).
 PDF statistics:
- 1252 PDF objects out of 1440 (max. 8388607)
- 716 compressed objects within 8 object streams
+ 1272 PDF objects out of 1440 (max. 8388607)
+ 727 compressed objects within 8 object streams
  0 named destinations out of 1000 (max. 500000)
- 993 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1013 words of extra memory for PDF output out of 10000 (max. 10000000)
 
