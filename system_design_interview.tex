@@ -11572,4 +11572,97 @@ SQLite [19] is a good choice here
 It is a file-based relational database with a solid reputation
 \end{itemize}
 
+\subsection{Updated data persistence flow}
+
+Since we have made quite a few changes to the data node, let's revist how to save a new object in the data nodde (Figure 9.13).
+
+\begin{itemize}
+\item
+The API service sends a request to save a new object named \lstinline|object 4|.
+\item
+The data node service appends the object named \lstinline|object 4| at the end of the read-write file named \lstinline|/data/c|
+\item
+A new record of \lstinline|object 4| is inserted into the \lstinline|object_mapping| table
+\item
+The data node service returns the UUID to the API service
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Durability}
+
+Data reliability is extremely important for data storage systems.
+
+\begin{itemize}
+\item
+How can we create a storage system that offers six nines of durability?
+\item
+Each failure case has to be carefully considered and data needs to be properly replicated.
+\end{itemize}
+
+
+\subsubsection{Hardware failure and failure domain}
+
+Hard drive failures are inveitable no matter which media we use.
+
+\begin{itemize}
+\item
+Some storage media mya have btter duarbility than others, but we cannot rely on a single hard drive to achieve our durability objective
+\item
+A proven way to increase durability is to replicate data to multiple hardd rives, so a single disk failure does not impact the data availability, as a whole
+\item
+In our design, we replicate data three times
+\end{itemize}
+
+Let's assume the spinning hard drive has an annual failure rate of 0.81\% [20].
+
+\begin{itemize}
+\item
+This number hihgly depends on the model and make.
+\item
+Making 3 copies of data gives us $1 - 0.0081^{3} = ~ 0.999999$ reliability
+\item
+This is a very rough estimate
+\item
+For more sophisticated calculations, please read [20]
+\end{itemize}
+
+For a complete durability evalution, we also need to consider the impacts of different failure domains.
+
+\begin{itemize}
+\item
+A failure domain is a phyical or logical sect   of the environment that is negatively affected when a critical service experiences problems
+\item
+In a nodern data center, a server i usually put into a rack [21], and the racks are grouped into rows/floors-rooms
+\item
+Since each rack shares network swithces and power, all the servers in a rack are in a rack-level failure domain
+\item
+A modern server shares components like the motherboard, processors, power suplly, HDD drives, etc.
+\item
+The components in a server are in a node-level failure domain
+\end{itemize}
+
+Here is a good example of a large-scale failure domain isolation.
+
+\begin{itemize}
+\item
+Typically, a data centers divide infrastructure that shares nothing into different Availability Zones (AZs)
+\item
+We replicate our data to different AZs to minimize the failure impact (Figure 9.14)
+\item
+Note that the choice of failure domain level doesn't directly increase the durability of data, but it will result in better reliability in extreme cases , such as large-scale power outages, cooling system fialures, natural disasters, etc.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}
