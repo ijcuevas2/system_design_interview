@@ -11915,4 +11915,105 @@ However, a single database server mgiht not have enough CPU or network bandwidth
 \item
 If so, we can spread the read load among multiple database replicas
 \end{itemize}
+
+\subsection{Scale the object table}
+
+The \lstinline|object| table holds the object metadata.
+
+\begin{itemize}
+\item
+The dataset at our deisgn scale will liekly not fit in a single databvase isnstance
+\item
+We can scale the boject table by sharding
+\item
+One option is to shard by \lstinline|bucket_id| so all the objects under the smae bucket are stored in one shared
+\item
+This doesn't work because it causes hotpot shards as a bucket might contain billions of objects
+\item
+Another option is to shard by \lstinline|object_id|
+\item
+The beneifit of this sharding scheme is that it evenly distributes the load
+\item
+But we will not be able to execute query 1 and query 2 effficiently because those two queries are based on the URI
+\item
+We choose to shard by a combination of \lstinline|bucket_name| and \lstinline|object_name|
+\item
+This is because most of the metadata operations are based on the object URI, for example, finding the object ID by URI or uploading an object via URI
+\item
+TO evenly distribute the data, we can use the hash of the \lstinline|<bucket name, object_name>|
+\item
+With this sharding scheme, it is straightforward to support the first two queries, but the last query is less obvious. Let's take a look.
+\end{itemize}
+
+\subsection{Listing object in a bucket}
+The object store arranges files in a flat structure instead of a hierarchy, like in a file system
+
+An object can be accessed using a path in this format, \lstinline|s3://bucket-name/object-name|.
+
+For exmaple, \lstinline|s3://mybucket/abc/d/e/f/file.txt| contains:
+
+\begin{itemize}
+\item
+Bucket name: \lstinline|mybucket|
+\item
+Object name: \lstinline|abc/d/e/f/file.txt|
+\end{itemize}
+
+To help users organize their objects in a bucket, S3 introduces a concept called `prefixes'.
+
+\begin{itemize}
+\item
+A prefix iis a string at the beginning of the object name
+\item
+S3 uses prefixes to organize the data in a way similar to directories
+\item
+However, prefixes are not directories
+\item
+Listing a bucket by prefix limits the results to ony those object names that begin with the prefix
+\end{itemize}
+
+In the example above with the path \lstinline|s3:bucket//mybucket/abc/d/e/f/file.txt|, the prefix is \lstinline|abc/d/e/f/|
+
+The AWS S3 listing command has 3 typical uses:
+
+\begin{enumerate}
+\item
+List all buckets owned by a user. The command looks like this:
+
+\lstinline|aws s3 list-buckets|
+\item
+LIst all objects in  abucket that are at the same level as the specified prefix. The command looks like this:
+\lstinline|awes s3 ls s3://mybucket/abc|
+
+In this mode, objects with more slashes in the name after the prefix are rolled up into a common prefix. FOr example, with these objects in the bucket:
+
+\begin{lstlisting}
+CA/cities/losangeles.txt
+CA/cities/sanfrancisco.txt
+NY/cities/ny.txt
+federal.txt
+\end{lstlisting}
+
+Listing the bucket with the "/" prefix would return these results, with everything under \lstinline|CA/| and \lstinline|NY/| rolled up into them:
+
+\begin{lstlisting}
+CA/
+NY/
+federal.txt
+\end{lstlisting}
+\item
+Recursively list all objects in a bucket that shares the same prefix. THe command looks like this:
+
+\begin{lstlisting}
+aws s3 ls s3://mubucket/abc/ --recursive
+\end{lstlisting}
+
+Using the same example as above, listing the bucket with the \lstinline|CA/| prefix would return these results:
+
+\begin{lstlisting}
+CA/cities/losangeles.txt
+CA/cities/sanfrancisco.txt
+\end{lstlisting}
+\end{enumerate}
+
 \end{document}
