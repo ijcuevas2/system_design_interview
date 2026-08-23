@@ -11690,4 +11690,60 @@ Let's take a look at a concrete example (4 + 2 erasure coding) as shown in Figur
     \caption{}
   \end{center}
 \end{figure}
+
+\begin{itemize}
+\item
+Dataq is broken up into four even-sized data chunks d1, d2, d3, and d4
+\item
+The mathematical formula [23] is used to calculate the partities p1 and p2. To give a much simplified example, $p1 = d1 + 2 \times d2 - d3 + 4 \times d4$ and $p2 = -d1 + 5 \times d2 + d3 - 3 \times d4$ [24]
+\item
+Data d3 and d4 are lost due to node crashes
+\item
+The mathematical formula is used to reconstruct lost data d3 and d4, using the known values of d2, d3, p1, and p2
+\end{itemize}
+
+Let's take a look at another example as shown in Figure 9.16 to better understand how erasure coding works with failure domains.
+
+\begin{itemize}
+\item
+An (8+4) erasure coding setup breaks up the original data evenly into 8 chunks and calculates 4 partiies
+\item
+ALl 12 pieces of data have the same size
+\item
+All 12 chunks of data are distributed across 12 different failure domains
+\item
+The mathematics behind erasure coding ensures that the original data can be reconstructed when at most 4 nodes are down
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Compared to replication where the data router only needs to read data for an object from on healthy node, in easure coding the data router has to read data from at least 8 healhty nodes.
+
+\begin{itemize}
+\item
+This is an architectural design tradeoff
+\item
+We use a more complex solution with a slower access speed, in exchange for higher durability and lower storage cost
+\item
+For object storage where the main cost is storage, this tradeoff might be worth it
+\item
+How much extra space does erasure coding need?
+\item
+For every two chunks of data, we need one prarity block, so the storage overhead is 50\% (Figure 9.17)
+\item
+While in 3-copy replication, the storage overhead is 200\% (Figure 9.17)
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}
