@@ -11890,4 +11890,29 @@ Query 2: Insert and dlete an object based on the object name
 Query 3: List objects in a bucket sharing the same prefix
 \end{itemize}
 
+Figure 9.21 shows the schma design. We need two database tables: \lstinline|bucket| and \lstinline|object|.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_9_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Scale the bucket table}
+
+Since there is usually a limit on the number of buckets a user can create, the size of the \lstinline|bucket| table is small.
+
+\begin{itemize}
+\item
+Let's assume we have 1 million customers, each customer owns 10 buckets and each record takes 1KB
+\item
+That means we need 10GB ($1 \text{ million} \times 10 \times 1 \text{ KB}$) of storage space
+\item
+THe whole table can easily fit in a modern database server
+\item
+However, a single database server mgiht not have enough CPU or network bandwidth to handle all read requests
+\item
+If so, we can spread the read load among multiple database replicas
+\end{itemize}
 \end{document}
