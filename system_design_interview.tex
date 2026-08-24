@@ -13215,7 +13215,7 @@ With 5 million DAU, we can get away with one Redis cache from both a storage and
 \item
 However, let's imagine we have 500 million DAU, which is 100 times our original scale
 \item
-Now our worst-case scenario for the size of the leaderboard goes up to 65GB (650MB $\times$ 100), and our QPS goes up to 250,000 (2,500 \times 100) queries per second
+Now our worst-case scenario for the size of the leaderboard goes up to 65GB (650MB $\times$ 100), and our QPS goes up to 250,000 (2,500 $\times$ 100) queries per second
 \item
 This calls for a sharding solution
 \end{itemize}
@@ -13270,6 +13270,21 @@ In Figure 10.18, the last shard with scores [901, 1000] contains the top 10 play
 To fetch the rank of a user, we would need to calculate the rank within their current shard (local rank), as well as the total number of players with higer scores in all of the shards
 \item
 Note that the total number of players in a shard can be retrieved by running the \lstinline|info keyspace| command in \lstinline|O(1)| [11]
+\end{itemize}
+
+\subsubsection{Hash partition}
+
+A second approach is to use the Redis cluster, which is desirable if the scores are very clustered or clumped.
+
+\begin{itemize}
+\item
+Redis cluster provides a way to shard data autmatically across multiple Redis nodes
+\item
+It doesn't use consistent hasing but a different form of sharding, where every key is part of a \lstinline|hash slot|
+\item
+There are 16384 hash slots [12] and we can compute the hash slot of a given key by doing \lstinline|CRC16(key) % 16384|  [13]
+\item
+This
 \end{itemize}
 
 \end{document}

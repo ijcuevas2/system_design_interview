@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  24 AUG 2026 02:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  24 AUG 2026 02:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2872,53 +2872,12 @@ File: images/figure_10_17.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/figure_10_17.jpg  used on input line 13195.
 (pdftex.def)             Requested size: 276.00105pt x 111.28267pt.
 [333 <./images/figure_10_16.jpg> <./images/figure_10_17.jpg>]
-./system_design_interview.tex:13218: Missing $ inserted.
-<inserted text> 
-                $
-l.13218 ...ur QPS goes up to 250,000 (2,500 \times
-                                                   100) queries per second
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-
-./system_design_interview.tex:13219: LaTeX Error: Command \item invalid in math
- mode.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.13219 \item
-             
-Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
-
-./system_design_interview.tex:13220: Missing $ inserted.
-<inserted text> 
-                $
-l.13220 T
-         his calls for a sharding solution
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-
-Overfull \hbox (48.88484pt too wide) in paragraph at lines 13218--13220
-\OT1/cmr/m/n/10 65GB (650MB $\OMS/cmsy/m/n/10 ^^B$ \OT1/cmr/m/n/10 100), and ou
-r QPS goes up to 250,000 (2,500 $\OMS/cmsy/m/n/10 ^^B\OT1/cmr/m/n/10 100)\OML/c
-mm/m/it/10 queriespersecond
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 13218--13220
-
- []
-
 <images/figure_10_18.jpg, id=1296, 6142.95pt x 1453.43pt>
 File: images/figure_10_18.jpg Graphic file (type jpg)
 <use images/figure_10_18.jpg>
 Package pdftex.def Info: images/figure_10_18.jpg  used on input line 13240.
 (pdftex.def)             Requested size: 276.00105pt x 65.29063pt.
-[334 <./images/figure_10_18.jpg>] [335] (./system_design_interview.aux)
+ [334 <./images/figure_10_18.jpg>] [335] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
@@ -2943,7 +2902,7 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (335 pages, 839037696 bytes).
+Output written on system_design_interview.pdf (335 pages, 839036801 bytes).
 PDF statistics:
  1368 PDF objects out of 1440 (max. 8388607)
  780 compressed objects within 8 object streams
