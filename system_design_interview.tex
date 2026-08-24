@@ -13110,4 +13110,93 @@ If this becomes too inefficient in the long term, we can leverage a user profile
 The design is shown in Figure 10.15
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_15}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Build on the cloud}
+
+The second approach is to leverage cloud infrastructures.
+
+\begin{itemize}
+\item
+In this section, we assume our existing infrastructure is built on AWS and that it's a natural fit to build the leaderboard on the cloud
+\item
+We will use two major AWS echnologies in this design
+
+\begin{itemize}
+\item
+Amazon API Gateway and AWS Lambda function [8]
+\end{itemize}
+
+\item
+The Amazon API gateway provides a way to define the HTTP endpoints of a RESTful API and connect it to any backend services
+\item
+We use it to connect to our AWS lambda functions
+\item
+The mapping between Restful APIs and Lambda functions is shown in Figure in Table 10.5.
+\end{itemize}
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{APIs} & \textbf{Lambda function} \\
+\hline
+GET \lstinline|/v1/scores| & \lstinline|LeaderboardFetchTop10| \\
+\hline
+GET \lstinline|/v1/scores/{:user_id}| & \lstinline|LeaderboardFetchPlayerRank| \\
+\hline
+POST \lstinline|/v1/scores| & \lstinline|LeaderboardUpdateScore| \\
+\hline
+\end{tabular}
+
+Table 10.5: Lambda functions
+
+AWS Lambda is one of the most popular serverless computing platforms.
+
+\begin{itemize}
+\item
+It allows us to run code without code withotu having to provision or manage the servers ourselves
+\item
+It runs only when needed and will scale autmatically based on traffic
+\item
+Serverless is one of the hottest topics in cloud services and is supported by all major cloud service providers
+\item
+For example, Google Cloud has Google CLoud Functions [9] and Microsoft has named its offering Microsoft Azure Functions [10]
+\item
+At a high level, our game calls the Amazon API Gateway, which in turn invokes the apprpriate lambda functions return the results back to the API Gateway, and then to the application
+\end{itemize}
+
+We can leverage Lambda functions to perform the queries wwe need without having to spin up a server instance.
+
+\begin{itemize}
+\item
+AWS provides support for Redis clients that can be called from the Lambda function
+\item
+This also allows for auto-scaling as needed with DAU growth
+\item
+Design diagram for a user scoring a point and retrieving the leaderboard are shown below:
+
+\textbf{Use case 1: scoring a point}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\textbf{Use case 2: retrieving leaderboard}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\end{itemize}
+
 \end{document}
