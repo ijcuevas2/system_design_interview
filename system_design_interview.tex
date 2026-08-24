@@ -13664,11 +13664,69 @@ With these questions, we get a clear picture of both the functional and non-func
 \item
 In this interview, we focus on designing a payment system that supports the following.
 \end{itemize}
-
-
-
 \end{enumerate}
 
+\subsection{Functional requirements}
 
+\begin{itemize}
+\item
+Pay-in flow: payment system receives money from cusomters on behalf of sellers
+\item
+Pay-out flow: payment system sends money to sellers around the world
+\end{itemize}
+
+\subsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Reliability and fault tolerance. Failed payments need to be carefully handled
+\item
+
+\begin{itemize}
+\item
+A reconciliation process between internal services (payment systems, accounting systems) and external services (payment service providers) is required
+\item
+The process asynchronously verfies that the payment information across these systems is consistent
+\end{itemize}
+\end{itemize}
+
+\subsection{Back-of-the-envelope estimation}
+
+The system needs to process 1 million transactions per day, which is 1,000,000 trnasactions / $10^5$ seconds = 10 transactions per second (TPS).
+
+10 TPS is not a big number for a typical database, which means the focus of this system design interview is on how to correctly handle payment trnasactions, rahter than aiming for high throughput.
+
+\subsection{Step 2: Propose High-level Design and Get Buy-in}
+
+At a high level, the payment flow is broken down in to two steps to reflect how money flows
+
+\begin{itemize}
+\item
+Pay-in flow
+\item
+Pay-out flow
+\end{itemize}
+
+Take the e-commerce site, Amazon, as an example.
+
+\begin{itemize}
+\item
+After a buyer places an order, the money flows into Amazon's bank account, Amazon does not own all of the money
+\item
+THe seller owns a substraintial part of it and Amazon only works as the money customdian for a fee
+\item
+Later, when the products are delivered and money is released, the balance after fees then flows from Amazon's bank account to the seller's bank account
+\item
+This is the pay-out flow
+\item
+The simplified pay-in and pay-out flows are shown in Figure 11.1
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_1}
+    \caption{}
+  \end{center}
+\end{figure}
 
 \end{document}
