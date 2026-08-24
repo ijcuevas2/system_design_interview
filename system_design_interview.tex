@@ -13608,4 +13608,67 @@ It is very important to determine the exact requirements at the beginning of the
 These are some questions you can ask the interviewer
 \end{itemize}
 
+\begin{enumerate}
+\item
+\textbf{Candidate}: What kind of payment system are we building?
+
+\textbf{Interviewer}: Assume you are building a payment backend for an e-commerce application like Amazon.com. When a customer places an order on Amazon.com, the payment system handles everything relatedf to money movement.
+
+\item
+\textbf{Candidate}: What payment options are supported? Credit cards, PayPal, bank cards, etc.
+
+\textbf{Interviewer}: The payment system should support all of these optoins in real life. However, in this interview, we can use cred card payment as an example
+
+\item
+\textbf{Candidate}: Do we handle credit card payment processing ourselves?
+
+\textbf{Interviewer}; No, we use third-party payment processors, such as Stripe, Braintree, Square, etc.
+
+\item
+\textbf{Candidate}: Do we store credit card data in our system?
+
+\textbf{Interviewer}: Due to extremely high security and compliance requirements, we do not store card numbers direclty in our system
+
+\item
+
+\textbf{Candidate}: Is the application global? Do we need to support different currencies and international payments?
+
+\textbf{Interviewer}: Great question. Yes, the application would be global but we assume only one currency is used in this interview.
+
+\item
+\textbf{Candidate}: How many payment trnasactions per day?
+
+\textbf{Interviewer}: 1 million transactions per day.
+
+\item
+\textbf{Candidate}: Do we need to support the pay-out flow, which an e-commerce site like Amazon uses to pay sellers every month?
+\item
+\textbf{Interviewer}: Yes, we need to support that
+
+\item
+\textbf{Candidate}: I think I gathered all the requirements. I there anything else I should pay attention to?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+Yes. A payment system interfacts with a lot of internal services (accounting, analytics, etc.) and external services (payment service providers)
+\item
+When a service fails, we may see inconsistent states among services
+\item
+Therefore, we need to perform reconciliation and fix any inconsistencies
+\item
+This is also a requirement
+\item
+With these questions, we get a clear picture of both the functional and non-functional requirements
+\item
+In this interview, we focus on designing a payment system that supports the following.
+\end{itemize}
+
+
+
+\end{enumerate}
+
+
+
 \end{document}
