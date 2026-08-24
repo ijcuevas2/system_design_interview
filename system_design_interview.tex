@@ -12910,7 +12910,66 @@ Now that we know sorted sets are fast, let's take a loook at the Redis operation
 \lstinline|ZADD|: insert the user into the set if they don't yet exist. Otherwise, update the score for the user. It takes $O(log(n))$ to execute.
 \item
 \lstinline|ZINCRBY|: increment the score of the user by the specified increment. If the user doesn't exist in the set, then it assumes the score starts at 0. It takes $O(log(n))$ to execute
+\item
+\lstinline|ZRANGE/ZREVRANGE|:
 
+\begin{itemize}
+\item
+fetch a range of users sorted by the score
+\item
+We can specify the order (range vs revrange), the number of entries, and the position to start from
+\item
+This takes $O(log(n) + m)$ to execute, where $m$ is the number of entries to fetch (which is usually small in our case) and $n$ is the number of entires in the sorted set
 \end{itemize}
+
+\item
+\lstinline|ZRANK/ZREVRANK|:
+
+fetch the position of any user sorting in ascending/descending order in logarithmic time
+\end{itemize}
+
+\subsection{Workflow with sorted sets}
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+A user scores a point
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_11}
+    \caption{}
+  \end{center}
+\end{figure}
+\item
+Every month we create a new leaderboard sorte set and the previous ones are moved to historical data storage
+\item
+When a user wins a match, they score 1 point; so we call \lstinline|ZINCRBY| to increment the user's score by 1 in that month's leaderboard, or ad dthe user to the leaderboard set if they weren't already there.
+\item
+The syntax for \lstinline|ZINCRBY| is:
+
+\begin{lstlisting}
+ZINCRBY <key> <increment> <user>
+\end{lstlisting}
+\item
+The following command adds a point to user \lstinline|mary1934| after they win a match.
+
+\begin{lstlisting}
+ZINCRBY leaderboard_feb_2021 1 'mary1934'
+\end{lstlisting}
+\end{itemize}
+
+\item
+A user fetches the top 10 global leaderboard
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_12}
+    \caption{}
+  \end{center}
+\end{figure}
 
 \end{document}
