@@ -13729,4 +13729,83 @@ The simplified pay-in and pay-out flows are shown in Figure 11.1
   \end{center}
 \end{figure}
 
+\subsection{Pay-in flow}
+
+The high-level design diagram for the pay-in flow is shown in Figure 11.2. Let's take a look at each component of the system.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Payment service}
+
+The payment service accepts payment events from users and coordinates the payment process.
+
+\begin{itemize}
+\item
+The first think it usually does is a reisk check, assessing for compliance with regulartions such as AML/CFT [2], and fo revidence of criminal activity such as money laundering or financing of terrorism.
+\item
+Usually, the risk check service uses a third-party provider because it is very complicated and highly specialized
+\end{itemize}
+
+\subsubsection{Payment executor}
+
+The payment executor executes a single payment order via a Payment Service Provider (PSP). A payment event may contain several payment orders.
+
+\subsubsection{Payment Service Provider (PSP)}
+
+A PSP moves money from account A to account B. In this simplified example, the PSP moves the money out of the byer's credit card account.
+
+\subsubsection{Card schemas}
+
+Card schemes are the orgnaizations that process credit card operations. Well known card schemes are Visa, MasterCard, Discovery, etc. The card scheme ecosystems is very complex. [3]
+
+\subsubsection{Ledger}
+
+The ledger keeps a financial record of the payment transaction.
+
+\begin{itemize}
+\item
+For example, when a user pays the seller $1, we record it as debit $1 from the user and credit $1 to the seller
+\item
+The ledger system is very important in post-payment analysis, such as calculating the total revenue of the e-commerce website or forecastin future revenue
+\end{itemize}
+
+\subsection{Wallet}
+
+The wallet keeps the account balance of the merchant. It may also record how much a given user has paid in total.
+
+A shown in Figure 11.2, a typical pay-in flow works like this:
+
+\begin{enumerate}
+\item
+When a user clicks the ``place order'' button , a payment event is generated and sent to the payment service.
+
+\item
+The payment services stores the payment event in the database
+\item
+\begin{itemize}
+\item
+Sometimes, a single apyment event may contain several payment orders
+\item
+For example, you may select products from multiple sellers in a single checkout process
+\item
+If the e-commerce website splits the checkout into multiple payment orders, the payment service calls the payment executor for each payment order
+\end{itemize}
+\item
+The payment executor stores the payment order in the database
+\item
+The payment executor calls an external PSP to process the credit card payment
+\item
+After the payment executor has successfully processed the payment, the payment service updates the wallet to record how much meny a given seller has
+\item
+The wallet server stores the updated balance information in the database
+\item
+After wallet service has successfully updated the seller's balance information, the payment service calls the ledger to update it
+\item
+The ledger service appends the new ledger information to the database
+\end{enumerate}
 \end{document}
