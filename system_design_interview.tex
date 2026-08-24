@@ -13196,7 +13196,26 @@ Design diagram for a user scoring a point and retrieving the leaderboard are sho
     \caption{}
   \end{center}
 \end{figure}
+\end{itemize}
 
+Lambdas are great because they are a serverless approach, and the infrastructure wil take care of auto-scaling the function as needed.
+
+\begin{itemize}
+\item
+This means we don't need to manage the scaling and environment steup and maintenance
+\item
+Given this, we recommend going witha serverless approach fi we build the game from the ground up
+\end{itemize}
+
+\subsection{Scaling Redis}
+
+With 5 million DAU, we can get away with one Redis cache from both a storage and QPS perspective.
+
+\begin{itemize}
+\item
+However, let's imagine we have 500 million DAU, which is 100 times our original scale
+\item
+Now our worst-case scenario for the size of the leaderboard goes up to 65GB (650MB $\times$ 100),
 \end{itemize}
 
 \end{document}
