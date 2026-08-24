@@ -13947,4 +13947,27 @@ The payment order table stores the xecution status of each payment order. This i
 Table 11.4: Payment order
 \end{enumerate}
 
+Before we deive into the tables, let's take a look at some background information.
+
+\begin{itemize}
+\item
+The \lstinline|checkout_id| is the foreign key. A single checkout creates a payment event that may contain several payment orders
+\item
+
+\begin{itemize}
+\item
+When we call a third-party PSP to deduct money from the buyer's credit card, the money is not directly transferred to the seller
+\item
+TInstead, the money is transferred to the e-commerce website's bank account
+\item
+This process is called pay-in
+\item
+When the payout condition is satisfied, such as when the products are delivered, the seller initiates a pay-out
+\item
+Only then is the money transferred from the e-commerce website's bank account to the seller's bank account
+\item
+Therefore, during the apy0in flow, we only need the byer's card information, not the seller's bank account information
+\end{itemize}
+\end{itemize}
+
 \end{document}
