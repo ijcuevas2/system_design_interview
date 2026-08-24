@@ -13558,7 +13558,7 @@ Given the design above, we could create a script that leverages the fact that th
 \item
 We could iterate through all of the entires for each user, and call \lstinline|ZINCRBY| once per entry, per user
 \item
-THis would allow us to recreate the leaderboard offline if necessary, in case of a large-scale outage.
+This would allow us to recreate the leaderboard offline if necessary, in case of a large-scale outage.
 \end{itemize}
 
 \begin{figure}[H]
@@ -13567,5 +13567,30 @@ THis would allow us to recreate the leaderboard offline if necessary, in case of
     \caption{}
   \end{center}
 \end{figure}
+
+\chapter*{Chapter 11: Payment System}
+
+In this chapter, we design a payment system.
+
+\begin{itemize}
+\item
+E-commerce has exploded in popularity across the world in recent years
+\item
+What makes every transaction possible is a payment system running behind the scenes
+\item
+A reliable, scalable, and flexcible payment system is essential
+\item
+What is a payment system?
+\item
+According to Wikipedia, ``a payment system is any system used to settle financial transactions through the transfer of monetary value''
+\item
+This includes the institutions, instruments, people, rules, procedures, standards, and technologies that make its exchange possible
+\item
+A payment system is easy to undertsand on the surface but is also intimidating for many developers to work on
+\item
+A small slip could potentially cause significant revenue loss and destroy credibility among users
+\item
+But fear not! In this chapter, we demystify payment systems
+\end{itemize}
 
 \end{document}
