@@ -13769,7 +13769,7 @@ The ledger keeps a financial record of the payment transaction.
 
 \begin{itemize}
 \item
-For example, when a user pays the seller $1, we record it as debit $1 from the user and credit $1 to the seller
+For example, when a user pays the seller \$1, we record it as debit \$1 from the user and credit \$1 to the seller
 \item
 The ledger system is very important in post-payment analysis, such as calculating the total revenue of the e-commerce website or forecastin future revenue
 \end{itemize}
@@ -13808,4 +13808,13 @@ After wallet service has successfully updated the seller's balance information, 
 \item
 The ledger service appends the new ledger information to the database
 \end{enumerate}
+
+\subsection{API for payment service}
+
+We use the RESTful API design convention for the payment service.
+
+\subsubsection{POST /v1/payments}
+
+
+
 \end{document}
