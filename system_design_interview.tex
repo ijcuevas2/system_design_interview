@@ -60,8 +60,9 @@
 
 \graphicspath{{images/}}
 
-\begin{document}
 \newcolumntype{M}{>{\begin{varwidth}{8cm}}l<{\end{varwidth}}} %M is for Maximal column
+
+\begin{document}
 
 \chapter{Proximity Service}
 
@@ -12963,7 +12964,6 @@ ZINCRBY leaderboard_feb_2021 1 'mary1934'
 
 \item
 A user fetches the top 10 global leaderboard
-\end{enumerate}
 
 \begin{figure}[H]
   \begin{center}
@@ -12971,5 +12971,143 @@ A user fetches the top 10 global leaderboard
     \caption{}
   \end{center}
 \end{figure}
+
+We will call \lstinline|ZREVRANGE| to obtain the members in descending order because we ant the highest scores, and pass the \lstinline|WITHSCORES| attribute to ensure that it also returns the toal score for each user, as well as the set of users with the highest scores.
+
+The following command fetches the top 10 players on the Feb 2021 leaderboard.
+
+\begin{lstlisting}
+ZREVRANGE leaderboard_feb_2021 0 9 WITHSCORES \end{lstlisting}
+
+This returns a list like this:
+
+\begin{lstlisting}
+[(user2, score2), (user1, score1), (user5, score5)...]
+\end{lstlisting}
+
+\item
+A user wants to fetch their leaderboard position
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+TO fetch the position of a user in the leaderboard, we will call \lstinline|ZEVRANK| to retrieve their rank on the leaderboard
+\item
+Again, we call the rev version of the command because we want to rank scores from high to low.
+
+\begin{lstlisting}
+ZREVRANK leaderboard_feb_2021 'mary1934'
+\end{lstlisting}
+\item
+Fetch the relative position in the leaderboard for a user. An example is shown in Figure 10.14.
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
+While not an explicit requirement, we can easily fetch the relative position for a user  by leveraing \lstinline|ZREVRANGE| with the number of results above and below the desired player.
+
+For example, if user \lstinline|Mallow007|'s rank is 361 and we want to fetch 4 players above and below them, we would run the following command.
+
+\begin{lstlisting}
+ZREVRANGE Leaderboard_feb_2021 357 365
+\end{lstlisting}
+
+\subsection{Storage requirement}
+
+At a minimum, we need to store the user id and score.
+
+\begin{itemize}
+\item
+The worst-case scenario is that all 25 million montly active users have won at least one game, and they all have entires in the leaderboard for the month
+\item
+Assuming the id is a 24-character string and the score is a 16-bit integer (or 2 bytes), we need 26 byters of storage per leaderboard entry
+\item
+Given the worst-case scenario of one leaderboard entry per MAU, we would need $26 \text{ bytes} \times 25 \text{ million} = 650 \text{ million bytes}$ or $\sim 650 MB$ for leaderboard storage in the Redis cache
+\item
+Even if we double the memory usage to account for the overhead of the skip list and the hash for the sroted set, one modern Redis server is more than enough to hold the data
+\end{itemize}
+
+Another related factor to consider is CPU and I/O usage.
+
+\begin{itemize}
+\item
+Our peak QPS from the back-of-the-envelope estimation is 2500 updates/sec
+\item
+This is well within the performance envelope of a single Redis server
+\item
+One concern about the Redis cache is persistence, as a Redis node might fail
+\item
+Luckily, Redis does support persistence, but restarting a large Redis instance from disk is slow
+\item
+Usually, Redis is configured with a read replica, and when the main instance fails, the read replica is promoted, and a new read replica is attached
+\end{itemize}
+
+Besides, we need to have 2 supporting tables (user and point) in a relational database like MySQL.
+
+\begin{itemize}
+\item
+The user table would store the user ID and user's display name (in a real-world application, this would contain a lot more data)
+\item
+The point table would contain the user id, score, and timestamp when they won a game.
+\item
+This can be leveraged for other game functions such as play hisotry, and can also be used to recreate the redis leaderboard in the event of an infrastructure failure
+\item
+As a small performance optimization, it may make sense to create an additional cache of the user details, potentially for the top 10 players since they are retrieved most frequently
+\item
+However, this doesn't amount to a large amount of data
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+Now that we've discussed the high-level design, let's dive into the following:
+
+
+\begin{itemize}
+\item
+Whether or not to use a cloud provider
+
+\begin{itemize}
+\item
+Manage our own services
+\item
+Leverage cloud service providers like Amazon Web Services (AWS)
+\end{itemize}
+\item
+Scaling Redis
+\item
+Alternative solution: NoSQL
+\item
+Other considerations
+\end{itemize}
+
+\subsubsection{To use a cloud provider or not}
+
+Depending on the existing infrastructure, we generally have two options for deploying our solution. Let's take a look at each of them.
+
+\subsubsection{Manage our own services}
+
+In this approach, we will create a leaderboard sorted set each month to store the leaderboard data for that period.
+
+\begin{itemize}
+\item
+The sorted set stores member and score information
+\item
+The rest of the details about the user, such as their name and profile image, are stored in MySQL databases
+\item
+When fetching the leaderboard, besides the leaderboard data, API servers also query the database to fetch corresponding users' names and profile images to display on the leaderboard
+\item
+If this becomes too inefficient in the long term, we can leverage a user profile cache to store users' details for the top 10 players
+\item
+However, this doesn't amount to a large amount of data
+\end{itemize}
 
 \end{document}
