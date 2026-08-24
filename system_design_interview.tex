@@ -12449,4 +12449,468 @@ Display players who are four places above and below the desired user (bonus)
 
 Other than clarifying functional requirements, it's important to understand non-functional requirements.
 
+\subsubsection{Non-functional requirements}
+
+\begin{itemize}
+\item
+Real-time update on scores
+\item
+Score update is reflected on the leaderboard in real-time
+\item
+General scalability, availability, and reliability requirements
+\end{itemize}
+
+\subsubsection{Back-of-the-envelope estimation}
+
+Let's take a look at some back-of-the-envelope calculations to determine the potential scale and challenges our solution will need to address.
+
+\begin{itemize}
+\item
+WIth 5 million DAU, if the game had an even distribution of players during a 24-hour period, we would have an average of 50 users per second ($\frac{5,000,000 \text{ DAU}}{10^{5} \text{ seconds}} = ~ 50$)
+\item
+However, we know that usages most likely aren't evenly distributed, and potentially there are peaks during evenings whe4n many people across different time zones have time to play
+\item
+To account for this, we could assume that peak load would be 5 times the average
+\item
+Therefore we'd want to allow for a peak load of 250 users per second
+\item
+QPS for users scoring a point: if a user plays 10 games per day on average, the QPS for suers socring a point is: $50 \times 10 =~ 500$.
+\item
+Peak QPS is 5x of the average: 500 $\times 4$ = 2,500
+\item
+QPS for fetching the top 10 leaderboard: assume a user opens the game once a day and the top 10 leaderboard is loaded only when a user first opens the game
+\item
+The QPS for this is around 50
+\end{itemize}
+
+\subsection{Step 2: Propose High-levl Design and Get Buy-in}
+
+In this section, we will discuss API design, high-level architecture, and data models.
+
+\subsection{API design}
+
+At a high level, we need the following three APIs:
+
+\textbf{POST /v1/scores}
+
+\begin{itemize}
+\item
+Update a user's position on the leaderboard when a user wins a game.
+\item
+The request parameters are listed below.
+\item
+This should be an internal API that can only be called by the game servers
+\item
+The client should not be able  to update the leaderboard score directly
+\end{itemize}
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|Field| & \lstinline|Description| \\
+\hline
+\lstinline|user_id| & The user who wins a game \\
+\hline
+\lstinline|points| & The number of points a user gained by winning a game \\
+\hline
+\end{tabular}
+
+Table 10.1: Request parameters
+
+Response:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{Name} & \textbf{Description} \\
+\hline
+\lstinline|200 OK| & Successfully updated a user's score \\
+\hline
+\lstinline|400 Bad Request| & Failed to update a user's score\\
+\hline
+\end{tabular}
+
+\textbf{GET /v1/scores}
+
+Fetch the top 10 players from the leaderboard.
+
+Sample response:
+
+\begin{lstlisting}
+{
+  "data": [
+   {
+      "user_id": "user_id1",
+      "user_name": "alice",
+      "rank": 1,
+      "score": 976,
+   },
+  {
+    "user_id": "user_id2",
+    "user_name": "bob",
+    "rank": 2,
+    "score": 965
+  }
+  ]
+}
+\end{lstlisting}
+
+\lstinline|GET /v1/scores/{:user_id}|
+
+Fetch the rank of a specific user.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\textbf{Field} & \textbf{Description} \\
+\hline
+\lstinline|user_id| & The ID of the user whose rank we would like to fetch \\
+\hline
+\end{tabular}
+
+Table 10.3: Request parameters
+
+Sample response:
+
+\begin{lstlisting}
+{
+  "user_info": {
+    "user_id": "user5",
+    "score": 940,
+    "rank": 6
+  }
+}
+\end{lstlisting}
+
+\subsection{High-level architecture}
+
+The high-level design diagram is shown in Figure 10.2.
+
+There are two services in this design. The game service allows users to play the game and the leaderboard service creates and displays a leaderboard.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{enumerate}
+\item
+When a player wins a game, the client sends a request to the game service
+\item
+The game service ensures the win is valid and calls the leaderboard service to update the score
+\item
+The leaderboard service updates the user's score in the leaderboard store
+\item
+A player makes a call to the leaderboard service direclty to fetch leaderboard data including:
+
+\begin{itemize}
+\item
+top 10 leaderboard
+\item
+the rank of the player on the leaderboard
+\end{itemize}
+\end{enumerate}
+
+Before settling on this design, we considered a few alternatives and decided against them
+
+It might be helpful to go through the thought process of this and to compare different options.
+
+\subsection{Should the client talk to the leaderboard service directly?}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In the alternative design, the score is set by the client.
+
+\begin{itemize}
+\item
+This option is not secure because it is subject to man-in-the-middle attack [1], where players can put in a proxy and change scores at will
+\item
+Therefore, we need the score to be set on the server-side
+\item
+NOte that for server authoritative games such as online poker, the client may not need to call the game server explictly to set scores
+\item
+The game server handles all game logic, and it knows when the game finishes and could set the score wihtout any client intervention
+\end{itemize}
+
+\subsection{Do we need a message queue between the game service and the leaderboard service?}
+
+
+The answer to this question highly depends on how the game scores are used
+\begin{itemize}
+\item
+If the data is used in other places or supports multiple functionalities, then it might make sense to put data in Kafka as shown in Figure 10.4
+\item
+This way, the same data can be consumed by multiple consumers, such as leaderboard service, analytics service, push notification service, etc.
+\item
+This is especially true when the game is a turn-bawesd or multi-player game in which we need to notify other players about the score update
+\item
+As this is not an explicit requirement based on the conversation with the interviewer, we do not use a message queue in our design
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Data models}
+
+One of the key components in the system is the leaderboard store.
+
+We will discuss three potential solutions: relational database, Redis, and NOSQL (NoSQL solution is explained in deep dive section on page 309).
+
+\subsubsection{Relational database solution}
+
+First, let's take a step back and start with the simplest solution.
+
+\begin{itemize}
+\item
+What if the scale doesn't matter and we have only a few users?
+\item
+We would most likely opt to have a simple leaderboard solution using a relational database system (RDS)
+\item
+Each monthly leaderboard could be represented as a database table containing user id and score columns
+\item
+When the user wins a match, either award the user 1 point if they are new, or increase their existing score by 1 point
+\item
+To determine a user's ranking on the leaderboard, we would sort the table by the score in descending order
+\item
+The details are explained below
+\end{itemize}
+
+Leaderboard DB table:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|user_id| & \lstinline|varchar| \\
+\hline
+\lstinline|score| & \lstinline|int| \\
+\hline
+\end{tabular}
+
+In reality, the leaderboard table has additional information, such as a \lstinline|game_id|, a timestamp, etc.
+
+\begin{itemize}
+\item
+However, the underlying logic of how to query and update the leaderboard remains the same
+\item
+For simplicity, we assume only the current month's leaderboard data is stored in the leaderboard table
+\end{itemize}
+
+\subsubsection{A user wins a point}:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Assume every score update would be an increment of 1. If a user doesn't yet have an entry in the leader board for the month, the first insert would be:
+
+\begin{lstlisting}
+INSERT INTO leaderboard (user_id, score) VALUES ('mary1934', 1);
+\end{lstlisting}
+
+An update to the user's score would be:
+
+\begin{lstlisting}
+UPDATE leaderboard set score=score +1 where user_id='mary1934';
+\end{lstlisting}
+
+\subsection{Find a user's leaderboard position:}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+To fetch the user rank, we would sort the leaderboard table and rank by the score:
+\begin{lstlisting}
+SELECT (@rownum := @rownum + 1) AS rank, user_id, score
+FROM leaderboard
+ORDER BY score DESC;
+\end{lstlisting}
+
+The result of the SQL query looks like this:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|rank| & \lstinline|user_id| & \lstinline|score| \\
+\hline
+1 & \lstinline|happy_tomato| & \lstinline|987| \\
+\hline
+2 & \lstinline|mallow| & \lstinline|902| \\
+\hline
+3 & \lstinline|smith| & \lstinline|870| \\
+\hline
+4 & \lstinline|mary1934| & \lstinline|850| \\
+\hline
+\end{tabular}
+
+The solution works when the data set is small, but the qery becomes very slow when there are millions of rows. Let's take a look why.
+
+\begin{itemize}
+\item
+To figure out the rank of a user, we need to srt every single player into their correct spot on the leaderboard so we can determine exactly what the correct rank is
+\item
+Rember that there can be duplicate scores as well, so the rank isn't just the position of the user in the list
+\item
+SQL databases are not performant when we have to process large amounts of continuously changin information
+\item
+Attempting to do a rank operation over millions of rows is going to take 10s of seconds, which is not acceptable for the desired real-time approach
+\item
+Since the data is constantly changing, it is also not feasible to consider a cache
+\item
+A relational database is not designed to handle the high load of read queries this implementation would require
+\item
+An RDS could be used successfully if done as a batch operation, but that would not align with the rquirement to return a real-time position for the user on the leader board
+\end{itemize}
+
+
+However, this approach doesn't scale well. First finding a user's rank is not performant because it essentially requires a table scan to determine the rank
+
+One optimization we can do is to add an index and limit the number of pages to scan with the \lstinline|LIMIT| clause. The query looks like this:
+
+\begin{lstlisting}
+SELECT (@rownum := @rownum + 1) AS rank, user_id, score
+FROM leaderboard
+ORDER BY score DESC;
+LIMIT 10
+\end{lstlisting}
+
+Second, this approach doesn't provide a striaghforward solution for determining the rank of a user who is not at the top of the leaderboard.
+
+\subsection{Redis solution}
+
+We want to find a solution that gives us predictable performance even for millions of users and allows us to have easy access to common leaderboard operations, without needing to fall back on complex DB queries.
+
+\begin{itemize}
+\item
+Redis provides a potential solution to our problem
+\item
+Redis is an in-memory data store supporting key-value pairs
+\item
+Since it works in memory, it allows for fast reads and werites
+\item
+Redis has a specific data type called \textbf{sorted sets} that are idea for solving leaderboard system design problems
+\end{itemize}
+
+\subsubsection{What are sorted sets?}
+
+A sorted set is a data type similar to a set.
+
+\begin{itemize}
+\item
+Each member of a sorted set is associated with a score.
+\item
+THe members of a set must be unique, but scores may repeat
+\item
+THe score is used to rank the sorted set in ascending order
+\item
+OUr leaderboard use case maps perfectly to sorted sets
+\item
+Internally, a sorted set is implemented by two data structures: a hash table and a skip list [2]
+\item
+The has table maps users to scores and the skip list maps scores to users
+\item
+In sorted sets, users are sreoted by scores
+\item
+A good way to understand a sorted set is to picture it as a table with score and member columns as shown in Figure 10.8
+\item
+The table is sorted by score in descending order
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this chapter, we don't go into the full detail of the sorted set implementation, but we do go over the high-level ideas.
+
+\begin{itemize}
+\item
+A skip list is a list structure that allows for fast search
+\item
+It consists of a base sorted linked list and multi-level indexes
+\item
+Let's take a look at an example
+\item
+In Figure 10.9, the base list is a sorted singly-linked list
+\item
+The time complexity of insertion, removal, and search operations is \lstinline|O(n)|
+\end{itemize}
+
+How can we make thos operations faster?
+
+\begin{itemize}
+\item
+ONe idea is to get to the middle quickly,as the binary search algorithm does
+\item
+TO achieve that, we add a level 1 index that skips every other node, and then a level 2 index that skips every other node of the level 1 indexes
+\item
+We keep introducing additional levels, with each new level skipping every other nodes of the previous level
+\item
+We stop this addition when the distance between nodes is $\frac{n}{2} - 1$, where $n$ is the total number of nodes
+\item
+As shown in Figure 10.9, searching for number 45 is a lot faster when we have multi-level indexes
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+When the data set is small, the speed improvement using the skip list isn't obvious.
+
+\begin{itemize}
+\item
+Figure 10.10 shows an example of a skip list with 5 levels of indexes
+\item
+In the base linked list, it needs to travel 62 nodes to reach the correct node
+\item
+In the skip list, it only needs to traverse 11 nodes [3]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+SOrted sets are more performant than a relational database because each element is automatically positioned in the right order during insert or update, as well as the fact that the complexity of an add or find operation in a sorted set is logarithmic: $O(log(n))$.
+
+In contrast, to calculate the rank of a specific user in a relational database, we need to run nested queries:
+
+\begin{lstlisting}
+SELECT *, (SELECT COUNT(*) FROM leaderboard lb2
+WHERE lb2.score >= lb1.score) RANK
+FROM leaderboard lb1
+WHERE lb1.user_id = {:user_id}
+\end{lstlisting}
+
+\subsubsection{Implementation using Redis sorted sets}
+
+Now that we know sorted sets are fast, let's take a loook at the Redis operations we will use to build our leaderboard [4] [5] [6] [7]:
+
+\begin{itemize}
+\item
+\lstinline|ZADD|: insert the user into the set if they don't yet exist. Otherwise, update the score for the user. It takes $O(log(n))$ to execute.
+\item
+\lstinline|ZINCRBY|: increment the score of the user by the specified increment. If the user doesn't exist in the set, then it assumes the score starts at 0. It takes $O(log(n))$ to execute
+
+\end{itemize}
+
 \end{document}
