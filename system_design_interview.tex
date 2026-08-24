@@ -13283,8 +13283,112 @@ Redis cluster provides a way to shard data autmatically across multiple Redis no
 It doesn't use consistent hasing but a different form of sharding, where every key is part of a \lstinline|hash slot|
 \item
 There are 16384 hash slots [12] and we can compute the hash slot of a given key by doing \lstinline|CRC16(key) % 16384|  [13]
-\item
-This
 \end{itemize}
 
+This allows us to add and remove nodes in the cluster easily without redistributing all the keys. In Figure 10.19, we have 3 nodes, where:
+
+\begin{itemize}
+\item
+The first node contains hash slots [0, 5500]
+\item
+The second node contains hash slots [5501, 11000],
+\item
+The third node contains hash slots [11001, 16383]
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+An update would simply change the score of the user in the corresponding shard (determined by \lstinline|CRC16(key) % 16384|)
+
+\begin{itemize}
+\item
+Retrieving the top 10 players on the leaderboard is more complicated
+\item
+We need to gather the top 10 players from each shard and have the application sort the data
+\item
+A concrete example is shown in Figure 10.20
+\item
+Those queries can be parallelized to reduce latency
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This approach has a few limitations:
+
+\begin{itemize}
+\item
+When we need to return top \lstinline|k| results (where \lstinline|k| is a very large number) on the leaderboard, the latency is high because a lot of entires are returned from each shard and need to be sorted
+\item
+Latency is high if we have lots of partitions because the query has to wait for the slowest partition
+\item
+Another issue with this approach is that it doesn't provide a straightforward solution for determining the rank of a specific user
+\end{itemize}
+
+Therefore, we lean towards the first proposal, fixed partition
+
+\subsection{Sizing a Redis node}
+
+There are multiple things to consider when sizing the Redis nodes [14].
+
+\begin{itemize}
+\item
+Write-heavy applications require much more available memory, since we need to be able to accommmodate all of the writes to create the snapshot in case of a failure
+\item
+To be safe, allocate twice the amount of memory for write-heavy applications
+\item
+Redis provides a tool caleed Redis-benchmark that allows us to benchmark the performance of the Redis setup, by simulating multiple clients executing multiple queries and returning the number of requests per second for the given hardware
+\item
+To learn more about Redis-benchmark, see [15]
+\end{itemize}
+
+\subsubsection{Alternative solution: NoSQL}
+
+An alternative solution to consider is NoSQL databases. What kind of NoSQL should we use?
+
+Ideally, we want to choose a NoSQL that has the following properties:
+
+\begin{itemize}
+\item
+Optimized for writes
+\item
+Efficiently sort items within the same partition by score
+\end{itemize}
+
+NoSQL databases such as Amazon's DynamoDB [16], Cassandra, or MongoDB can be a good fit.
+
+\begin{itemize}
+\item
+In this chapter, we use DynamoDB as an example
+\item
+DynamoDB is a fully managed NoSQL database that offers reliable performance and great scalability
+\item
+To allow efficient access to data with attributes other than the primary key, we can leverage global secondary indexes [17] in DynamoDB
+\item
+A global secondary index contains a selection of attributes from the parten table, but they are organized using a different primary key
+\end{itemize}
+
+Let's take a look at an example.
+
+The updated system diagram is shown in Figure 10.21. Redis and MySQL are replaced with DynamoDB.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Assume we design the leaderboard for a chess game and our initial table is shown in Figure 10.22.
+
+It is a denormalized view of the leaderboard and user tablers and contains everything needed to render a leaderboard.
 \end{document}
