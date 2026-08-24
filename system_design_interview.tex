@@ -13391,4 +13391,181 @@ The updated system diagram is shown in Figure 10.21. Redis and MySQL are replace
 Assume we design the leaderboard for a chess game and our initial table is shown in Figure 10.22.
 
 It is a denormalized view of the leaderboard and user tablers and contains everything needed to render a leaderboard.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This table schema works, but it doesn't scale well. As rows are added, we have to scan the entire table to find the top scores.
+
+To avoid a linear scan, we need to add indexes.
+
+Our first attempt is to use \lstinline|game_name#{year-month}| as the partition key and the score as the sort key, as shown in Figure 10.23.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_23}
+    \caption{}
+  \end{center}
+\end{figure}
+
+This works, but it runs into issues at a high load.
+
+\begin{itemize}
+\item
+DynamoDB splits data across multiple nodes using consistent hasing
+\item
+Each item lives in a corresponding node based on its partition key
+\item
+We want to structure the data so that data is evenly distributed across partitions
+\item
+In our table design (Figure 10.23), all the data for the most recent month would be stored in one partition and that partition becomes a hot partition
+\item
+How can we solve this problem?
+\item
+We can split data into \lstinline|n| partitions and appened a partition number (\lstinline|user_id % number_of_partitions|) to the partition key
+\item
+THis pattern is called write sharding
+\item
+Write sharding adds complexity for both read and write operations, so we should consider the trade-offs carefully
+\item
+THe second question we need to answer is, how many parittions should we have?
+\item
+It can be based on write volume or DAU
+\item
+The important thing to remember is that there is a trade-off between load on partitions and read complexity
+\item
+Because data for the same month is spread evenly across multiple partitions, the load for a single partition is much lighter
+\item
+However, to read items for a given month, we have to query all the partitions and merge the results, which adds read complexity
+\item
+The partition key looks omething like this: \lstinline|game_name#{year-month}#p{partition_number}|
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The global secondary index uses \lstinline|game_name#{year-month}#p{partition_number}| as the partition key and the score as the sort key.
+
+\begin{itemize}
+\item
+What we end up with are \lstinline|n| partitions that are all sorted within their own partition (locally sorted)
+\item
+IF we assume we had 3 partitions, then in order to fetch the top 10 leaderboard, we would use the approach called ``scatter-gather'' mentioned earlier
+\item
+We would fetch the top 10 results in each of the partitions
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_25}
+    \caption{}
+  \end{center}
+\end{figure}
+
+How do we decide on the number of partitions?
+
+\begin{itemize}
+\item
+This might require some careful bench marking
+\item
+More partitions decrease the load on each partition but add complexity, as we need to scatter across more partitions to build the final leaderboard
+\item
+By employing benchmarking, we can see the trade-off more clearly
+\end{itemize}
+
+However, similar to the Redis partition solution mentioned earlier, this approach doesn't provide a striaghtforward solution for determining the relative rank of a user.
+
+\begin{itemize}
+\item
+But it in possible to get the percentile of a user's position, which could be good neough
+\item
+In real life, telling a player that they are in the top \lstinline|10 ~ 20%| might be better than showing the exact rank at eg. 1,200,001.
+\item
+Therefore, if the scale is large enough that we neede dto shard, we could assume that the score distributions are roughly the same across all shards
+\item
+If this assumption is true, we could have a cron job that analyzes the distribution of the score for each shard, and caches that result
+\end{itemize}
+
+The result would look something like this:
+
+\begin{align*}
+10\text{th percentile} &= \text{ score} < 100 \\
+20\text{th percentile} &= \text{ score} < 500 \\
+& \vdots \\
+90\text{th percentile} &= \text{ score} < 6500
+\end{align*}
+
+Then we could quickly return a user's relative ranking (say 90th percentile).
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we have created a solution for building a real-time game leaderboard with the scale of millions of DAU.
+
+\begin{itemize}
+\item
+We explored the straighforward solution of using a MySQL database and rejected that approach because it does not scale to million of users
+\item
+We then designed the leaderboard using Redis sorted sets
+\item
+We also looked int scaling the solution to 500 million DAU, by leveraging sharding across different Redis caches
+\item
+We also proposed an alternative NoSQL solution
+\end{itemize}
+
+In the event you have some extra time at the end of the interview, you can cover a few more topics:
+
+\subsubsection{Faster retrieval and breaking tie}
+
+A Redis Hash provides a map between string fields and values. We could leverage a hash for 2 uses cases
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+To store a map of the user id to the user object that we can display on the leaderboard
+\item
+This allows for faster retrieval than having to go to the database to fetch the user object
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+In the case of two playershaving the same scores, we could rank the users based on who received that score first
+\item
+When we increment the score of the user, we can also store a map of the user id to the timestamp of the most recently won game
+\item
+In the case of a tie, the user with the older timestamp ranks higher
+\end{itemize}
+\end{enumerate}
+
+\subsection{System failure recovery}
+
+The Redis cluster can potentially experience a large-scale failure.
+
+\begin{itemize}
+\item
+Given the design above, we could create a script that leverages the fact that the MySQL database records an entry with a timestamp each time a user won a game.
+\item
+We could iterate through all of the entires for each user, and call \lstinline|ZINCRBY| once per entry, per user
+\item
+THis would allow us to recreate the leaderboard offline if necessary, in case of a large-scale outage.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_10_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}
