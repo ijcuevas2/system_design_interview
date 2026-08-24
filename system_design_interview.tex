@@ -13866,7 +13866,7 @@ This difference might cause unintended rounding errors
 \end{itemize}
 \item
 
-The number could be extremely big (for example, Japan's GDP is around $5 \times 10^{14}$ yen for the calendar year 2020), or extremely small (for example, a satoshi of Bitcoin is 10^{-8})
+The number could be extremely big (for example, Japan's GDP is around $5 \times 10^{14}$ yen for the calendar year 2020), or extremely small (for example, a satoshi of Bitcoin is $10^{-8}$)
 \end{enumerate}
 
 It is recommended to keep numbers in string format during transmission and storage.
@@ -13966,8 +13966,73 @@ When the payout condition is satisfied, such as when the products are delivered,
 \item
 Only then is the money transferred from the e-commerce website's bank account to the seller's bank account
 \item
-Therefore, during the apy0in flow, we only need the byer's card information, not the seller's bank account information
+Therefore, during the pay-in flow, we only need the buyer's card information, not the seller's bank account information
 \end{itemize}
 \end{itemize}
+
+I nt eh appyment order table (Table 11.4), \lstinline|payment_order_status| is an enumerated type (enum) that keeps the execution status of the payment order.
+
+Execution status includes \lstinline|NOT_STARTED|, \lstinline|EXECUTING|, \lstinline|SUCCESS|, \lstinline|FAILED|.
+
+The update logic is:
+
+\begin{enumerate}
+\item
+The initial status of \lstinline|payment_order_status| is \lstinline|NOT_STARTED|
+\item
+When the payment esrvice sends the payment order to the payment executor, the \lstinline|payment_order_status| is \lstinline|EXECUTING|
+\item
+THe payment service updates the \lstinline|payment_order_status| to \lstinline|SUCCESS| or \lstinline|FAILED| depending on the response of the payment executor
+\end{enumerate}
+
+Once the \lstinline|payment_order_status| is \lstinline|SUCCESS|, the payment service calls the wallet service to update the seller balance and update the \lstinline|wallet_updated| field to \lstinline|TRUE|
+
+\begin{itemize}
+\item
+Here we simplify the design by assuming wallet updates always succeed.
+\item
+Once it is done, the enxt step for the payment service is to call the ledger service to update the ledger database by updating the \lstinline|ledger_updated| field to \lstinline|TRUE|
+\item
+When all payment orders under the same \lstinline|checkout_id| are processed successfully, the payment service updates the \lstinline|is_payment_done| to \lstinline|TRUE| in the payment event table.
+\item
+A scheduled job usually runs at a fixed interval to monitor the status of the in-flight payment orders
+\item
+It sends an alert when a payment order does not fnish within a threshold so that enineers can investigate it.
+\end{itemize}
+
+\subsubsection{Double-entry leedger system}
+
+There is a very important design principle in the ledger system: the double-entry principle (also called double-entry accounting/bookkeeping [6]).
+
+\begin{itemize}
+\item
+Double-entry system is fundamental to any payment system and is key to accurate bookkeeping
+\item
+It records every payment transaction into two separate ledger accounts with the same amount
+\item
+One account is debited and the other is credited with the same amount (Table 11.5)
+\end{itemize}
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+Account & Debit & Credit  \\
+\hline
+buyer & \$1 &   \\
+\hline
+seller & & \$1  \\
+\hline
+\end{tabular}
+
+The double entry system states that the sum of all the transaction entires must be 0.
+
+\begin{itemize}
+\item
+One cent lost means someone else gains a cent
+\item
+It provides end-to-end traceability and ensures consistency throughout the payment cycle
+\item
+TO find out more about implemnting the double-entry system, see Square's engineering blog about immutable double-entry accounting database service [7]
+\end{itemize}
+
 
 \end{document}
