@@ -13215,7 +13215,61 @@ With 5 million DAU, we can get away with one Redis cache from both a storage and
 \item
 However, let's imagine we have 500 million DAU, which is 100 times our original scale
 \item
-Now our worst-case scenario for the size of the leaderboard goes up to 65GB (650MB $\times$ 100),
+Now our worst-case scenario for the size of the leaderboard goes up to 65GB (650MB $\times$ 100), and our QPS goes up to 250,000 (2,500 \times 100) queries per second
+\item
+This calls for a sharding solution
+\end{itemize}
+
+\subsubsection{Data sharding}
+
+We consider sharding in one of the following two ways: fixed or hash partitions
+
+\subsubsection{Fixed partition}
+
+One way to understand fixed partitions is to look at the overall range of points on the leaderboard.
+
+\begin{itemize}
+\item
+Let's say that the number of points won in one month ranges from 1 to 1000, and we break up the data by range
+\item
+For example, we could have 10 shards and each shard would have a range of 100 scores (For example, $1 \sim 100, 101 \sim 200, 201 \sim 300, \cdot$) as shown in Figure 10.18
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_10_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+For this to work, we want to ensure there is an even distribution of scores across the leaderboard.
+
+\begin{itemize}
+\item
+Otherwise, we need to adjust the score range in each shared to make sure of a relatively even distribution
+\item
+In this approach, we shard the data ourselves in the application code
+\item
+When we are inserting or updating the score for a user, we need to know which shard they are in
+\item
+We could do this by calculating the user's current score form the MySQL database
+\item
+This can work, but a more performant option is to create a secondary cache to store the ampping from user ID to score
+\item
+We need to be careful when a user increases their score and moves between shards
+\item
+In this case, we need to remove the user from their current shard and move them to the new shard
+\end{itemize}
+
+To fetch the top 10 players in the leaderboard, we would fetch the top 10 players from the shard (sorted set) with the highest scores.
+
+\begin{itemize}
+\item
+In Figure 10.18, the last shard with scores [901, 1000] contains the top 10 players
+\item
+To fetch the rank of a user, we would need to calculate the rank within their current shard (local rank), as well as the total number of players with higer scores in all of the shards
+\item
+Note that the total number of players in a shard can be retrieved by running the \lstinline|info keyspace| command in \lstinline|O(1)| [11]
 \end{itemize}
 
 \end{document}
