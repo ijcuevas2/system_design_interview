@@ -13815,6 +13815,136 @@ We use the RESTful API design convention for the payment service.
 
 \subsubsection{POST /v1/payments}
 
+This endpoint executes a payment event. As mentioned above, a asingle payment event may contain multiple payment orders. The request parameters are listed below:
 
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|Field| & \lstinline|Description| & \lstinline|Type| \\
+\hline
+\lstinline|buyer_info| & The information of the buyer & json \\
+\hline
+\lstinline|checkout_id| & A globally unique ID for this checkout & string \\
+\hline
+\lstinline|credit_card_info| & This could be encrypted credit card information or a payment token. The value is PSP-specific & JSON \\
+\hline
+\lstinline|payment_orders| & A list of the payment orders & list \\
+\hline
+\end{tabular}
+
+Table 11.1: API request parameters (execute a payment event)
+
+The \lstinline|payment_orders| look like this:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\lstinline|Field| & \lstinline|Description| & \lstinline|Type|  \\
+\hline
+\lstinline|seller_account| & Which seller will receive the money & string  \\
+\hline
+\lstinline|amount| & The transaction amount for the order & string  \\
+\hline
+\lstinline|currency| & The currency for the order & string (ISO 4217 [4])  \\
+\hline
+\lstinline|payment_order_id| & A globally unique ID for this payment & string \\
+\hline
+\end{tabular}
+
+Table 11.2: \lstinline|payment_orders|
+
+NOte that the \lstinline|payment_order_id| is globally unique. When the payment executor sends a payment request  to a third-party PSP, the \lstinline|payment_order_id| is used by the PSP as the deduplication ID, also called the idempotency key.
+
+You may have noticed that the data type of the ``amount'' field is ``string'' rather than ``double''. Double is not a good choice because
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Different protocols, software, and hardware may support different numeric precisions in serialization and deserialization
+\item
+This difference might cause unintended rounding errors
+\end{itemize}
+\item
+
+The number could be extremely big (for example, Japan's GDP is around $5 \times 10^{14}$ yen for the calendar year 2020), or extremely small (for example, a satoshi of Bitcoin is 10^{-8})
+\end{enumerate}
+
+It is recommended to keep numbers in string format during transmission and storage.
+
+They are only parsed to numbers when used for display or calculation.
+
+\subsubsection{GET /v1/payments/{:id}}
+
+This endpoint returns the execution status of a single payment order based on \lstinline|payment_order_id|.
+
+The payment API mentioned above is simlar to the API of some well-known PSPs.
+
+If you are interested in a more compreshensive view of payment APIs, checkout Stripe's API documentation [5]
+
+\subsection{The data model for payment service}
+
+We need two tables for the payment service: payment event and payment order. WHen we select a storage solution for a payment system, performance is usually not the most important factor. Instead, we focus on the following:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Proven stability.
+\item
+Whether the storage system has been used by other big financial firms for many years (for example more than 5 years) with positive feedback
+\item
+The richness of supporting tools, such as monitoring and investigation tools
+\item
+Maturity of the database administrator (DBA) job marktet. Whether we can recruit experienced DBAs is a very important factor to consider
+\item
+Usually, we prefer a traditional relational database with ACID transaction support over NoSQL/NewSQL
+\end{itemize}
+
+The payment event table contains detailed payment event information. This is what it looks like:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|Name| & \lstinline|Type| \\
+\hline
+\lstinline|checkout| & string PK \\
+\hline
+\lstinline|buyer_info| & string \\
+\hline
+\lstinline|seller_info| & string \\
+\hline
+\lstinline|credit_card_info| & depends on the card provider \\
+\hline
+\lstinline|is_payment_done| & boolean \\
+\end{tabular}
+
+Table 11.3: Payment event
+
+The payment order table stores the xecution status of each payment order. This is what it looks like:
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|Name| & \lstinline|Type| \\
+\hline
+\lstinline|payment_order_id| & \lstinline|String| PK \\
+\hline
+\lstinline|buyer_account| & \lstinline|string| \\
+\hline
+\lstinline|amount| & \lstinline|string| \\
+\hline
+\lstinline|currency| & \lstinline|string| \\
+\hline
+\lstinline|checkout_id| & \lstinline|string| FK \\
+\hline
+\lstinline|payment_order_status| & \lstinline|string| \\
+\hline
+\lstinline|ledger_updated| & \lstinline|boolean| \\
+\hline
+\lstinline|wallet_updated| & \lstinline|boolean| \\
+\hline
+\end{tabular}
+
+Table 11.4: Payment order
+\end{enumerate}
 
 \end{document}
