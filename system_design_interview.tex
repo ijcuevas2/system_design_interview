@@ -14031,8 +14031,239 @@ One cent lost means someone else gains a cent
 \item
 It provides end-to-end traceability and ensures consistency throughout the payment cycle
 \item
-TO find out more about implemnting the double-entry system, see Square's engineering blog about immutable double-entry accounting database service [7]
+To find out more about implemnting the double-entry system, see Square's engineering blog about immutable double-entry accounting database service [7]
 \end{itemize}
 
+\subsection{Hosted payments page}
+
+Most companies prefer not to store credit card information internally because if they do, they have to deal with complex regulartions such as Payment Card Industry Data Security Standard (PCI DSS) [8] in the United States.
+
+\begin{itemize}
+\item
+To avoid handling credit card information, copmnaies use hosted cred card pages provided by PSPs.
+\item
+For websites, it is a widget or an iframe, while for mbile applications, it may be a pre-built page from the payment SDK.
+\item
+Figure 11.3 illustrates an example of the checkout experience with PayPal integration
+\item
+The key point here is that the PSP provides a hosted payment page that captures the customer card information directly, rather than relying on our payment service.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Pay-out flow}
+
+The components of the pay-out flow are very similar to the pay-in flow.
+
+\begin{itemize}
+\item
+One difference is that instead of using PSP to move money from the byer's credit card to the e-commerce website's bank account, the pay-out flow uses a third-party pay-out provider to move money from the e-commerce website's bank account to the sellers bank account
+\item
+Usually the payment system uses third-party account payable providers like Tipalti [9] to handle pay-outs
+\item
+There are a lot of bookkeeping and regulatory requirements with pay-outs as well
+\end{itemize}
+
+\subsection{Step 3: Design Deep Dive}
+
+In this section, we focus on making the system faster, more robust, and secure
+
+\begin{itemize}
+\item
+In a distributed system, errors and failures are not only inevitable but common
+\item
+For example, what happens if a customer pressed the ``pay'' button multiple times?
+\item
+Will they be charged multiple times?
+\item
+How do we handle payment failures caused by poor network connections?
+\item
+How do we handle payment failures caused by poor network connections?
+\end{itemize}
+
+In this section, we dive deep into several key topics.
+
+\begin{itemize}
+\item
+PSP integration
+\item
+Reconciliation
+\item
+Handling payment processing delays
+\item
+Communication among internal services
+\item
+Handling failed payments
+\item
+Exact-once delivery
+\item
+Consistency
+\item
+Security
+\end{itemize}
+
+\subsection{PSP integration}
+
+If the payment system can direclty connect to banks or card schemes such as Bisa or MasterCard, payment can be made without PSP.
+
+These direction necttions are uncommon and highly specialized.
+
+THey are usually reserved for really large compnaies that can justify such an investment.
+
+For most compnaies, the paymenbt system integrates with a PSP instead, in one of two ways:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+If a company can safely store sensitive payment information and chooses to do so, PSP can be integrated using API
+\item
+The companis responsible for developing the payment web pages, collecting and storign sensitive payment information
+\item
+PSP is responsible for connecting to banks or card schemes
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+If a company chooses not to store sensitive payment information due to complex regulations and security concerns, PSP provides a hosted payment page to collect card payment details and securely store them in PSP
+\item
+This is the approach most companies take
+\end{itemize}
+\end{enumerate}
+
+We use Figure 11.4 to explain how the hosted payment page works in detail.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+We omitted the payment executor, ledger, and wallet in Figure 11.4 for simplicity. The payment service orchestrates the whole payment process.
+
+\begin{enumerate}
+\item
+The user clicks the ``checkout'' button in the client browser. The client calls the payment service with the payment order information.
+
+\item
+
+\begin{itemize}
+\item
+AFter receiving the payment order information, the payment service sends a payment registration request to the PSP
+\item
+This registration request contains payment information, such as the amount, currency, expriation data of the payment request, and the redirect URL
+\item
+Because a payment order should be registered only once, there is a UUID field to ensure the exactly-once registration
+\item
+This UUID is also called nonce [10]
+\item
+Usually, this UUID is the ID of the payment order
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+The PSP returns a token back to the payment service
+\item
+A token is a UUID on the PSP side that uniquely identifies the payment
+\end{itemize}
+
+\item
+The payment service stores the token in the database before calling the PSP-hosted payment page
+
+\item
+
+\begin{itemize}
+\item
+Once the token is persisted, the client displays a PSP-hosted payment page
+\item
+Mobile applications usually use the PSP's SDK integration for this functionality
+\item
+Here we use Stripe's web integration as an example (Figure 11.5)
+\item
+STripe provides a JavaScript library that displays the payment UI, collects sensitive payment information, and calls the PSP directly to complete the payment
+\item
+Snesitive payment information is collected by STripe
+\item
+It never reaches our payment system
+\item
+The hosted payment page usually needs two pieces of information:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+The token we received in step 4
+\item
+The PSP's javascript code uses the token to retrieve detailed information about the payment request from the PSP's backend
+\item
+One important piece of information is how much money to collect
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Another important piece of information is the redirect URL
+\item
+This is the web page URL that is called when the payment is complete
+\item
+When the PSP's JavScript finishes the payment, it redirects the browser to the redirect URL
+\item
+Usually, the redirect URL is an e-commerce web page that shows the status of the checkout
+\item
+Note that the redirect URL is different from the webhook [11] URL in step 9
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+The user fills in the payment details on the PSP's web page, such as the credit card number, holder's name, expiration date, etc, then clicks the pay button
+\item
+The PSP starts the payment processing
+\end{itemize}
+
+\item
+The PSP returns the payment status
+\item
+
+\begin{itemize}
+\item
+The web page is now redirected to the redirect URL
+\item
+THe payment status that is received in step 7 is typically appended to the URL
+\item
+For example, the full redirect URL could be [12]: \lstinline|https://your-compnay.com/?tokenID-JIOUIQ123NSF&payResult=X32FSa|
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Asynchronously, the PSP calls the payment service witht eh paymentstatus via a webhook
+\item
+The webhook is an URL on the payment system side that was registered with the PSP during the initla setup with the PSP
+\item
+When the pyament system receives payment events throught ht webhook,it extracts the payment status and updates the \lstinline|payment_order_status| field in the Pyament Order database table
+\end{itemize}
+\end{enumerate}
+
+So far, we explained the happy path of the hosted payment page.
+
+In reality, the network connection could be unrealible and all 9 steps above could fail.
+
+Is there any systematic way to handl failure cases? THe answer is reconciliation.
 
 \end{document}
