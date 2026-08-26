@@ -14264,6 +14264,133 @@ So far, we explained the happy path of the hosted payment page.
 
 In reality, the network connection could be unrealible and all 9 steps above could fail.
 
-Is there any systematic way to handl failure cases? THe answer is reconciliation.
+Is there any systematic way to handle failure cases? The answer is reconciliation.
+
+\subsubsection{Reconciliation}
+
+When system components communicate aysnchronously, there is no guarantee that a message will be dlivered or a response will be returned.
+
+\begin{itemize}
+\item
+This is very common in the payment business, which often uses asynchronous communication to increase system performance
+\item
+External systems, such as PSPs or banks, prefer asynchronous communication as well
+\item
+So how can we esnure correctness in this case?
+\item
+The answer is reconciliation
+\item
+This is a practice that perioidcally compares the states among related services in order
+\item
+It is usually the last line of defense in the payment system
+\item
+Every night the PSP or banks send a settlement file to their clients
+\item
+The settlement file contains the balance of the bank account, together with all the transactions that took place on this bank account during the day
+\item
+The reconciliation system parses the settlement file and compares the details with the ledger system
+\item
+Figure 11.6 below shows where the reconciliation process fits in the system.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Reconciliation is also used to verify that the payment system is internally consistent.
+
+\begin{itemize}
+\item
+For example, the states in the ledger and wallet might diverge and we could use the reconciliatoin system to detect any discrepancy
+\item
+This fix mismatches found during reconciliation, we usually rely on the finance team to perform manual adjustments
+\end{itemize}
+
+The mismatches and adjustments are usually classified onto three categories:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+The mismatch is classifiable and the adjustment can be automated
+\item
+In this case, we know the cause of the mismatch, how to fix it, and it is cost-effective to write a program to automate the adjustment
+\item
+Engineers can automate both the mismatch classification and adjustment
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+This mis match is classfiable, but we are unable to automate the adjustment
+\item
+In this case, we know the cause of the mismatch and how to fix it, but the cost of writing an auto adjustment program is too high
+\item
+The mismatch is put into a job queue and the finance team fixes the mismatch manually
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+The mismatch is unclassifiable
+\item
+In this case, we do not know how the mismatch happens
+\item
+The mismatch is put into a special job queue
+\item
+The finance team investigates it manually
+\end{itemize}
+\end{enumerate}
+
+\subsection{Handling payment processing delays}
+
+As discussed previously, an end-to end payment request flows through many components and involes both internal and external parties.
+
+While in most cases , a payment request would complete in seconds there are siutaitons where a pyamnent request would stall and somtimes take hours or days before it is completed or rejected.
+
+Here are some examples where a payment request could take longer than usual:
+
+\begin{itemize}
+\item
+The PSP deems a payment request high risk and requires a human to review it
+\item
+A credit card requires extra protection like 3D Secure Authentication [13] which requires extra details from a card holder to verify a purchase
+\end{itemize}
+
+The payment service must be able to handle these payment requests that take a long time to process.
+
+If the buy page is hosted by an external PSP, which is quite common these days, the PSP would hanel these long-running payment requests in the following ways:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+THe PSP would return a pending status to our client
+\item
+OUr client would display that to the user
+\item
+Our client would also provide a page for the customer to check the current payment status
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+The PSP tracks the pending payment on our behalf, and notifies the payment service of any status update via the webhook the payment service registered with the PSP
+\end{itemize}
+\end{itemize}
+
+When the payment request is finally completed, the PSP calls the registered webhook mentioned above.
+
+The payment service updates its internal system and completes the shipment to the customer.
+
+Alternatively, instead of updating the payment service via a webhook, some PSP would put the burdern on the payment service to poll the PSP for status updates on any pending payment requests.
 
 \end{document}

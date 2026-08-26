@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  25 AUG 2026 16:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  25 AUG 2026 22:31
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -702,6 +702,18 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count348
 )
 (./system_design_interview.aux)
+Runaway argument?
+{\contentsline {figure}{\numberline {3.167}{\ignorespaces 
+./system_design_interview.tex:65: File ended while scanning use of \@writefile.
+<inserted text> 
+                \par 
+l.65 \begin{document}
+                     
+I suspect you have forgotten a `}', causing me
+to read past where you wanted me to stop.
+I'll try to recover; but if the error is serious,
+you'd better type `E' or `X' now and fix your file.
+
 \openout1 = `system_design_interview.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 65.
@@ -719,7 +731,6 @@ LaTeX Font Info:    ... okay on input line 65.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 65.
 LaTeX Font Info:    ... okay on input line 65.
 \c@lstlisting=\count349
-
 (/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count350
@@ -3002,17 +3013,22 @@ Overfull \hbox (21.47159pt too wide) in paragraph at lines 14259--14260
 \OT1/cmr/m/n/10 hook,it ex-tracts the pay-ment sta-tus and up-dates the []
  []
 
-[358] (./system_design_interview.aux)
+<images/figure_11_6.jpg, id=1386, 7752.965pt x 5149.2375pt>
+File: images/figure_11_6.jpg Graphic file (type jpg)
+<use images/figure_11_6.jpg>
+Package pdftex.def Info: images/figure_11_6.jpg  used on input line 14298.
+(pdftex.def)             Requested size: 276.00105pt x 183.30598pt.
+[358] [359 <./images/figure_11_6.jpg>] [360] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 28398 strings out of 467533
- 661768 string characters out of 5422138
- 1100751 words of memory out of 5000000
- 56959 multiletter control sequences out of 15000+600000
+ 28412 strings out of 467533
+ 662115 string characters out of 5422138
+ 1100756 words of memory out of 5000000
+ 56973 multiletter control sequences out of 15000+600000
  632185 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -3027,10 +3043,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (358 pages, 883055142 bytes).
+Output written on system_design_interview.pdf (360 pages, 888900761 bytes).
 PDF statistics:
- 1454 PDF objects out of 1728 (max. 8388607)
- 830 compressed objects within 9 object streams
+ 1461 PDF objects out of 1728 (max. 8388607)
+ 834 compressed objects within 9 object streams
  0 named destinations out of 1000 (max. 500000)
- 1168 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1173 words of extra memory for PDF output out of 10000 (max. 10000000)
 
