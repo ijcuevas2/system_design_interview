@@ -14393,4 +14393,129 @@ The payment service updates its internal system and completes the shipment to th
 
 Alternatively, instead of updating the payment service via a webhook, some PSP would put the burdern on the payment service to poll the PSP for status updates on any pending payment requests.
 
+\subsection{Communication among internal services}
+
+There are two types of communication patterns that internal services use to communicate: synchronous vs asynchronous. Both are explained below:
+
+\subsection{Synchronous communication}
+
+Synchronous communication like HTTP works well for small-scale systems, but its shortcomings become obvious as the scale increases.
+
+It creates a long request and response cycle that depends on many services.
+
+The drawbacks of this approach are:
+
+\begin{itemize}
+\item
+Low performance. If any one of the services in the chian doesn't perform well, the whole system is impacted
+\item
+Por failure isolation. If PSPs or any other services fail, the client will no longer receive a response
+\item
+Tight coupling. THe request sender needs to know the recipient
+\item
+Hard to scale. Without using a queue to act as a buffer, it's not easy to scale the system to support a sudden increase in traffic
+\end{itemize}
+
+\subsection{Asynchronous communication}
+
+Asynchronous communication can be divided into two categories:
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+Single receiver: each request (message) is processed by one receiver or service
+
+\item
+The message queue can have multiple subscribers, but once a message is processed, it gets removed form the queue
+\item
+Let's take a look at a concreate example
+\item
+In Figure 11.7, service A and service B both subscribe to a shared message queue
+\item
+When m1 and m2 are consumed by service A and service B respectively, both messages are  removed from the queue as shown in Figure 11.8.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_8}
+    \caption{}
+  \end{center}
+\end{figure}
+\item
+
+\begin{itemize}
+\item
+Multiple receivers: each request (message) is processed by multiple receivers or services
+\item
+Kafka works well here
+\item
+When consumers receive messages, they are not removed from Kafka
+\item
+THis model maps well to the payment system, as the same request might trigger multiple side effects such as sending push notifications, updating financial reporting analytics, etc.
+\item
+An exmpale is illustrated in Figure 11.9
+\item
+Payment events are published to Kafka and consumed by different services such as the payment system, analytics service, and billing service.
+\end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Generally speaking, synchronous communication is simpler in design, but it doesn't alllow services to be autonomous.
+
+\begin{itemize}
+\item
+As the dependency grah grows, the overall performance suffers
+\item
+Aysnchronous communication trades design simplicity and consistency for scalability and afilure resilience
+\item
+For a large-scale payment system with complex business logic and a large number of third-party dependencies, asynchronous commnication is a better choice
+\end{itemize}
+
+\subsection{Handling failed payments}
+
+Every payment system has to handle failed transactions. Reliability and fault tolerance are key requirements. We review some of teh techniques for taling those challenges.
+
+\subsection{Tracking payment state}
+
+\begin{itemize}
+\item
+Having a definittive payment state any any state of the payment cycle is crucial
+\item
+Whenever a fialure happens, we can determine the current state of a payment transaction and decide whether a retry or refund is needed
+\item
+The payment state can be persisted in an append only database table
+\end{itemize}
+
+\subsection{Retry queue and dead letter queue}
+
+To gracefuly handle failures, we utilize the retry queue and dead letter queue, as shown in Figure 11.10.
+
+\begin{itemize}
+\item
+Retry queue: retryable error such as transient errors are routed to a retry queue
+\item
+\begin{itemize}
+\item
+Dead letter queue [14]: if a message fails repeatedly, it eventually lands in the dead letter queue
+\item
+A dead letter queue is useful for debugging and isolatin problematic messages for inspection to determine why they were not processed successfully
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\end{itemize}
+
 \end{document}
