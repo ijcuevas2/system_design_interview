@@ -14508,6 +14508,7 @@ Dead letter queue [14]: if a message fails repeatedly, it eventually lands in th
 \item
 A dead letter queue is useful for debugging and isolatin problematic messages for inspection to determine why they were not processed successfully
 \end{itemize}
+\end{itemize}
 
 \begin{figure}[H]
   \begin{center}
@@ -14516,6 +14517,91 @@ A dead letter queue is useful for debugging and isolatin problematic messages fo
   \end{center}
 \end{figure}
 
+\begin{enumerate}
+\item
+Check whether the failure is retryable
+\begin{itemize}
+\item
+Retryable failures are routed to a retry queue
+\item
+FOr non-retryable failures such as invalid input, errors are stored in a database
+\end{itemize}
+
+\item
+The payment system consumes events fromt eh retry queue and retries failed payment transactions
+\item
+If the payment transaction fails again:
+
+\begin{itemize}
+\item
+If the retry count doesn't execeed the threshold, the event is routed to the retry queue
+\item
+If the retry coutn exceeds the threshold, the event is put in the dead letter queue. THose failed events might need to be investigated.
+\end{itemize}
+
+\item
+The payment system consumes events from the retry queue and retries failed payment transactions
+\item
+If the payment transaction fails again:
+
+\begin{itemize}
+\item
+If the retry count doesn't exceed the threshold, the vent is routed to the retry queue
+\item
+If the retry count exceeds the threshold, the event is put in the dead letter queue. Those failed events might need to be investigated
+\end{itemize}
+\end{enumerate}
+
+If you are interested in a real-world example of using those queues, take a look at Uber's payment system that utilizes Kafka to meet the reliability and fault-tolerance requirements [15].
+
+\subsubsection{Exacty-once delivery}
+
+One of the most serious problems a payment system can have is to double charge a customer.
+
+It is important to guarantee in our design that the payment system executes a payment order exactly-once [16].
+
+A first glance, exactly-once delivery seems very hard to tackle, but if we divide the problem into two parts, it is much easier to solve.
+
+Mathematically, an operation is executed exactly-once if:
+
+\begin{enumerate}
+\item
+It is executed at-least-once
+\item
+At the same time, it is executed at-most-once
+\end{enumerate}
+
+We will explain how to implement at-least-once using retry,m and at-most-once using idempotency check.
+
+\subsection{Retry}
+
+Occasionally, we need to retry a payment transaction due to network errors or timeout.
+
+\begin{itemize}
+\item
+Retry provides the at-least-once guarantee
+\item
+For example, as shown in Figure 11.11, where the client tries to make a \$10 payment, but the payment request keeps failing due to a poor network conneciton
+\item
+In this example, the network eventually recovered and the request succeeded at the fourth attempt.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_11_11}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Deciding the appropriate time intervals betwen retries is important. Here are a few common retry stategies.
+
+\begin{itemize}
+\item
+Immediate retry: client immediately resends a request
+\item
+Fixed intervals: wait a fixed amount of time between the time of the failed payment and a new retry attempt
+\item
+Incremental intervals: client wais tfor a short time for the first retry, adn the icnrementally cinreases the time for subsequent writes
 \end{itemize}
 
 \end{document}
