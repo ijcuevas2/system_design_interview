@@ -42,7 +42,8 @@
    (LaTeX-add-labels
     "tab:label"
     "tab:storage-options"
-    "lst:uploading-object")
+    "lst:uploading-object"
+    "tab:payment-security")
    (LaTeX-add-environments
     '("defbox" 1))
    (LaTeX-add-array-newcolumntypes

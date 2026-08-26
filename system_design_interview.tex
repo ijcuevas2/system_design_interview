@@ -14723,4 +14723,128 @@ THe PSP keeps the payment execution status
 Data might be replicated among different database replicas to increase reliability
 \end{enumerate}
 
+In a distributed environment, the communication between any two services can fail, causing data inconsistency, Let's take a look at some tehcnique to resolve data inconsitency in a payment system.
+
+To maintain data consistency between internal services, ensuring exactly-once processing is very important.
+
+\begin{itemize}
+\item
+To maintain data consistency between the interal service and external service (PSP), we usually rely on idemptoency and reconciliation
+\item
+If the external serfvice supports idempotency, we should use the same idempotency key for payment rety operations
+\item
+Even if an external service supports idempotent APIs, reconciliation si stil needed because we shouldn't assume the external system is always right
+\end{itemize}
+
+If data is replicated, replication lag could cause inconsisten t data between the primary database and the replicas, There are generally two options to solve this:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Serve both reads and writes from the primary database only
+\item
+This approach is easy to setup, but the obvious drawback is scalability
+\item
+Replicas are used to ensure data reliability, but they don't serve any traffic, which wastes resources
+\end{itemize}
+
+\item
+\begin{itemize}
+\item
+Ensure all replicas are always in-sync
+\item
+We could use consensus algorithms such as Paxos [21] and Raft [22], or use consesnsus-based distributed databases such as YugabyteDB [23] or CockroachDB [24]
+\end{itemize}
+\end{enumerate}
+
+\subsection{Payment security}
+
+Payment security is very important. In the final part of this system design, we briefly cover a few techniques for combating cyber attacks and card thefts.
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{|p{0.32\textwidth}|X|}
+\hline
+\textbf{Problem} & \textbf{Solution} \\
+\hline
+Request/response eavesdropping & Use HTTPS \\
+\hline
+Data tampering & Enforce encryption and integrity monitoring \\
+\hline
+Man-in-the-middle attack & Use SSL with certificate pinning \\
+\hline
+Data loss & Database replication across multiple regions and take snapshots of data \\
+\hline
+Distributed denial-of-service attack (DDoS) & Rate limiting and firewall [25] \\
+\hline
+Card theft & Tokenization. Instead of using real card numbers, tokens are stored and used for payment \\
+\hline
+PCI compliance & PCI DSS is an information security standard for organizations that handle branded credit cards \\
+\hline
+Fraud & Address verification, card verification value (CVV), user behavior analysis, etc. [26] [27] \\
+\hline
+\end{tabularx}
+\caption{Payment security}
+\label{tab:payment-security}
+\end{table}
+
+\subsection{Step 4: Wrap Up}
+
+In this chapter, we investigated the pay-in flow and pay-out flow.
+
+\begin{itemize}
+\item
+We went into great deptabout retry, idempotency, and consistency
+\item
+Payment error handling and security are also covered at the end of the chapter
+\item
+A payment system is extrenely complex
+\item
+Event hough we have covered many topics there are still more worth mentioning
+\end{itemize}
+
+The following is a representative but not an exhaustive list of relevant topics:
+
+\begin{itemize}
+\item
+Monitoring:
+\begin{itemize}
+\item
+Monitoring key metrics is a critical part of any modern application
+\item
+With extensive monitoring, we can answer questions like ``What is the average acceptance rate for a specific payment method?'', `What is the CPU usage of our servers?`, etc.
+\item
+We can create and display those metrics on a dashboard.
+\end{itemize}
+
+\item
+Alerting. When something abnormal occurs, it is important to alert on-calll developers so they respond promptly
+\item
+
+\begin{itemize}
+\item
+Debugging tools. ``Why does a payment fail?" is a common question
+\item
+To make debugging easier for engineers and customer support, it is important to develop tools that allow staff to review the transaction status, processing server hisotry, PSP records, etc. of a payment transaction.
+\item
+Currency exchange. Currency exchange is an importanta consideration when designing a payment system for an international user base
+\item
+Geography. Different regions might have completely different sets of payment methods
+\item
+Cash payment. Cash payment is very common in India, Brazil, and some other ocuntires. Uber [28] and Airbnb [29] wrote detailed engineering blogs about how they handled cash-based payment
+\item
+Google/Apple pay integration. PLease read [30] if interested
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_11_summary}
+    \caption{}
+  \end{center}
+\end{figure}
+\end{itemize}
+
 \end{document}
