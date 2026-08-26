@@ -14602,6 +14602,33 @@ Immediate retry: client immediately resends a request
 Fixed intervals: wait a fixed amount of time between the time of the failed payment and a new retry attempt
 \item
 Incremental intervals: client wais tfor a short time for the first retry, adn the icnrementally cinreases the time for subsequent writes
+\item
+Exponential backoff [17]:
+
+\begin{itemize}
+\item
+double the waiting time between retries after each failed retry
+\item
+For example, when a request fails for the first time, we retry after 1 second; if it fails a second time, we wait 2 seconds before the enxt retry; if it fails a third tiem, we wait 4 secodjns before another retry
 \end{itemize}
+\item
+Cancel: the client can cancel the request. This is a common practice when the failure is permanent or repeated requests are unilkey to be successful
+\end{itemize}
+
+Determining the appropriate retry strategy is difficult.
+
+\begin{itemize}
+\item
+There is no ``one size fits all'' solution
+\item
+As a general guideline, use expotentnial backoff if the network issue is unlikely to be resolved in a short amount of time
+\item
+Overly aggressive retry strategies waste computing resources and can cause service overload
+\item
+A good practice is to provide an error code with a \lstinline|Retry-After| header.
+\item
+A potential problem of retrying is double pyament. Let us take a look at two scenarios.
+\end{itemize}
+
 
 \end{document}
