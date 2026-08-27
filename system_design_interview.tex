@@ -15210,4 +15210,20 @@ As the name implies, it has two phases as in Figure 12.3
   \end{center}
 \end{figure}
 
+\begin{enumerate}
+\item
+The coordinator, which in our case is the wallet service, performs read and write operations on multiple databses as normal. As shown in Figure 12.5, both databases A and C are locked
+\item
+When the application is about to commit the transaction, the coordinator asks all databases to prepare the transaction
+\item
+In the second phase, the coordinator collects replies from all databases and performs the following:
+
+\begin{itemize}
+\item
+If all the databses reply with a \lstinline|yes|, the coordinator asks all databses to commit the transaction they have received
+\item
+If any database replies with a \lstinline|no|, the coordinator asks all databses to abort the transaction
+\end{itemize}
+\end{enumerate}
+
 \end{document}
