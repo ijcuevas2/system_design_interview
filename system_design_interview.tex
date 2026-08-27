@@ -15053,4 +15053,161 @@ In practice, many people still choose float or doubl erepresentation of numbers 
 
 It is a proper choice as long as we understand the potential risk of losing precision.
 
+\subsection{In-memory sharding solution}
+
+THe wallet application maintains an account balance for every user account.
+
+\begin{itemize}
+\item
+A good data structure to represent this \lstinline|<user, balance>| relationship is a map, which is also called a hash table (map) or key-value store
+\item
+For in-memory stores, on e popular choice is Redis
+\item
+One Redis node is not enough to handle 1 million TPS
+\item
+We need to setup a cluster of Redis nodes and evenly distribute user accounts among them
+\item
+This process is called partitioning or sharding
+\item
+To distribute the key-value data among \lstinline|n| partitions, we could calculate the hash value of the key, and divide it by \lstinline|n|
+\item
+The remainder is the desitnation of the partition
+\end{itemize}
+
+The pseudocode below shows the sharding process:
+
+\begin{lstlisting}
+String accountID = "A";
+Int partition = 7;
+Int myPartition = accountID.hashCOde() % partitionNUmber;
+\end{lstlisting}
+
+The number of partitions nad addresses of all Redis nodes can be stored in a centralized place.
+
+We could use ZooKeeper [4] as a highly-avaiable configuration stroage solution.
+
+The final component of this solution is a service tha handles the transfer commands. We call ti the wallet service and it has several key responsibilites.
+
+\begin{enumerate}
+\item
+Receives the transfer command
+\item
+Validates the transfer command
+\item
+If the command is valid, it updates the account balances for the two users invovled in the transfer. In a cluster, the account balances are likely to be in different Redis nodes
+\end{enumerate}
+
+The waaet service is statless. It is easy to scale horizontally. FIgure 12.3 shows the in-memory solution.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this example, we have 3 Redis nodes.
+
+\begin{itemize}
+\item
+There are three clients, A, B, and C.
+\item
+Thie raccount balances are evenly spread across these three Redis nodes
+\item
+There are two wallet services nodes in this example that handle the balance transfer requests
+\item
+When one of the wallet services nodes receives the transfer command which is to move \$1 from client A to client B, it issues two commands to two Redis nodes
+\item
+For the Redis node that contains client A's account, the wallet services deducts \$ from the account
+\item
+For client B, the wallet service adds \$1 to the account
+\end{itemize}
+
+\textbf{Candidate}:
+
+\begin{itemize}
+\item
+In this design, account balances are spread across multiple Redis nodes
+\item
+ZooKepper is used to maintain the sharding information
+\item
+The stateless wallet services uses the sharding information to locate the Redis nodes for the clients and updates the account balances accordingly
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+This design works, but it does not meet our correcness requirement
+\item
+THe wallet services updates two Redis nodes for each transfer
+\item
+There is no guarantee that both updates would succeed
+\item
+If, for example, the wallet service node crashes after the first update has gone through but before the second update is done, it would result in an incomplete transfer
+\item
+THe two updates need to be in a single atomic transaction
+\end{itemize}
+\end{itemize}
+
+\subsection{Distributed transactions}
+
+\subsubsection{Database sharding}
+
+How do we make the updates to two different storage nodes atomic?
+
+\begin{itemize}
+\item
+The first step is to replace each Redis node with a transactional relational database node
+\item
+The first step is to replace each Redis node with a transactional relational database node
+\item
+Figure 12.4 shows the architecture
+\item
+This time, clients A, B, and C are partitioned into 3 relational databases, other than in 3 Redis nodes
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_4}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Using transactional databases only solves part of the proble.
+
+\begin{itemize}
+\item
+As mentioned in the last section, it is very liekly that one transfer command will need to update two accoutns in two different databses
+\item
+THere is no guarantee that two update operations will be handled at exactly the same time
+\item
+I fthe wallet service restarted right after it updated the first account balance, how can we make sure the second account will be updated as well?
+\end{itemize}
+
+\subsection{Distributed transaction: Two-phase commit}
+
+In a distributed system, a trnascation may involve multiple processes on multiple nodes.
+
+\begin{itemize}
+\item
+To make a transaction atomic, the distributed transaction might be the answer
+\item
+There are two ways to implement a distributed trnasaction: a low-level solution and a high-level solution
+\item
+We will examine each of them
+\item
+The low-level solution relies on the databse itself
+\item
+The most commonly used algorithm is called two-phase commit (2PC)
+\item
+As the name implies, it has two phases as in Figure 12.3
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}
