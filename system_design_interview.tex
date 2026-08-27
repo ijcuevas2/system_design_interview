@@ -15226,4 +15226,64 @@ If any database replies with a \lstinline|no|, the coordinator asks all databses
 \end{itemize}
 \end{enumerate}
 
+It is a low-level solution becaues the prepare step requires a special modification to the database transacaiton
+
+\begin{itemize}
+\item
+For example, there is an X/Open XA [6] standard that coordinates heterogeneous databses to achieve 2PC.
+\item
+The biggest problem with 2PC is that it's not performant, as lcoks can be hled for a very long time while waiting for a message form the other ndoes
+\item
+Another issue with 2PC is that the coordinator can be a single point of failure, as shown in Figure 12.6.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Distributed transaction: Try-Confirmm/Cancel (TC/C)}
+
+TC/C is a type of compensating transaction [7] that has two steps:
+
+\begin{itemize}
+\item
+In the first phase, the coordinator asks all databses to reserve reousrces for the transaction
+\item
+In the second phase, the coordinator collects replies from all databses:
+
+\begin{itemize}
+\item
+If all databases reply with \lstinline|yes|, the coordinator asks all databases to confirm the operation, which is the Try-Confirm process
+\item
+If any databse replies with \lstinline|no|, the coordinator asks all databses to cancel the operation, which is the Try-Cancel process
+\end{itemize}
+\end{itemize}
+
+It's important to note that the two phases in 2PC are wrapped in the same transaction but in TC/C each phase is a separate transaction.
+
+\subsection{TC/C example}
+
+It would be much easier to explain how TC/C works with a real-world example. Suppose we weant to transfer \$1 from account A to account C.
+
+Table 12.2 gives a summary of how TC/C eis executed in each phase.
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+Phase & Operation & A & C \\
+\hline
+1 & Try & Balance Change: -\$1 & Do nothing \\
+\hline
+2 & Confirm & Do nothing & Balance Change: +\$1 \\
+\hline
+2 & Cancel & Balance Change: +\$1 & Do nothing \\
+\hline
+\end{tabular}
+
+Table 12.2: TC/C example
+
+Let's assume the wallet service is the coordinator of the TC/C. A the beginning of the distributed transaction, account A has \$1 in its balance, and account C has \$0.
+
 \end{document}
