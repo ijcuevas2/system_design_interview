@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  26 AUG 2026 01:16
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  27 AUG 2026 02:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -3065,20 +3065,35 @@ File: images/chapter_11_summary.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/chapter_11_summary.jpg  used on input line 1484
 4.
 (pdftex.def)             Requested size: 276.00105pt x 431.4275pt.
- [371] [372 <./images/chapter_11_summary.jpg>] [373
+ [371] [372 <./images/chapter_11_summary.jpg>]
+<images/figure_12_1.jpg, id=1440, 7289.2325pt x 2065.7175pt>
+File: images/figure_12_1.jpg Graphic file (type jpg)
+<use images/figure_12_1.jpg>
+Package pdftex.def Info: images/figure_12_1.jpg  used on input line 14860.
+(pdftex.def)             Requested size: 276.00105pt x 78.20178pt.
+<images/figure_12_2.jpg, id=1441, 5480.475pt x 3001.2125pt>
+File: images/figure_12_2.jpg Graphic file (type jpg)
+<use images/figure_12_2.jpg>
+Package pdftex.def Info: images/figure_12_2.jpg  used on input line 14878.
+(pdftex.def)             Requested size: 276.00105pt x 151.1227pt.
+ [373
 
-]
-(./system_design_interview.aux)
+ <./images/figure_12_1.jpg>] [374 <./images/figure_12_2.jpg>] [375]
+Overfull \hbox (21.63303pt too wide) in paragraph at lines 14979--14988
+[][] 
+ []
+
+[376] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 28497 strings out of 467533
- 664359 string characters out of 5422138
+ 28525 strings out of 467533
+ 665053 string characters out of 5422138
  1100777 words of memory out of 5000000
- 57058 multiletter control sequences out of 15000+600000
+ 57086 multiletter control sequences out of 15000+600000
  632185 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -3093,10 +3108,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (373 pages, 913004358 bytes).
+Output written on system_design_interview.pdf (376 pages, 917500870 bytes).
 PDF statistics:
- 1510 PDF objects out of 1728 (max. 8388607)
- 864 compressed objects within 9 object streams
+ 1521 PDF objects out of 1728 (max. 8388607)
+ 870 compressed objects within 9 object streams
  0 named destinations out of 1000 (max. 500000)
- 1203 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1213 words of extra memory for PDF output out of 10000 (max. 10000000)
 

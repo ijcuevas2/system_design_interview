@@ -14855,4 +14855,157 @@ For example, you can add money to your digital wallet from your bank card and wh
 
 Figure 12.1 shows this process.
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Spending money is not the only feature that the digital wallet provides.
+
+\begin{itemize}
+\item
+For a payment platform like PayPal, we can directly transfer money to somebody ele's wallet on the same payment platform
+\item
+Compared with the bank-to-bank transfer, direct transfer between digital wallets is fater, and most imporantly, it usually odes not charge an extra fee
+\item
+Figure 12.2 shows a cross-wallet balance transfer operation
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Suppose we are asked to design the backend of a digital wallet application that supports.
+
+At the beginning of the interview, we will ask clarification questions to nail down the requirements.
+
+Suppose we are asked to design the backend of a digital wallet application that supports the cross-wallet balance transfer operation. At the beginning ot he interview, we will ask clarification questions to nail down the requirements.
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+\begin{enumerate}
+\item
+
+\textbf{Candidate}: Should we only focus on balance transfer operations between two digital wallets? DO we need to worry about other features?
+
+\textbf{Interviewer}: Let's focus on balance transfer operations only.
+\item
+\textbf{Candidate}: How many transactions per second (TPS) does the system need to support?
+
+\textbf{Interviewer}: Let's assume 1,000,000 TPS.
+\item
+\textbf{Candidate}: A digital wallet has strict requirements for correctness. Can we assume transactional guarantees [1] are sufficient?
+
+\textbf{Interviewer}: That sounds good.
+
+\item
+\textbf{Candidate}: Do we need to prove correctness?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+This is a good question.
+\item
+Correctness is uslaly only verifiable after a transaction is complete
+\item
+One way to verify is to compare our internal records with statements from banks
+\item
+The limitation of reconciliation is that it only shows discrepanices and cannot tell how a difference was generated
+\item
+Therefore, we woud like to design a system with reproducibility, meaning we could always reconstruct historical balance by replaying the data from the very beginning
+\end{itemize}
+
+\item
+\textbf{Candidate}: Can we assume the availability requirement is 99.99\%.
+
+\textbf{Interviewer}: Sounds good.
+\item
+\textbf{Candidate}: Do we need to take foreign exchange into consideration?
+
+\textbf{Interviewer}: No, it's out of scope.
+\end{enumerate}
+
+In summary, our digital wallet needs to support the following:
+
+\begin{itemize}
+\item
+Support balance transfer operation between two digital wallets
+\item
+Support 1,000,000 TPS
+\item
+Reliability is at least 99.99\%
+\item
+Support transactions
+\item
+Support reproducibility
+\end{itemize}
+
+\subsection{Back-of-the-envelope estimation}
+
+When we talk about TPS, we imply a transactional datbase will be used.
+
+\begin{itemize}
+\item
+Today, a relational database running on a typical data center node can support a few thousand transactions per second
+\item
+For example, reference [2] contains the performance benchmark of some of the popular transactional database servers
+\item
+Let's assume a datbase node can support 1,000 TPS
+\item
+In order to reach 1 million TPS, we need 1000 database nodes
+\end{itemize}
+
+However, this calculation is slightly inaccurate.
+
+\begin{itemize}
+\item
+Each transfer command requires two operations: deducting moeny from one account and despositing money to the other account
+\item
+To support 1 million transfers per second, the system actually needs to handle up to 2 million TPS, which means we need 2000 nodes
+\end{itemize}
+
+Table 12.1 shows the total number of nodes required when the ``per-node TPS'' (the TPS a single node can handle) changes.
+
+Assuming hardware remains the same, the mroe transactions a single node can handle per second., the lower the total number of nodes required, indicating lower hardware cost
+
+So one of our design goals is to increase the number of transactions a single node can handle.
+
+\begin{tabular}{|p{6cm}|p{6cm}|}
+\hline
+\lstinline|Per-node TPS| & \lstinline|Node Number| \\
+\hline
+\lstinline|100| & \lstinline|20,000| \\
+\hline
+\lstinline|10,000| & \lstinline|200| \\
+\hline
+\end{tabular}
+
+Table 12.1: Mapping between pre-node TPS and node number
+
+\subsection{Step 2: Propose High-level DEsign and Get Buy-in}
+
+In this section, we will discuss the following:
+
+\begin{itemize}
+\item
+API design
+\item
+Three high-level designs
+
+\begin{enumerate}
+\item
+Simple in-memory solution
+\item
+Database-based distributed transaction solution
+\item
+Event sourcing solution with reproducibility
+\end{enumerate}
+\end{itemize}
+
 \end{document}
