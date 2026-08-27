@@ -15407,4 +15407,65 @@ The disadvantage is that we have to manage the details and handle the complexity
 
 \subsection{Phase status table}
 
+We still have not yet answered the question asked earlier, what if the wallet service restats in the middle of TC/C? WHen it restarts all preivous operation hisotry might be lost, and the system may not know how to recover.
+
+THe solution is simple. We can store the progress of a TC/C/ as phase status in a transactional database. THe phase status includes at least the following information.
+
+\begin{itemize}
+\item
+The ID and content of a distributed transaction
+\item
+THe status of the TRy phase for each database. THe status could be \lstinline|not sent yet|, and has \lstinline|been sent|, and \lstinline|response received|
+\item
+THe name of the second phase. It coudl be \lstinline|Confirm| or \lstinline|Cancel|. It could be calculated using the result of the TRy phase
+\item
+THe status of the second phase
+\item
+AN out-of-order flag (explained soon in the section ``out-of-order Execution'').
+
+Where should we put the phase status table? Usually we store the phase status in the database that contains the wallet account from which money is deducted. THe update architecture diagram is shon in Figure 12.10.
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_10}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Unbalanced state}
+
+Have you noticed that by the end of the Try phase, \$1 is missing (Figure 12.11)?
+
+Assuming everything does well, by the end of the TRy phase, \$1 is deducted from account A and account C remains unchanged.
+
+\begin{itemize}
+\item
+The sum of account balances in A and C will be \$0, which is less than at the beginning of the TC/C
+\item
+It violates a fundamental rule of accounting that the sum should reamin the same after a transaction
+\end{itemize}
+
+The good news is that the transactional guarantee is still maintained by TC/C.
+
+\begin{itemize}
+\item
+TC/C comprises several independent local transactions
+\item
+Because TC/C/ si sdriven by application,t he application tiself is able to see the intermediate result between these local trnasactions
+\item
+On the other hand, the database transaction or 2PC version of the distributed transaction was maintained by databases that are invisible to high-level applications
+\end{itemize}
+
+There are wlasy data discrepencies during the execution of distributed trnasactions.
+
+\begin{itemize}
+\item
+The discrepenacies might be trnasparent to us because lower-level systems such as databses already fixed the discrepancies
+\item
+If not, we hav eto handle it ourselves (for example, TC/C)
+\end{itemize}
+
+The unbalanced state is shown in Figure 12.11.
+
 \end{document}
