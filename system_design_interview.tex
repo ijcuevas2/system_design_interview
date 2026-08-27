@@ -15286,4 +15286,123 @@ Table 12.2: TC/C example
 
 Let's assume the wallet service is the coordinator of the TC/C. A the beginning of the distributed transaction, account A has \$1 in its balance, and account C has \$0.
 
+\subsubsection{First phase: Try}
+
+In the Try phase, the wallet service, which acts as the coordnator, sends two transaction commands to two databases:
+
+\begin{itemize}
+\item
+For the database that contains account A, the coordinator starts a local transaction that reduces the balance of A by \$1
+\item
+
+\begin{itemize}
+\item
+For the database that contains account C, the coordinator gives it a \lstinline|NOP| (no operation)
+\item
+To make the example adaptable for other scenarios, let's assume the coordinator sends to this database a \lstinline|NOP| command
+\item
+The database does nothing for \lstinline|NOP| commands and always replies to the coordinator with a success message
+\end{itemize}
+\end{itemize}
+
+The Try phase is shown in Figure 12.7. The thick line indicates that a lock is held by the transaction.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_7}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Second phase: Confirm}
+
+If both databases reply \lstinline|yes|, the wallet service starts the next Confirm phase.
+
+\begin{itemize}
+\item
+Account A's balance has already been updatedin the first phase.
+\item
+However, account C has not yet received its\$1 from account A in the first phase
+\item
+In the Confirm phase, the waleet service has to aadd \$1 to account C's balance
+\end{itemize}
+
+The Confirm process is shown in Figure 12.8.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_8}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Second phase: Cancel}
+
+What if the first Try phase fails?
+
+\begin{itemize}
+\item
+IN the example above we assumed the \lstinline|NOP| operation on account C always succeeds, although in practice it may fail
+\item
+For example, accoutn C might be an illegal acocunt, adhte regulator has mandated that no money can flow into our out of this account
+\item
+In this case, the distributed transaction must be acanceled and we have to clean up
+\item
+Because the balance of account A has already been updated in the transaction in the Try phase, it is impossible for the wallet service to cancel a completed transaction
+\item
+What it can do is to start another transaciton that reverts the effect of the transaction in the Try phase, which is to add \$1 back to account A
+\end{itemize}
+
+Because account C was not updated in the Try phase, the wallet service just needs to send a \lstinline|NOP| operation to account C's database.
+
+The Cancel process is shown in Figure 12.9.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_9}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Comparison between 2PC and TC/C}
+
+Table 12.3 shows that there are many similarities between 2PC and TC/C, but there are also differences.
+
+In 2PC, all local transactions are not done (still locked) when the second phase starts, while in TC/C, all location transactions are done (unlocked) when the second phase starts
+
+\begin{itemize}
+\item
+In other words, the second phase of 2PC is about completing an unfinished transaction, such as an abort or commit, while in TC/C, the second phase is about using a reverse operation to offset the previous transaction result when an error occurs
+\end{itemize}
+
+The following table summariezes their differences.
+
+\begin{tabular}{|p{3.5cm}|p{3.5cm}|p{3.5cm}|p{3.5cm}|}
+\hline
+ & First Phase & Second Phase: success & Second Phase: Fail\\
+\hline
+\lstinline|2PC| & Local transactions are not done yet & Commit all location transactions & Cancel all local transactions\\
+\hline
+  \lstinline|TC/C| & Execute new local transactions if needed & Revers4e the side effect of the already committed transaction or called ``undo''\\
+\hline
+\end{tabular}
+
+Table 12.3: 2PC v.s. TC/C
+
+TC/C is also called a distributed trnasaction by compensation.
+
+\begin{itemize}
+\item
+It is a high-level solution because the compensation, also called the ``undo'' is implementedin the business logic.
+
+\begin{itemize}
+\item
+The advantage of this approach is that it is database-agnostic.
+\item
+As long as a database supports transactions, TC/C will work
+\item
+The disadvantage is that we have to manage the details and handle the complexity of the distributed transactions in the business logic at the applicatoin layer.
+\end{itemize}
+\end{itemize}
+
 \end{document}
