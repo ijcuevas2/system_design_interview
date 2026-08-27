@@ -15036,5 +15036,21 @@ Request parameters are:
 \hline
 \end{tabular}
 
+Sample response body:
+
+\begin{lstlisting}
+{
+  "Status": "success",
+  "transaction_id": "81589980-2664-11ec-9621-8242ac130002"
+}
+\end{lstlisting}
+
+One thing worth mentioning is that the data type of the ``amount'' field is ``string'' rather than ``double''.
+
+We explained the reasoning in Chapter 11 Payment System on page 320.
+
+In practice, many people still choose float or doubl erepresentation of numbers because it is supported by almost every programming language and database.
+
+It is a proper choice as long as we understand the potential risk of losing precision.
 
 \end{document}
