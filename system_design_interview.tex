@@ -15518,4 +15518,101 @@ In this case, there is nothing to cancel
 The out-of-order execution is shon in Figure 12.12
 \end{itemize}
 
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_12}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+To handle out-of-order operations, each node is allowed to Cancel a TC/C without receiving a Try instruction, by enchaing the existiing logic witht he following updates:
+
+\begin{itemize}
+\item
+The out-of-order Cance operation leaves a flag in the databse indication that it has seen Aa Cacenl operation, bu ti thas not seen a Try operation yet
+\item
+The Try operation is enhanced so it always checks whether there is an out-of-order flag, and it retuns a failure if there is
+\end{itemize}
+
+This is why we added an out-of-order flag to the phase status table in the ``Phase Status Table'' section.
+
+To handle out-of-order operations, each node is allowed to Cancel a TC/C without receiving a Try instruction, by enhancing the existing logic with the following updates:
+
+\begin{itemize}
+\item
+The out-of-order Cacnel operation leaves a flag in the database indicating that it has seen a Cancel oepration, but it has not seen a Try operation yet
+\item
+The Try operation is enhanced so it always chks whether there is an out-of-order flag, and it returns a failure if there is
+\end{itemize}
+
+This is why we added an out-of-order flag to the phase status table in the ``Phase Status Table''
+
+\subsection{Distributed transaction: Saga}
+
+\subsubsection{Linear order execution}
+
+There is another popular distributed transaction solution called Saga [8]. Saga is the de-facto standard in a microservice architecture. The idea of Saga is simple:
+
+\begin{itemize}
+\item
+All operations are ordered in a sequence. Each operation is an independent transaction on its own database
+\item
+Operations are executed from the first to the last. WHen one operation has finished, the next operation is triggered
+\item
+
+\begin{itemize}
+\item
+When an operation has failed , the entire process starts to roll back from the current operation to the first operation in reverse order, using compensating transactions
+\item
+So if a distributed trnasaction has \lstinline|n| operations, we need to prepare \lstinline|2n| operations, \lstinline|n| operations for the normal case and another \lstinline|n| for the compensating transaction during rollback
+\end{itemize}
+\end{itemize}
+
+It is easier to understand this by using an example. Figure 12.13 shows the Saga work flow to transfer \$1 from account A to account C.
+
+The top horizontal line shows the normal order of execution.
+
+\begin{itemize}
+\item
+The two vertical lines show what the system should do when there is an error
+\item
+When it encounters an error, the transfer operations are rolled back and the client receives an error message
+\item
+As we metnioned in the ``Validation operation orders'' section on page 352, we have to put the deduction operation before the addition operation
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+HOw do we coordinate the operations? There are two ways to do it:
+
+\begin{itemize}
+\item
+Choreograpy.
+\begin{itemize}
+\item
+In a microservice architecture, all the services involved in the Saga distributed trnasaction do their jobs by subscribing ot other services' events.
+\item
+So it is fully decentralized coordination
+\end{itemize}
+\item
+Orchestration. A single coordinator instructs all services to do their jobs in the correct order
+\end{itemize}
+
+The choice of which coordination model is to use is determined by the business needs and goals.
+
+\begin{itemize}
+\item
+The challenge of the choreography solution is that services communicate in a fully asynchronous way, so each service has to maintain an internal state machine in order to undertsand what to do when other services emit an event
+\item
+It can become hard to manage when there are many services
+\item
+The orchestration soution handles complexity well, so it is usually the preferred solution in a digital wallet system
+\end{itemize}
+
 \end{document}
