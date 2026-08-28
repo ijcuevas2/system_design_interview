@@ -15690,4 +15690,81 @@ How do we prove that the system logic is correct after a code change?
 
 One design philosophy that systematically answers those questions is event sourcing, which is a technique developed in Domain-Driven Design (DDD) [9].
 
+\subsubsection{Definition}
+
+There are four important terms in event sourcing.
+
+\begin{enumerate}
+\item
+Command
+\item
+Event
+\item
+State
+\item
+State machine
+\end{enumerate}
+
+\subsubsection{Command}
+
+A command is the intended from the outside world.
+
+\begin{itemize}
+\item
+For example, if we want to transfer \$1 from client A to client C, this money transfer request is a command
+\item
+In event sourcing, it is very important that everythin has an order
+\item
+So commands are usually put into a FIFO (first in, first out) queue
+\end{itemize}
+
+\subsubsection{Event}
+
+Command is an intention and not a fact because some commands may be invalid and cannot be fulfilled.
+
+\begin{itemize}
+\item
+For example, the transfer operation will fail if the acocunt balance becomes negative after the transfer
+\item
+A command must be validated before we do anything about it
+\item
+Once the command passes the validation, it is valid and must be fulfilled
+\item
+The result of the fulfillment is called an event
+\end{itemize}
+
+There are two major differences between command and event.
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Events must be executed because they represent a validated fact
+\item
+In practice, we usually use the past tense for an event
+\item
+If the command is ``transfer \$1 from A to C'' the corresponding event would be ``transferred \$1 from A to C''
+\end{itemize}
+\item
+Commands may contain randomness or I/O, but events must be deterministic. Event represent historical facts.
+\end{enumerate}
+
+There are two important properties of the event generation process.
+
+\begin{enumerate}
+\item
+One command may generate any number of events. It could generate zero or more events.
+\item
+
+\begin{itemize}
+\item
+Event generation may contain randomness, meaning it is not guaranteed that a command always generates the same event(s)
+\item
+The event generation may contain external I/O or random numbers
+\item
+We will revist this property in more detail near the end of the chapter
+\end{itemize}
+\end{enumerate}
+
 \end{document}
