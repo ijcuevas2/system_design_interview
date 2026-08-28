@@ -15615,4 +15615,79 @@ It can become hard to manage when there are many services
 The orchestration soution handles complexity well, so it is usually the preferred solution in a digital wallet system
 \end{itemize}
 
+\subsubsection{Comparison between TC/C and Saga}
+
+TC/C and Saga are both applicatoin-level distributed trnasactions. Table 12.5 summarizes their similarities and differences.
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+ & TC/C & Saga \\
+\hline
+Compensation action & In Cancel phase & In rollback phase \\
+\hline
+Central coordination & Yes & Yes (orchestration mode) \\
+\hline
+Operation execution order & any & linear \\
+\hline
+Parallel executino possibility & Yes & No (linear execution) \\
+\hline
+Could see the partial inconsistent status & Yes & Yes \\
+\hline
+Application or database logic & Application & Application \\
+\hline
+\end{tabular}
+
+Table 12.5: TC/C vs Saga
+
+WHich one should we use in practice? The answer depends on the latency requirement.
+
+As Table 12.5 shows, operations in Saga have to be executed in linear order, but it is possible to execute them in parallel in TC/C. So the decision depends on a few factors:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+If there is no latency requirement, or there are very few services, such as our money transfer example, we can choose either of them
+\item
+If we want to go with the trend in mircroservice architecture, choose Saga
+\end{itemize}
+\item
+If the system is latency-sensitive and contains many services/operations, TC/C might be a better option
+\end{enumerate}
+
+\textbf{Candidate}: To make the balance transfer transactional, we replace Redis witha relational database, and use TC/C or Saga to implement distributed transactions
+
+\textbf{Interviewer}
+
+\begin{itemize}
+\item
+Great work! The distributed transaction solution works, but there might be aes where it doesn't work well.
+\item
+For example, users might enter the wrong operations at the application level
+\item
+In this case, the money we specified might be incorrect
+\item
+We need a way to trace back the root cause of the issue and audit all account operations
+\item
+How can we do this?
+\end{itemize}
+
+\subsection{Event sourcing}
+
+\subsubsection{Background}
+
+In real life, a digital wallet provider may be audited. These external auditors might ask some challenging questions, for example:
+
+\begin{enumerate}
+\item
+Do we know the account balance at any given tiem?
+\item
+How do we know the historical and current account balances are correct?
+\item
+How do we prove that the system logic is correct after a code change?
+\end{enumerate}
+
+One design philosophy that systematically answers those questions is event sourcing, which is a technique developed in Domain-Driven Design (DDD) [9].
+
 \end{document}
