@@ -15484,5 +15484,38 @@ Choice 3 & \lstinline|-$1| & \lstinline|+$1| \\
 \hline
 \end{tabular}
 
+ALl three choices look plausible, but some are not valid.
+
+For choice 2, if the Try phase on account C is successful, but has failed on account A (\lstinline|NOP|), the wallet service needs to enter the Cancel phase.
+
+\begin{itemize}
+\item
+There is a chance that somebody else may jump in and move the \$1 away from account C.
+\item
+Later when the wallet service tries to deudct \$ from account C, it find nothing is left, which violates the transactional guarantee of a distributed transaction
+\item
+For choice 3, if \$1 is deducted from account A and added to account C concurrently, it introduces lots of complications
+\item
+For example, \$1 is added to account C, but it fails to deduct the money from account A
+\item
+Therefore, choice 2 and choice 3 are flawed choices and only choice 1 is valid
+\end{itemize}
+
+\subsubsection{Out-of-order execution}
+
+One side effect of TC/C is the out-of-order execution. It will be much easier to explain using an example.
+
+\begin{itemize}
+\item
+We reuse the above example which transfers \$1 from account A to account C
+\item
+As Figure 12.12 shows, in the Try phase, the operation against account A fails and it returns a failure to the wallet service, which then enters the Cancel phase and sends the cancel operation to both account A and account C
+\item
+Let's assume that the databse that hnadles account C has some network issues and it receives  the Cnacel instruction before the Try instruction
+\item
+In this case, there is nothing to cancel
+\item
+The out-of-order execution is shon in Figure 12.12
+\end{itemize}
 
 \end{document}
