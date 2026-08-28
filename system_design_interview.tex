@@ -15468,4 +15468,21 @@ If not, we hav eto handle it ourselves (for example, TC/C)
 
 The unbalanced state is shown in Figure 12.11.
 
+\subsubsection{Valid operation orders}
+
+There are three choice for the Try phase:
+
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+Try phase orders & Account A & Account C \\
+\hline
+Choice 1 & \lstinline|-$1| & \lstinline|NOP| \\
+\hline
+Choice 2 & \lstinline|NOP| & \lstinline|+$1| \\
+\hline
+Choice 3 & \lstinline|-$1| & \lstinline|+$1| \\
+\hline
+\end{tabular}
+
+
 \end{document}
