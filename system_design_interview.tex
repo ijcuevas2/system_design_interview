@@ -15986,4 +15986,77 @@ But the event sourcing architecture you proposed only handles one event at a tim
 Can we make it faster?
 \end{itemize}
 
+\subsection{Step 3: Design Deep Dive}
+
+In this section, we delve deep into techniques for achieving high performance, reliability, and scalability.
+
+\subsubsection{High-performance event sourcing}
+
+In the earlier example, we used Kafka as the command and event store, and the databse as a state store. Let's explore some optimizations.
+
+\subsubsection{File-based command and event list}
+
+The first optimization is to save commands and events to a local disk, rather than to a remote store like Kafka.
+
+\begin{itemize}
+\item
+This avoid transite time across the network
+\item
+The event list uses an append-only data structure
+\item
+Appending is a sequential write operation, which is generally very fast
+\item
+It works well even for magnetic hard drives because the operating system is heavily optimized for sequential reads and wrties
+\item
+According to this artcile [12], sequential disk access can be faster than raondom memory access in some cases
+\end{itemize}
+
+The second optimization is to cache recent commands and events in memory.
+
+\begin{itemize}
+\item
+As we explained bofre, we process commands and events right after they are persisted
+\item
+We may acache them in memory to save the time of loading them back form the local disk
+\item
+We are going to explore some implementation details
+\item
+A technique called mmap [13] is great for implementing the optimizations metnioned previously
+\item
+Mmap can write to a local disk and cache recent content in memory at the same time
+\item
+It maps a disk file to memory as an array
+\item
+The operating system caches certain sections of the file in memory to accelerate the read and write operations
+\item
+For append-only file operations, it is almost guaranteed that all data are saved in memory, which is very fast
+\item
+Figure 12.20 shows the file-based command and event storage
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{File-based state}
+
+In the previous design, state (balance information) is stored in a relational database.
+
+\begin{itemize}
+\item
+In a production environment, a datbase usually runs in a stand-alone server that can only be accessed through networks
+\item
+Similar to the optimizations we did fro command and event, state information can be saved to the local disk, as well
+\item
+More specifically, we can use SQLite [14], which is a file-based local relational database or use RocksDB [15], which is a local file-based key-value store
+\item
+RocksDB is chosen because it uses a log-structured merge-tree (LSM), which is optimized for writer operations
+\item
+To improve read performance, the most recent data is cached
+\item
+Figure 12.21 shows the file-based solution for command, event, and take
+\end{itemize}
 \end{document}
