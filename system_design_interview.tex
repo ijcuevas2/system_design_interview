@@ -16059,4 +16059,414 @@ To improve read performance, the most recent data is cached
 \item
 Figure 12.21 shows the file-based solution for command, event, and take
 \end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Snapshot}
+
+Once everything is file-based, let us consider how to accelerate the preoducibility process.
+
+\begin{itemize}
+\item
+When we first introduced reproducibility, the state machine had to process events from the very beginning, every time
+\item
+What we could optimize is to periodically stop the state machine and save the current state into a file
+\item
+This is called a snapshot
+\end{itemize}
+
+A snapshot is an immutable view of a historical state.
+
+\begin{itemize}
+\item
+Once a snapshot is saved, the state machine does not have to restart form the very geninning anymore
+\item
+It can read data from a snapshot,v erify where it left off, and resume processing from there
+\end{itemize}
+
+For financial application such as wallet service, the finance team often requires a snapshot to be taken at 00:00 so they can verify all transactions that happened during that day.
+
+\begin{itemize}
+\item
+When we first introduced CQRS of event sourcing, the solution was to set up a read-only state machine that reads from the beginning until sthe specified tiem is met
+\item
+With snapshots, a read-only state machine only needs to load one snapshot that contains the data
+\item
+A snapshot is a ginait binary file and a common solution si to save it in an object storage solution, such as HDFS [16]
+\item
+Figure 12.22 shows the file-based event sourcing architecture
+\item
+When everything is file-based, the system can fully utilize the maximum I/O throughput of the computer hardware
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\textbf{Candidate}:
+
+\begin{itemize}
+\item
+We could refactor the design of event sourcing so the command list, event list, state, and snapshot are all saved in files
+\item
+Event sourcin garchitecture processes the event list in a linear mannger, which fits well into the design on hard disks and operating system cache
+\end{itemize}
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+The performance of the local file-based solution si better than the system that requires accessing data from remote Kafka and datbases
+\item
+However, there is another problem: because data is saved on a local disk, a server is now stateful and becomes a single point of failure
+\item
+How do we imporve the reliability of the system?
+\end{itemize}
+
+\subsection{Reliable high-performance event sourcing}
+
+Before we explain the solution, let's examine the parts of the system that need the reliability guarantee.
+
+\subsubsection{Reliability analysis}
+
+Conceptually, everything a node does is around two concept; data and computation.
+
+\begin{itemize}
+\item
+As long as data is durable, it's easy to recover the computational result by running the same code on another node
+\item
+This means we only need to worry about the reliability of data because if data is lost, it is lost forver
+\item
+The reliability of the system is mostly about the reliability of the data
+\end{itemize}
+
+There are four types of data in our system.
+
+\begin{enumerate}
+\item
+File-based command
+\item
+File-based event
+\item
+File-based state
+\item
+State snapshot
+\end{enumerate}
+
+Let us take a close lok at how to esnure the realibility of each type of data.
+
+STate and snapshot can always abe refenerated by replaying the event list.
+
+\begin{itemize}
+\item
+To improve the reliability of state and snapshot, we just need to ensure the event list has strong reliability
+\item
+Now let us examine command
+\item
+On the face of it, event is generated from command
+\item
+We might think providing a strong reliability guarantee for command should be sufficient
+\item
+This seems to be correct at first glance, but it misses something important
+\item
+Event generation is not guaranteed to be deterministic, and also it may contain raondom factors such as random numbers, external I/O, etc
+\item
+So command cannot generate reproducibility of events
+\end{itemize}
+
+Now it's time to take a close look at event.
+
+\begin{itemize}
+\item
+Event represents historical facts to introduce changes ot the state (account balance)
+\item
+Event is immutable and can be used to reubild the state
+\item
+From this analysis, we conlucde that event data is the only one that requires a high-reliabilty guarantee
+\item
+We will explain how to achieve this in the next section.
+\end{itemize}
+
+\subsection{Consensus}
+
+To provide high reliability, we need to replicate the event list across multiple nodes. During the replication proces, we have to guarantee the following properties.
+
+\begin{enumerate}
+\item
+No data loss
+\item
+The relative order of data within a log file remains the same across nodes
+\end{enumerate}
+
+To achieve those guarantees, consensus-based replication is a good fit.
+
+\begin{itemize}
+\item
+The consensus algorithm makes sure that multiple nodes reach a consensus on what the event list is
+\item
+Let's use the Raft [17] consensus algorithm as an example
+\item
+The Raft algorithm guarantees that as long as more than half of the nodes are online, the append-only lists on them have the same data
+\end{itemize}
+
+For example, if we have 5 noes and use the Raft algorithm to synchronize their data, as long as at least 3 (more than $\frac{1}{2}$) of the nodes are up as Figure 12.23 shows, the system can still work properly as a whole:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_23}
+    \caption{}
+  \end{center}
+\end{figure}
+
+A node can have three different roles in the Raft algorithm:
+\begin{enumerate}
+\item
+Leader
+\item
+Candidate
+\item
+Follower
+\end{enumerate}
+
+We can find the implementation fo the Raft algorithm in the Raft Paper.
+
+\begin{itemize}
+\item
+We will only cover the high level concepts here and not go into detail
+\item
+In Raft, at most one node is the leader of the cluster and the remaining nodes are followers
+\item
+The leader is responsible for receiving external commands and replicating data reliability across nodes in the cluster
+\item
+WIth the Raft Algorithm, the system is reliabile as long as the majority of the nodes are operational
+\item
+For example, if there are 3 nodes in the cluster, it could tolerate the failure of 1 node, and if there are 5 nodes, it can tolerate the failure of 2 nodes
+\end{itemize}
+
+\subsection{Reliable solution}
+
+With replication, there won't be a single point of failure in our file-based event sourcing architecture.
+
+Let's take a look at the implementation details.
+
+Figure 12.24 shows the event sourcing architecture with the reliability guarantee.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In Figure 12.24, we set 3 event sourcing nodes. These nodes use the Raft algorithm to synchronize the event list reliably.
+
+\begin{itemize}
+\item
+The leader takes incoming command requests from external users, converts them into events, and appends events into the local event list
+\item
+The Raft algorithm replicates newly added events to the followers
+\item
+All nodes, including the followers, process the event list and update the state
+\item
+The Raft algorithm esnures the leader and followers have the same event lists, while event sourcing guarantees all states are the same, as long as the event lists are the same
+\item
+All nodes including the followers, process the event list an dupdate the state
+\item
+The Raft algorithm esnures the leader and followers have the same event lists, while event sourcing uarantees all states are the same, as long as the event lists are the same
+\item
+A reliable system needs to handle failures gracefully, so let's explore how node crashes are handled
+\item
+If the leader crashes, the Raft algorithm automatically selects a new leader from the remaining healthy nodes
+\item
+This newly elected leader takes responsibility for accepting commands from external users
+\item
+It is guaranteed that the cluster as a whole can provide continued service when a node goes down
+\end{itemize}
+
+When a leader crashes, it is possible that the crash happens before the command list is converted to events
+\begin{itemize}
+\item
+In this case, the client would notice the issue weither by a timeout or by receign an error response
+\item
+The client needs to resned the same command to the newly elected leader
+\item
+In constrast, follower crashes are much easier to handle
+\item
+If a follower crashes, requests sent to it will fail
+\item
+Raft handles failures by returing indefinitely until the crashed node is restarted or a new one replaces it
+\end{itemize}
+
+\textbf{Candidate}: In this design, we use the Raft consesnsus aglrotihm to replicate the event list across multiple nodes. The leader receives commands and replicates events to other nodes.
+
+\textbf{Interviewer}: Yes, the system is more reliabile and fault-toleratnt. However, in order to handle 1 million TPS, one server is not enough. How can we make the system more scalable?
+
+\subsection{Distributed event sourcing}
+
+In the previous section, we explained how to implement a reliable high-performance event sourcing architecture. It solves the reliability issue, but it has two limitations.
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+When a dgitial wallet is updated, we want to receive the updated result immediately.
+\item
+But in the CQRS design, the request/response can be slow
+\item
+This is because a client doesn't know exactly when a dgitial wallet is updated and the client may need to rely  on periodic polling
+\end{itemize}
+\end{enumerate}
+
+Let's take a look at how those two problems are solved.
+
+\subsection{Pull vs push}
+
+\begin{itemize}
+\item
+In the pull model, an external user peridiocally polls  execution status from the read-only state machine.
+\item
+This model is not real-time and may overload the wallet service if the polling frequency is set too high.
+\item
+Figure 12.25 shows the pulling model
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_25}
+    \caption{}
+  \end{center}
+\end{figure}
+
+The naive pull model can be improved by adding a reverse proxy [18] between the external user and the event sourcing node.
+
+\begin{itemize}
+\item
+In this design, the external user sends a command to the reserve proxy, which forwards the command to event sourcing nodes and periodically polls the execution status
+\item
+This  design simplifies the client logic, but the communication is still not real-time
+\item
+Figure 12.26 shows the pull model with a reverse proxy added
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_26}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Once we have the reverse proxy, we could make the response faster by modifying the read-only state machine.
+
+\begin{itemize}
+\item
+As we mentioned earlier, the read-only state machine could have its own behavior.
+\item
+For example, one behavior could be that the read-only state machine pushes execution status back to the reverse proxy, as soon as it receives the event
+\item
+This will give the user a feeling of real-time response
+\end{itemize}
+
+Figure 12.27 shows the push-based model.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_27}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Distributed transaction}
+
+Once synchronous execution is adpoted for every event sourcing node group, we can resuse the distributed transaction solution, TC/C or Sage.
+
+Assume we partition the data by dividing the has value of keys by 2.
+
+Figure 12.28 shows the updated design.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_28}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's take a look at how the money transfer works inthe final distributed event sourcing architecture.
+
+\begin{itemize}
+\item
+To make it easier to undetsnad, we use the Saga distributed transaction model and only explain the happy path without any rollback
+\item
+THe momney trnasfer operation contains 2 distributed operations: \lstinline|A: - \$1| and \lstinline|C:+\$1|
+\item
+The Saga coordinator coordinates the execution as shown in Figure 12.29
+\end{itemize}
+
+\begin{enumerate}
+\item
+User A sends a distributed transaction to the Saga coordinator. It contains two operations: \lstinline|A: -$1| and \lstinline|C: +$1|
+\item
+Saga coordinator creates a record in the phase status table to trace the status of a transaction
+\item
+Saga coordinator examines the order of operations and determines that it needs to handle \lstinline|A: -$1| first. The coordinator sends \lstinline|A: -$1| as a command to Partition 1, which contains account A's information
+\item
+
+\begin{itemize}
+\item
+Partition 1's Raft leader receives the \lstinline|A-$1| command and stores it in the command list
+\item
+It then validates the command
+\item
+If it is valid, it is converted into an event
+\item
+The Raft consensus algorithm is used to synchronize data across different nodes
+\item
+The event (deducting \$1 from A's account balance) is executed after synchronization is complete
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+After the event is synchronized, the event sourcing framework of Parittion 1 synchronizes the data to the read path using CQRS
+\item
+The read path reconstructs the state and the status of execution
+\end{itemize}
+\item
+The read path of Partition 1 pushes the status back to the caller of the event sourcing rramework, which is the Saga coordinator
+\item
+Saga coordinator receives the success status from Partition 1
+\item
+The Saga coordinator creates a record, indicating the operation in Partition 1 is successful, in the phase status table
+\item
+
+\begin{itemize}
+\item
+Because the first operation succeeds, the Safa coordinator executes the second operation, which is \lstinline|C: +$1|
+\item
+The coordinator sends \lstinline|C:$1| as a command in Partition 2 which contains account C's information
+\end{itemize}
+\item
+
+\begin{itemize}
+\item
+Partition 2's Raft leader receives the \lstinline|C: +$1| command and saves it to the command list
+\item
+If it is valid, it is converted into an event
+\item
+The Raft consensus algorithm is used to synchronize data across different nodes
+\item
+The event (add \$1 to C's account) is executed after syncrhonization is complete
+\end{itemize}
+
+\end{enumerate}
+
 \end{document}
