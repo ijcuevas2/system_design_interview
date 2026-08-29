@@ -16466,7 +16466,70 @@ The Raft consensus algorithm is used to synchronize data across different nodes
 \item
 The event (add \$1 to C's account) is executed after syncrhonization is complete
 \end{itemize}
+\item
 
+\begin{itemize}
+\item
+After the event is synrhonized, the event sourcing fraemwork of Parittion 2 synchronizes the data to the read path using CQRS
+\item
+The read path reoncstructs the state and the status of execution
+\end{itemize}
+\item
+THe read path of Partition 2 pushes the status back to the caller of the event sourcing framework, which is the Saga coordinator
+\item
+The Saga cooridnator receives the success status from Partition 2
+\item
+The Saga coordinator creates a record, indicating the operation in Partion 2 is successful in the phase status table
+\item
+At this time, all operations succeed and the distributed transaction is completed. The Saga coordinator responds to its caller with the result
 \end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_29}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 4: Wrap Up}
+
+In this cahpter, we designed a wallet service that is capable of processing over 1 million payment commands per second.
+\begin{itemize}
+\item
+After a back-of-the-envelope estimation, we conlcuded that a few thousand nodes are required to support such a load
+\item
+In the first design, a solution using in-memory key-value stores like Redis is proposed
+\item
+The problem with this design is that data isn't durable
+\item
+In the second design, the in-memory cache is replaced by transactional databses
+\item
+TO support multiple nodes, different transactional protocols such as 2PC, TC/C and Saga as proposed
+\item
+The main issue with trnasaction-based solutions is that we cannot conduct a data audit easily.
+\item
+Next, event sourcing is introduced
+\item
+We first implemented event sourcing using an external database and queue, but it's not performant
+\item
+We improved performance by storing command, event, and state in a local node
+\item
+A single node means a single point of failure
+\item
+TO increase the system reliability, we use the Raft consensus algorithm to replicate the event list onto multiple nodes
+\item
+The last enhancement we made was to adpot the CQRS feature of event sourcing
+\item
+We added a reverse proxy to change the aysnchronous event sourcing framework to a synchronous one for external users
+\item
+The TC/C or Sage protocol is used to coordinate COmmand executions across multiple node groups
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{chapter_12_summary}
+    \caption{}
+  \end{center}
+\end{figure}
 
 \end{document}
