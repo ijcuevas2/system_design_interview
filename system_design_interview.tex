@@ -15767,4 +15767,223 @@ We will revist this property in more detail near the end of the chapter
 \end{itemize}
 \end{enumerate}
 
+The order of events must follow the order of commands. SO events are stored in a FIFO queue, as well.
+
+\subsection{State}
+
+State is what will be changed when an event is applied.
+
+\begin{itemize}
+\item
+In the wallet system, stat is the balances of all client accounts, which can be represented with a map data structure
+\item
+The key is the account name or OID, and the value is the account balance
+\item
+Key-value stores are usually used to store the map data structure
+\item
+The relational database can also be viewed as a key-value store, where keys are primary keys and values are table rows
+\end{itemize}
+
+\subsection{State machine}
+
+A state machine drives the event sourcing process. It has two major functions.
+
+\begin{enumerate}
+\item
+Validate commands and generate events
+\item
+Apply event to update state
+\end{enumerate}
+
+Event sourcing requires the behavior of the state machine to be deterministic.
+
+\begin{itemize}
+\item
+Therefore, the state machine itself should never contain any randomness
+\item
+For example, it should never read anything random from the outside using I/O, or use any random numbers
+\item
+WHen it applies an event to a state, it should always generate the same result
+\item
+Figure 12.14 shows the status view of event sourcing architecture
+\item
+The state machine is resposible for converting the command to an event and for applying the event
+\item
+Because state machine has two primary functions, we usually draw two state machines, one for validating command sand the other for applying events
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_14}
+    \caption{}
+  \end{center}
+\end{figure}
+
+If we add the time dimension, Figure 12.15 shows the dynamic view of event sourcing.
+
+The system keeps receigin commands and processing them, one by one.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_15}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Wallet service example}
+
+For the wallet service, the comands are balance transfer requrests. These commands are put into a FIFO queue. The command queue is shown in Figure 12.16.
+
+Let us assume the state (the account balance) is stored in a relational database.
+
+\begin{itemize}
+\item
+The state machine examines each command one by one in FIFO order
+\item
+For each command, it checks whether the account has a sufficient balance
+\item
+If yes, the state machine generates an event for each account
+\item
+For example, if the command is ``\lstinline|A -> $1 -> C|'', the state machine generates two events: ``\lstinline|A: -$1|'' and ``\lstinline|C: + $1|''
+\end{itemize}
+
+Figure 12.17 shows how the state machine works in 5 steps.
+
+\begin{enumerate}
+\item
+Read commands from the command queue
+\item
+Read balance state from the database
+\item
+Validate the command. If it is valid, generate two events for each of the accounts
+\item
+Read the next event
+\item
+Apply the event by updating the balance in the database
+\end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{Reproducibility}
+
+The most important advantage that event sourcing has over other architectures is reproducibility.
+
+\begin{itemize}
+\item
+In the distributed transaction solutions mentioned earlier, a wallet service saves the updated account balance (the state) into the databse
+\item
+It is difficult to know why the account balance was changed
+\item
+Meanwhile, historical balance information is lost during the update operation
+\item
+In the event sourcing design, all changes are saved first as immutable history
+\item
+The database is only used as an updated view of what balance looks like at any given point in time
+\item
+We could always reconstruct historical balance states by replaying th events from the very beginning
+\item
+Because the event list is immutable and the state machine logic is deterministic, it is guaranteed that the historical states generated from each replay are the same
+\item
+Figure 12.18 shows how to reproduce the tates of the wallet service by replaying the events
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_18}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Reproducibility helps us answer the difficult questions that the auditors ask at the beginning of the section. We repeat the questions here.
+
+\begin{enumerate}
+\item
+Do we know the account balance at any given time?
+\item
+How do we know the historical and current account balances are correct?
+\item
+How do we prove the system logic is correct after a code change?
+\end{enumerate}
+
+For the first question, we could answer it by replaying events from the start, up to the point in time where we would like to know the account balance.
+
+\begin{itemize}
+\item
+For the second question, we could verify the correctness of the account balance by reclaculating it from the event list
+\item
+For the third question, we can run different versions of the code against the events and verify that their results are identical
+\item
+Because of the audit capability, event sourcing is often chosen as the de facto solution for the wallet service
+\end{itemize}
+
+\subsubsection{Command-query responsibility (CQRS)}
+
+So far, we have designed the wallet esrvice to move money from one account to another efficiently.
+
+\begin{itemize}
+\item
+However, the client still does not know what the account balance is
+\item
+There needs to be a way to publich state (balance information) so the client, which is outside of the event sourcing framework, can know what the state is
+\item
+Intuitively, we can create a read-only copy of the database (historical state) and share it with the outside world
+\item
+Event sourcing answers this question in a slighty different way
+\item
+Rather than publishing the state (balance information), event sourcing publishes all the events
+\item
+The external world could rebuild any customrized state itself
+\item
+This design philosophy is called CQRS [11]
+\item
+In CQRS, there is one state machine responsible for the write part of the state, but there can be many read-only state machines, which are responsible for building views of the states
+\item
+Those views could be used for queries
+\item
+THese readon-only state machines can derive different state representations from the event queue
+\item
+For example, clients may want to know their balances and a read-only state machine could save state in a datbase to serve the balance query
+\item
+Another state machine could build state for a specific time period to hlep investigate issues like possible double charges
+\item
+The state infomration is an audit trail that could helpt ot reconcile the financial recrods
+\item
+The read-only state machines lag behind to some extent, but will always catch up
+\item
+The architecture design is eventually consistent
+\item
+Figure 12.19 shows a classic CQRS architecture
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_12_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\textbf{Candidate}:
+\begin{itemize}
+\item
+In this design, we use event sourcing architecture to make the whole system reproducible
+\item
+All valid business records are saved in an immutable event queue which could be used for correctness verification
+\end{itemize}
+
+\textbf{Interviewer}
+
+\begin{itemize}
+\item
+That's great
+\item
+But the event sourcing architecture you proposed only handles one event at a time and ti needs to communicate with several external ssytems
+\item
+Can we make it faster?
+\end{itemize}
+
 \end{document}
