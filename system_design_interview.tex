@@ -17537,4 +17537,52 @@ We will examine the optimizations in the ``Market data publisher'' section in de
 THe market data is usually persisted in an in-memory columnar database (for example, KDB [15]) for real-time analytics.
 
 After the market is closed, data is persisted in a historical database.
+
+\subsection{Step 3: Design Deep Dive}
+
+NOw that we undstand how an exchange works at a high level, let's ivnestigate how a modern exchange has evolved to become what it is today.
+
+\begin{itemize}
+\item
+WHat does a modern exchange look like?
+\item
+The answer might surprise a lot of readers
+\item
+SOme large exchanges run almsot everything on a single gigantic server
+\item
+While it might sound extreme, we can learn many good lessons from it
+\end{itemize}
+
+\subsection{Performance}
+
+As discussed in the non-functional requirements, latency is very important for an exchange.
+
+\begin{itemize}
+\item
+Not only does the average latency need to be low, but the overall latency must also be stalbe
+\item
+A good measure for the level of stability is the 99th percentile latency
+\end{itemize}
+
+Latency can be broke down into tis copmonents as shown in the formula below:
+
+\begin{align*}
+\text{Latency} = \sum \text{ executionTimeAlongCriticalPath}
+\end{align*}
+
+There are two ways to reduce latency:
+
+\begin{enumerate}
+\item
+Decrease the number of tasks on the critical path.
+\item
+Shorten the itme spent on each task:
+
+\begin{itemize}
+\item
+By reducing or eliminating network and disk usage
+\item
+By reducing execution time for each task
+\end{itemize}
+\end{enumerate}
 \end{document}
