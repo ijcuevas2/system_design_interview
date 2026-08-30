@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 AUG 2026 04:39
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 AUG 2026 05:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -3483,17 +3483,29 @@ File: images/figure_13_23.jpg Graphic file (type jpg)
 <use images/figure_13_23.jpg>
 Package pdftex.def Info: images/figure_13_23.jpg  used on input line 18125.
 (pdftex.def)             Requested size: 276.00105pt x 92.51pt.
- [456 <./images/figure_13_23.jpg>] (./system_design_interview.aux)
+ [456 <./images/figure_13_23.jpg>]
+<images/figure_13_24.jpg, id=1760, 8092.2325pt x 5735.4275pt>
+File: images/figure_13_24.jpg Graphic file (type jpg)
+<use images/figure_13_24.jpg>
+Package pdftex.def Info: images/figure_13_24.jpg  used on input line 18183.
+(pdftex.def)             Requested size: 276.00105pt x 195.59706pt.
+[457 <./images/figure_13_24.jpg>] [458]
+Overfull \hbox (20.3617pt too wide) in paragraph at lines 18287--18289
+[]\OT1/cmr/m/n/10 Instead, URLs like this work bet-ter: https://my.website.com/
+data/recent. 
+ []
+
+[459] [460] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 29202 strings out of 467533
- 682309 string characters out of 5422138
+ 29216 strings out of 467533
+ 682670 string characters out of 5422138
  1135777 words of memory out of 5000000
- 57761 multiletter control sequences out of 15000+600000
+ 57775 multiletter control sequences out of 15000+600000
  633229 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -3510,10 +3522,10 @@ sfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 i10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb
 ></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/f
 onts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (456 pages, 1154482500 bytes).
+Output written on system_design_interview.pdf (460 pages, 1162379426 bytes).
 PDF statistics:
- 1837 PDF objects out of 2073 (max. 8388607)
- 1052 compressed objects within 11 object streams
+ 1851 PDF objects out of 2073 (max. 8388607)
+ 1061 compressed objects within 11 object streams
  0 named destinations out of 1000 (max. 500000)
- 1453 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1458 words of extra memory for PDF output out of 10000 (max. 10000000)
 

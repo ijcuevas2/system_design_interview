@@ -18126,4 +18126,185 @@ In Figure 13.23, event timestamps from discrete unevent dots in the time dimensi
     \caption{}
   \end{center}
 \end{figure}
+
+Latency determinism means having almost the same latency through the system for each trade.
+
+This is key to the business
+
+\begin{itemize}
+\item
+There is a matehmatical way to measure this: the 99th percentile latency, or even more stricty, the 99.99th percentile altency
+\item
+We can leverage HdrHIstorgram [26] to calculate latency
+\item
+If the 99th percentile latency is low, the exchange offers stable performance across almost all the trades
+\item
+I t is importat to investigate large latency fluctuations
+\item
+FOr example, in Java, safe points are often the cause
+\item
+THe HotSPot HVM [27 Stop-the-World garbage collection is a well-known example]
+\item
+THis concludes our deep dive on the critical trading path
+\item
+In the reaminder of this chapter, we take a closer look at some of the more interesting aspect of other parts of the exchange
+\end{itemize}
+
+\subsection{Market data publisher optimizations}
+
+As we can see form the matching algorithm, the L3 order book data gives us a better view of the market.
+
+\begin{itemize}
+\item
+We can get free one-day candlestick data from Google Finance, but it is expensive to get the more detailed L2/L3 order book data
+\item
+Many hedge funds reocrd the data themselves via the exchange real-time API to build their own candlestick charts and other charts for technical analysis
+\end{itemize}
+
+The market data publisher (MDP) receives mathced results form the matching engine and reubilds the order book and candlestick charts based on that. It then publishes the data to the subscribers.
+
+The order book reubild is similar to the pseudocode mtnioend in teh amtching algorithm seciont above.
+
+\begin{itemize}
+\item
+MDP is a service with many levels.
+\item
+For example, a reail client can only view 5 levels of l2 Ddata by default and needs to apy extra to get 10 levels
+\item
+MDP's memory cannot expand forever, so we need to have an upper limit on the candlesticks
+\item
+Refer to the data models section fora review of the candlestick charts
+\item
+The design of the MDP is in Figure 13.24
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_24}
+    \caption{}
+  \end{center}
+\end{figure}
+
+THis design utlizes ring buffers.
+
+\begin{itemize}
+\item
+A ring buffer, also called a circular buffer, is a fixed size queue with the head connnected ot the tail
+\item
+A producer continously produces data and one or more consumers pull data off it
+\item
+The psace in a ring buffer is pre-allocated
+\item
+There is no object creationg or deallocation ncessary
+\item
+The data structure is also lock-free
+\item
+There are other techniques to make the data structure even more efficient
+\item
+For example, padding ensures that the ring buffer's sequence number is never in a cache line with anything else
+\item
+Refer to [28] for more detail
+\end{itemize}
+
+\subsection{DIstribution fairness of market data}
+
+In stock trading, having lower latency than others is like having an oracle that can see the future.
+
+\begin{itemize}
+\item
+For a regulated exchange, it is important to guarantee that all the receivers of market data get that data at the same time
+\item
+WHy is this important?
+\item
+FOr example, the MDP holds a list of data subscribers, and the order of the subscribes is decided by the order in which they connectt to the publisher, with the first one always receigin data first
+\item
+Guess what happens then?
+\item
+Smart clients will fight to be the first on the list when the market opens
+\item
+THere are some way sto mitigate this
+\item
+Multicast using reliable UDP is a good solution to broadcast updates to many participants at once
+\item
+The MDP could also assign a random order when the subscriber connects to it
+\item
+We look at multicast in more detail
+\end{itemize}
+
+\subsection{Multicast}
+
+Data can be transported over the internet by three different types of protocols. Let's take a quick look
+
+\begin{enumerate}
+\item
+Unicast: from one source to one destination
+\item
+Broadcast: from one source to an entire subnetwork
+\item
+Multicast: from one source to a set of hosts that can be on different subnetworks.
+\end{enumerate}
+
+Multicast is a commonly0used protocl in exchange design.
+
+By configuring several receives in the same multicast group, they will in theory receive data at the same time
+
+\begin{itemize}
+\item
+However, UDP is an unreliable protocol and the datagram might not reach all the receivers
+\item
+There are solutions to handle retransmission [29]
+\end{itemize}
+
+\subsection{Colocation}
+
+\begin{itemize}
+\item
+While we are on the subject of fainess, it is a fact that a lot of exchanges offer colcation services, which put hedge funds or broker's servers in the same data center as the exchange
+\item
+THe latency in placing an order to the matching engine is essneitally proportional to the length of the cable
+\item
+Colocation does not break the notion of fainess
+\item
+It can be considered as a paid-for VIP service
+\end{itemize}
+
+\subsection{Network security}
+
+An exchange usually provides some public interfaces and a DDoS attack is a real challenge. Here are a few techniques to combat DDoS:
+
+\begin{enumerate}
+\item
+Isolate public services and data from private services, so DDoS attackes don't impact the most important clients In case the same data is served, we can have multiple read-only copies to isolate problems
+\item
+Use a caching layer to store data that is infrequently updated With good cahing, most queries won't hit databases
+\item
+Harden URLs against DDoS attacks.
+
+\begin{itemize}
+\item
+For example, with an URL like \lstinline|https://my.website.com/data?from=123&to-456|, an attacker can easily generate many different requests by changing the query string
+\item
+Instead, URLs like this work better: https://my.website.com/data/recent.
+\item
+It can also be cached at the CDN layer
+\end{itemize}
+\item
+An effective safelist/blocklist mechnaism is needed. Many network gateway products provide this type of functionality
+\item
+Rate limiting is frequently used to defend against DDoS attacks
+\end{enumerate}
+
+\subsection{Step 4: Wrap Up}
+
+After readin this chapter, you may come to the conlcusion that an ideal deployment model for a big exchange is to put everything on a single gigantic server or even one single process.
+
+Indeed, this is exactly how some exchanges are designed!
+
+With the recent development of the cryptocurrency industry, many crypto exchanges use cloud infrastructure to deploy their services [30].
+
+Some decentralized finance projects are based on the nothion of AMM (AUtomatic Market Making) and don't even need an order book.
+
+The convenience provided by the cloud ecosystem changes some of the designs and lowers the threshold for entering the industry.
+
+This will surely inject innovative energy into the financial world.
 \end{document}
