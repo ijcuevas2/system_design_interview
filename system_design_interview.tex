@@ -17391,4 +17391,36 @@ Executions are forwarded to the market data processor to reconstruct the order b
 We discuss these data types next.
 \end{itemize}
 
+\subsubsection{Order book}
+
+An order book is a list of buy and sell orders for a specific security or financial instrucment, organized by price level [12] [13].
+
+It is a key data structure in the matching eingine for fast order matching.
+
+An efficient data structure for an order book must satisfy these requirements:
+
+\begin{itemize}
+\item
+Constant lookup time. Operation includes: getting volume at a price level or between price levels
+\item
+Fast add/cancel/execute operations, perfrably \lstinline|O(1)| time complexity. Operations include placing anew order, canceling an order, and matching an order
+\item
+Fast update. Operation: replacing an order
+\item
+Query best bid/ask
+\item
+Iterate through price levels.
+\end{itemize}
+
+Let's walk through an example order execution against an order book, as illustrated in Figure 13.13.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_13}
+    \caption{}
+  \end{center}
+\end{figure}
+
+
+
 \end{document}
