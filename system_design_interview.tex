@@ -16636,7 +16636,178 @@ We need to make sure users have suffcient funds whey they place orders.
 \item
 If an order is waiting in the order book to be filled, the funds required for the order need to be withheld to prevent overspending.
 \end{itemize}
-
 \end{itemize}
+
+\subsection{Non-functional requirements}
+
+After checking with the interviewer for the functional requirements, we should determine the non-functional requirements
+\begin{itemize}
+\item
+In fact, requirements like ``at least 100 symbols'' and ``tens of thousands of users'' tell us that the interviewer wants us to design a small-to-medium scale exchange
+\item
+On top of this, we should make sure the design can be extended to support more symbols and users
+\item
+Many interviewers focus on extensibility as an area for follow-up questions.
+\end{itemize}
+
+Here is a list of non-functional requirements:
+
+\begin{itemize}
+\item
+\textbf{Availability.}: At least 99.99\%. Avaialblity is crucial for excahnges. DOwntime, event seconds, can harm reptuation
+\item
+\textbf{Fault tolerance.}: Fulat tolerance and a fast recovery mechinaism are needed to limit the pact of a production incident
+\item
+\textbf{Latency.}
+
+\begin{itemize}
+\item
+The round trip latency should be at the mmillisecond level, with a partiulcar focus on the 99th percentile latency
+\item
+THe round trip latency is measured from the moment a market order enters the exchange to the point where the market order returns as a filled execution
+\item
+A persistently high 99th percentile latency causes a terrible user experience for a small number of users.
+\end{itemize}
+
+\item
+\textbf{Security}:
+\begin{itemize}
+\item
+The exchange should have an account management system
+\item
+For legal and compliace, the exchange performs a KYC (Know YOur CLient) check to verify a user's identity  before a new account is opened
+\item
+For public resources, such as web pages containing market data, we should prevent distributed denial-of-serivce (DDoS) [6] attacks
+\end{itemize}
+\end{itemize}
+
+\subsubsection{Back-of-the-envelope estimation}
+
+Let's do some simple back-of-the-envelope calculations to understand the scale of the system:
+
+\begin{itemize}
+\item
+100 symbols
+\item
+1 billion orders per day
+\item
+NYSE Stock exchange is open Monday through Friday from 9:30 am to 4:00 pm Eastern Time. That's 6.5 hours in total
+\item
+QPS: $\frac{1 \text{ billion}}{6.5 \times 3,600} = \sim 43,000$
+\item
+Peak QPS: $5 \times \text{ QPS } = 215,000$. The trading volume is significantly higher when the market first opens in the morning and before it closes in the afternoon.
+\end{itemize}
+
+\subsection{Step 2: Propose High-Level Design and Get Buy-In}
+
+Before we dive into the high-level design, let's briefly discuss some basic concepts and terminology that are helpful for designing an exchange.
+
+\subsubsection{Business Knowledge 101}
+
+\subsubsection{Broker}
+
+\begin{itemize}
+\item
+Most retail clients ttrad with an exchange via a broker.
+\item
+Some brokers whom you might be familiar with include Charles Schwab, Robinhood, E*Trade, Fidelity, etc.
+\item
+These brokers provide a friendly user interface for retail users to place trades and view market data
+\end{itemize}
+
+\subsubsection{Institutional client}
+
+\begin{itemize}
+\item
+Institutional clients trade in large volumes using specizlied trading software
+\item
+Different instittutional clients operate with different rquirements
+\item
+For example. pension  funds aim for a stable income
+\item
+They trade infrequenlty, but when they do trade, the volume is large
+\item
+They need features like order splitting to minimize the market impact [7] of their sizable orders
+\item
+SOme hedge funds specialize in market making and earn income via commission rebates
+\item
+They need low latency trading abilities, so obviously they cannot simply view market data on a web page or a mobile app, as retail clients do
+\end{itemize}
+
+\subsubsection{Limit order}
+
+A limit order is a buy or sell order with a fixed price. It might not find a match immediately, or it might just be partially matched.
+
+\subsubsection{Market order}
+
+\begin{itemize}
+\item
+A market order doesn't specify a price.
+\item
+It is executed at the prevailing karet price immediately
+\item
+A market order sacrifices cost in order to guarantee execution
+\item
+It is useful in certain fast-moving market conditions
+\end{itemize}
+
+\subsubsection{Market data levels}
+
+The US stock market has three tiers of price quotes: L1 (level 1,), L2, and L3.
+
+\begin{itemize}
+\item
+L1 market data contains the best bid price, ask price, and quantities (Figure 13.2).
+\item
+Bid price refers to the highest price a buyer is willing to pay for a stock.
+\item
+Ask price refers to the lowest price a sller is willing to sell the stock
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_2}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_3}
+    \caption{}
+  \end{center}
+\end{figure}
+
+L3 shows price levgels and the queued quantity at each price level (Figure 13.4).
+
+\subsubsection{Candlestick chart}
+
+A candlestick chart represent the stock price for a certain period of time.
+
+\begin{itemize}
+\item
+A typical candlestick looks like this (Figure 13.5)
+\item
+A candlestick shows the market's open, close, high, and low price for a time interval
+\item
+The common time intervals are one-minute, five-minute, one-hour, and one-month
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_5}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsubsection{FIX}
+
+FIX protocol [8], which stands for Financial INformation exchange protocol, was created in 1991. It is a vendor-netural communications protocol for exchanging securities information.
+
+See below for an example of a securities transaction encoded in FIX [8].
+
+\begin{lstlisting}
+8=FIX.4.2.| 9=176 | 35=8 | 49=PHLX | 56=PERS | 52=20071123-05:30:00.000 | 11=ATOMNOCCC9990900 | 20=3 | 150=e | 39=e | 55=MSFT | 167=CS | 54=1 | 38=15 | 40=2 | 44=15 | 58=PHLX EQUITY TESTING | 59=0 | 47=C | 32=0 | 31=0 | 151=15 | 14=0 | 6=0 | 10=128 |
+\end{lstlisting}
 
 \end{document}
