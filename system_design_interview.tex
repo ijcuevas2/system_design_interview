@@ -16532,4 +16532,111 @@ The TC/C or Sage protocol is used to coordinate COmmand executions across multip
   \end{center}
 \end{figure}
 
+\chapter*{Chapter 13: Stock Exchange}
+
+In this chapter, we design an electronic stock exchange system
+
+The basic function of an exchange is to facilitate the matching of buyers and sellers efficiently.
+
+\begin{itemize}
+\item
+This fundamental function has not change4d over time
+\item
+Before the rise of computing, people exchanged tangible goods by bartering and shouting at each other to get match
+\item
+Today, orders are processed siliently by supercomputers, and people trade not only for the exchange of products, but also for speculation and arbitrage
+\item
+Technology has greatly changed the landscape of trading and exponentially boosted electronic market trading volume
+\item
+When it comes to stock exchanges, most popel think about major market players like The New York Stock exchange (NYSE) or Nasdaq, which have existed for over fifty years
+\item
+In fact, there are many other types of exchange
+\item
+SOme focus on vertical segmentation of the financial industry and place special focus on technology [1], while others have an emphasis on fairness [2]
+\item
+Before diving into the design, it is imporrtant to check with the interviewer about the scale and the important charactersitics of the exchange in question
+\item
+Some focus on vertical segmentation of the financial industry and place special focus on technology [1], while others have an emphasis on fairnesss [2]
+\item
+Before diving into the design, it important to check with the interviewer about the scale and the important characteristics of the exchange in question
+\item
+Just to get a taste of the kind of problem we are dealing with; NYSE is trading billions of matches per day [3], and HKEX about 200 billion shares per day [4]
+\item
+Figure 13.1 shows the big exchanges in the ``trillion-dollar club'' by market capitalization
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_1}
+    \caption{}
+  \end{center}
+\end{figure}
+
+\subsection{Step 1: Understand the Problem and Establish Design Scope}
+
+A modern exchange is a complicated system with stringent requirements on latency, throughput, and robustness. Before we start, let's ask the interviewer a few questions to clarify the requirements.
+
+\begin{itemize}
+\item
+
+\textbf{Candidate}: WHich securities are we going to trade? Stocks, options or ftuures?
+
+\textbf{Interviewer}: For simplicity, only stocks
+\item
+\textbf{Candidate}:
+
+\begin{itemize}
+\item
+Which types of order operations are supported: placing a new order, canceling an order, or replacing an order?
+\item
+Do we need to support limit order, market order, or conditional order?
+\end{itemize}
+
+\textbf{Interviewer}:
+
+We need to support the following: placing a new order and canceling an order. For the order type, we only need to consider the limit order.
+
+\item
+\textbf{Candidate}: Does the system need to support after-hours trading?
+
+\textbf{Interviewer}: No we just need to support the nromal tarding hours.
+\item
+\textbf{Candidate}: Could you describe the basic functions of the exchange? And the cale of the exchange, usch as how many users, how many symbols and how many orders?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+A client can place new limit orders or cancel them, and receive matches trades in real-time
+\item
+A client can view the real-time order book (the list of buy and sell orders.)
+\item
+The exchange needs to support at least tens of thousands of users trading at the same time, and ti needs to support at least 100 symbols
+\item
+For the trading volume, we should support billions of orders per day
+\item
+Also the exchange is a regularted facility, so we need to make sure it runs risk checks
+\end{itemize}
+\item
+\textbf{Candidate}: COuld you please elaborate on risk checks?
+
+\textbf{Interviewer}: Let's just do simple risk checks. FOr example, a user can only trade a maximum of 1 million shares of Apple stock in one day.
+
+\item
+
+\textbf{Candidate}: I noticed you didn't mention user wallet management. Is it something we also need to consider?
+
+\textbf{Interviewer}:
+
+\begin{itemize}
+\item
+Good catch!
+\item
+We need to make sure users have suffcient funds whey they place orders.
+\item
+If an order is waiting in the order book to be filled, the funds required for the order need to be withheld to prevent overspending.
+\end{itemize}
+
+\end{itemize}
+
 \end{document}

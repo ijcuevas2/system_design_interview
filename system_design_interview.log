@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  29 AUG 2026 15:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  29 AUG 2026 22:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -3302,17 +3302,25 @@ File: images/chapter_12_summary.jpg Graphic file (type jpg)
 Package pdftex.def Info: images/chapter_12_summary.jpg  used on input line 1653
 0.
 (pdftex.def)             Requested size: 276.00105pt x 327.854pt.
- [413] [414 <./images/chapter_12_summary.jpg>] (./system_design_interview.aux)
+ [413] [414 <./images/chapter_12_summary.jpg>] [415
+
+]
+<images/figure_13_1.jpg, id=1606, 7335.405pt x 4364.305pt>
+File: images/figure_13_1.jpg Graphic file (type jpg)
+<use images/figure_13_1.jpg>
+Package pdftex.def Info: images/figure_13_1.jpg  used on input line 16570.
+(pdftex.def)             Requested size: 276.00105pt x 164.15382pt.
+ [416 <./images/figure_13_1.jpg>] [417] (./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 28889 strings out of 467533
- 674425 string characters out of 5422138
+ 28903 strings out of 467533
+ 674772 string characters out of 5422138
  1100778 words of memory out of 5000000
- 57450 multiletter control sequences out of 15000+600000
+ 57464 multiletter control sequences out of 15000+600000
  632185 words of font info for 56 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -3327,10 +3335,10 @@ lic/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmtt9.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/s
 hare/texmf/fonts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (414 pages, 1061549247 bytes).
+Output written on system_design_interview.pdf (417 pages, 1066220195 bytes).
 PDF statistics:
- 1669 PDF objects out of 1728 (max. 8388607)
- 953 compressed objects within 10 object streams
+ 1680 PDF objects out of 1728 (max. 8388607)
+ 960 compressed objects within 10 object streams
  0 named destinations out of 1000 (max. 500000)
- 1343 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1348 words of extra memory for PDF output out of 10000 (max. 10000000)
 
