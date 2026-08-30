@@ -17820,4 +17820,120 @@ We can have backup sesquencers for high availability in case the primary sequenc
   \end{center}
 \end{figure}
 
+\subsubsection{High availability}
+
+FOr high availability, our design aims for 4 nines (99.99\%). THis means the exchange can only have 8.64 seconds of dwontime per day. It requires almost immediate recover if a services godes down
+
+To achieve high availability, consider the following
+
+\begin{itemize}
+\item
+
+\begin{itemize}
+\item
+First, identify single-point-of-failures in the exchange architecture
+\item
+For example, the failure of the matching engine could be a disaster for the exchange.
+\item
+Therefore, we set up redundant instance along sid the primary instace
+\item
+Second, detection of failure and the decision to failover to the backup instance should be fast
+\end{itemize}
+\end{itemize}
+
+For stateless services sucha s the client gateway, they could easily be horizontally scaled by adding more servers
+
+\begin{itemize}
+\item
+For statefull components, usch as the order managner and matching engine, we need to be able to copy state data across replicas
+\item
+Figure 13.20 shows an example of hwo to copy data
+\item
+The hot matching engine works as the primary instance, and the warm engine receives and processes the exact same vetns but does not send any event out onto the event store
+\item
+When the primary goes down, the warm instance can immediately take over as the primary and send out events
+\item
+When the warm secondary instance goes down, upon restart, it can always recover al lthe states from the event store
+\item
+Event sourcing is a great fit fo rthe exhcange archtiecture
+\item
+The inherent determinism makes state reocoveryy easy and accurate
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_20}
+    \caption{}
+  \end{center}
+\end{figure}
+
+We need to design a mechanism to detect potential problems in the primary.
+
+\begin{itemize}
+\item
+Besides normal monitoringof hardware and proceses, we can also send heartbeats form the matching engine
+\item
+If a heartbeat is not received in time, the amtching engine might be experiencing problems
+\end{itemize}
+
+The problem with this hot-warm design is that it only works within the boundary of a single server.
+
+\begin{itemize}
+\item
+To achieve high availability, we have to extend this concept across multiple machines.
+\item
+In this setting an entire server is either hot or warm, and the entire event store is replicated form the hot server to all warm replicas
+\item
+Replicating the entire event store across machines takes time
+\item
+We could use reliable UDP [19] to efficiently broadcast the event messages to all warm servers
+\item
+Refer to the design of Aeron [20] for an example
+\item
+In the next section, we discuss an imporvement to the hot-warm diesgn to achieve high availability
+\end{itemize}
+
+\subsubsection{Fault tolerance}
+
+The hot-warm design above is relatively simple. It works reasonably well, but what happens if the warm instances go down as well?
+
+This is a low probability but catastorphic event, so we should prepare for it.
+
+This is a problem large tech compnaies face. They tackle it by replicatin core data to data centers in multiple cities.
+
+It mitigates the resik of a natural disaster such as an earthquake or a large-scale power outage. To make the sytem fault-tolerant, we have to answer many questions:
+
+\begin{enumerate}
+\item
+If the primary instance godes down, how an dhwne do we decide to failover to the backup instance?
+\item
+How do we choose the leader among backup instances?
+\item
+What is the recover time needed (RTO: Recover Time Objective)?
+\item
+What functionalities need to be recovered (RPO - Reocvery Point Objective)? Can our system operate under degraded conditions?
+\end{enumerate}
+
+Let's answer questions one by one.
+
+First, we have to understand what ``down'' really means. This is not as straightforward as it seems.
+
+Consider these situations.
+
+\begin{enumerate}
+\item
+The system mgith send out false alarms , which cause unncesssary failovers
+\item
+
+\begin{itemize}
+\item
+Bugs in the code might cause the primary instance to go down
+\item
+The same bug could bring down the backup instance after the failover
+\item
+When all backup instances are knocked out by the bug, the system is no longer available
+\end{itemize}
+
+
+\end{enumerate}
 \end{document}
