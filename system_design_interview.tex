@@ -16825,6 +16825,78 @@ Let's trace the life of an order through various components in the diagram to se
 
 First, we follow the order through the \textbf{trading flow}. THis is the critical path with strict latency requirements. Evetyhing has to happen fast in the flow:
 
+\begin{itemize}
+\item
+Step 1: A client places an order via the broker's web or mobile app
+\item
+Step 2: The broker sends the order to the exchange.
+\item
+Step 3:
 
+\begin{itemize}
+\item
+The order enters the exchane through the client gateway
+\item
+The client gateway performs basic gatekeeping functions such as input validation, rate limiting, authentication, normalization et.c
+\item
+The client gateway then forwards the order to the order manager
+\end{itemize}
+\item
+Step 4 $\sim$ Step 5: The order manager performs risk checks based on rules set by the risk manager.
+\item
+Step 6: AFter passing risk checks, the order manager verifies there are sufficient funds in the wallet for the order
+\item
+Step 7 $\sim$ 9:
+
+\begin{itemize}
+\item
+The order is sent to the matching engine
+\item
+When a match is found, the matching engine emits two executions (also called fills), with one each for the buy and sell sides
+\item
+To guarantee that matching results are deterministic when replayed, both orders and executions are sequenced in the sequencer (more on the sequencer later).
+\end{itemize}
+\item
+Step 10 $\sim$ 14: The executions are returned to the client
+\end{itemize}
+
+Next, we follow the \textbf{market data flow} and trace the order executions from the matching engine to the broker via the data service.
+
+\begin{itemize}
+\item
+Step M1: THe matching engine generates a stream of executions (fills) as matches are made. The stream is sent ot the market data publisher.
+\item
+Step M2:
+\begin{itemize}
+\item
+The market data publisher constructs the cnalde stick charts and the order books as market data from the stream of executions and orders
+\item
+It then sends market data to the data service
+\end{itemize}
+\item
+Step M3:
+
+\begin{itemize}
+\item
+The market data is saved to specialized storage for real-time analystics.
+\item
+Brokers connect to the data service to obtain timely market data
+\item
+Brokers relay market data to their clients
+\end{itemize}
+\end{itemize}
+
+Lastly, we examine the \textbf{reporting flow}.
+
+\begin{itemize}
+\item
+Step R1 $\sim$ R2 (reporting flow): The reporter collects all the necessary reporting fields (e.g. \lstinline|client_id|, \lstinline|price|, \lstinline|quantity|, \lstinline|filled_quantity|, \lstinline|remaining_quantity|) from orders and executions, and writes the consolidated records to the database
+\item
+Note that the trading flow (steps 1 to 14) is on the critical path, while the market data flow and reporting flow are not
+\item
+They have different latency requirements
+\item
+Now let's examine each of the three flows in more detail
+\end{itemize}
 
 \end{document}
