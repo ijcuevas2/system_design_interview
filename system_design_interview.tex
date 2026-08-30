@@ -17934,6 +17934,196 @@ The same bug could bring down the backup instance after the failover
 When all backup instances are knocked out by the bug, the system is no longer available
 \end{itemize}
 
+These are some tough problems to solve. Here are some suggestions.
 
+\begin{itemize}
+\item
+When we firs treelease a enw system, we might need to perform failovers manually
+\item
+Only when we gather enough signals and operational expereince and gain more confidence in the system do we automate the failure detection process
+\item
+Chaos engineering [21] is a good practice to surface edge cases and gain operational experience faster
+\item
+Once the decision to failover is correclty made, how do we decide which server takes over?
+\item
+Fortunately, this is a well-0understood problem
+\item
+There are many battle-tested leader-election galgorithsm
+\item
+We use Raft [22] as an example
+\end{itemize}
+
+Figure 13.21 shows a Raft cluster with 5 servers with their own event stores
+
+\begin{itemize}
+\item
+The current leader sends data to all the other instances (followers)
+\item
+The minimum number of votes required to perform an operation in Raft is $\frac{n}{2} + 1$, where $n$ is the number of members in the cluster.
+\item
+In this example, the minimum is $\frac{5}{2} + 1 = 3$
+\end{itemize}
+
+The following diagram (Figure 13.21) shows the followers receiving new events from the leader over RPC. The events are saved to the follower's own mmap event store.
 \end{enumerate}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_21}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's beifly examine the leader election process.
+
+\begin{itemize}
+\item
+The leader sends heartbeat messages (\lstinline|AppendEnties| with no content as shown in Figure 13.21) to its followers.
+\item
+If a follower has not received heartbeat messages for a period of time, it tiggers an election timeout that intiates a new election
+\item
+The first follower that reach election timeout becomes a candidate, and it asks the rest of the followers to vote (\lstinline|RequestVote|)
+\item
+If the first follower receives a majority of votes, it becomes the new leader
+\item
+If the first ofllower has a lower teerm value than the new node, it cannot be the leader
+\item
+If multiple followers becom candidates at the same time, it is called a ``split vote''
+\item
+In this case, the election times out and a new election is initiated
+\item
+See Figure 13.22 for the explanation of ``term''
+\item
+Time is divided into arbitrary intervals in Raft to represent nromal operation and election
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_22}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Next, let's take a look at recovery time.
+
+\begin{itemize}
+\item
+Recovery Time Objective (RTO) refers to the amount of time an application can dbe down without causing sifnificant damage to the business
+\item
+FOr a stock exfchange, we need to achieve a second-level  ROT, which definitely requires automatic failover of services
+\item
+To do this, we categorize services based on priority and define a degraation strategy to maintain a minimum service level
+\item
+Finally we need to figure out the tolerance for data loss
+\item
+Recovery Point Objective (RPO) refers ot the amount of data that can be lost before significant harm is done to the busiiness, i.e. the loss tolerance
+\item
+IN practice, this means backing up data frequently
+\item
+FOr a stock exchange, data loss i not acceptable, so RPO is near zero
+\item
+WIth Raft, we have many copies of the data
+\item
+It guarantees that state consensus is achieved among cluster nodes
+\item
+If the current leader crashes, the new leader should be able to function immediately
+\end{itemize}
+
+\subsubsection{Matching algorithms}
+
+Let's take a slight detour and dive into the matching algorithms. The pseudo-code below explains how matching works at a high level.
+
+\begin{lstlisting}
+Context handleOrder(OrderBook orderBook, OrderEvent orderEvent) {
+  if (orderEvent.getSequenceId() != nextSequence) {
+    return Error(OUT_OF_ORDER, nextSequence);
+  }
+
+  if (!validateOrder(symbol, price, quantity)) {
+    return ERROR(INVALID_ORDER, orderEvent);
+  }
+
+  Order order = createOrderFromEvent(orderEvent);
+  switch (msgType):
+    case NEW:
+      return handleNew(orderBook, order);
+    case CANCEL:
+      return handleCancel(orderBook, order);
+    default:
+      return ERROR(INVALID_MSG_TYPE, msgType);
+}
+
+Context handleNew(OrderBook orderBook, Order order) {
+  if (BUY.equals(order.side)) {
+    return match(orderBook.sellBook, order);
+  } else {
+    return match(orderBook.buyBook, order);
+  }
+}
+
+Context handleCancel(OrderBook orderBook, Order order) {
+  if (!orderBook.orderMap.contains(order.orderId)) {
+    return ERROR(CANNOT_CANCEL_ALREADY_MATCHED, order);
+  }
+  removeOrder(order);
+  setOrderStatus(order, CANCELED);
+  return SUCCESS(CANCEL_SUCCESS, order);
+}
+
+Context match(OrderBook book, Order order) {
+  Quantity leavesQuantity = order.quantity - order.matchedQuantity;
+  Iterator<Order> limitIter = book.limitMap.get(order.price).orders;
+  while (limitIter.hasNext() && leavesQuantity > 0) {
+    Quantity matched = min(limitIter.next.quantity, order.quantity);
+    order.matchedQuantity += matched;
+    leavesQuantity = order.quantity - order.matchedQuantity;
+    remove(limitIter.next);
+    generateMatchedFill();
+  }
+  return SUCCESS(MATCH_SUCCESS, order);
+}
+\end{lstlisting}
+
+The pseudocode uses the FIFO (First In First Out) matching algorithm.
+
+\begin{itemize}
+\item
+THe order that comes in first at a certain price level gets matched first, and the last one gets matched last
+\item
+There are many matching algorithms
+\item
+These algorithms are commonly used in futures trading
+\item
+FOr example, a FIFO with LMM (Lead Market Maker) algorithm allocates a certain qnauitty to the LMM based on a predefined ratio ahead of the FIFO queue, which the LMM firm negotitates with the exchange for the privilege
+\item
+See more matching algorithms on the CME website [24]
+\item
+THe matching algorithms are used in many other scenarios
+\item
+A typical one is a dark pool [25]
+\end{itemize}
+
+\subsection{Determinism}
+
+There is both functional determinism and latency determinism.
+
+\begin{itemize}
+\item
+We have convered functionald eterminism in previous sections
+\item
+The design choices we make, such as ssequencer and event sourcing, guarantee that if the events are replayed in the same order, the results will be the same
+\item
+With functional determinism, the actual time when the event happens does not matter most of the time
+\item
+WHat matters is the order of the events
+\item
+In Figure 13.23, event timestamps from discrete unevent dots in the time dimension are converted to continuous dots and the time spent on replay /reocvery can be greatly reduced
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_23}
+    \caption{}
+  \end{center}
+\end{figure}
 \end{document}
