@@ -17632,4 +17632,192 @@ Figure 13.15 shows a low-latency design with all the components on a single serv
   \end{center}
 \end{figure}
 
+There are a few insteresting design decisions that are woth a closer look at.
+
+Let's first focus on the application loops in the diagram above
+
+\begin{itemize}
+\item
+An application loop is an interesting concept
+\item
+It keeps polling for tasks to execute in a while loop and is the primary tasks execution mechanism
+\item
+TO meet the strict latency budget, only the most mission-critical tasks should be processed by the application loop
+\item
+Its goal is to reduce the execution time for each component and to guarantee a highly predictable execution time (ie.e, a low 99th percentiale latency)
+\item
+Each box in the daigram represents a component
+\item
+A component is a process on the server
+\item
+To maximuze CPU efficiency, each application loop (think of it as the main processing loop) is single-threaded, and the thread is pinned to a fixed CPU core
+\item
+Using the order manager as an example, it looks like the following diagram (Figure 13.16)
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_16}
+    \caption{}
+  \end{center}
+\end{figure}
+
+In this diagram,  the application loop for the order manager is pineed to CPU 1. The beneifts of pinning the application loop to the CPU are substantial:
+
+\begin{enumerate}
+\item
+No context switch [18]. CPU 1 is finally allocated to the order manager's application loop
+\item
+No locks and therefore no lock contention, since there is only one thread that updates states.
+\end{enumerate}
+
+Both of these contribute to a low 99th percentile latency.
+
+THe tradoff of CPU pinning is that it makes coding more complicated.
+
+\begin{itemize}
+\item
+Engineers need to carefully analyze the time each task takes to keep it from occuping the application loop thread for too long, as it can potentially block susequent tasks
+\item
+Next, let's focus our attention on the long rectangle labed ``mmap'' at the center of Figure 13.15
+\item
+``mmap'' refers to a POSIX-compliant UNIX system called named \lstinline|mmap(2)| that maps a file into the memory of a process
+\end{itemize}
+
+\lstinline|mmap(2)| provides a mechnaism for high-performance sharing of memory between processes.
+
+\begin{itemize}
+\item
+The performance advantage is compounded when the backing file is in \lstinline|/dev/shm|
+\item
+\lstinline|/dev/shm| is a memory-backed file system
+\item
+When \lstinline|mmap(2)| is done overa file in \lstinline|/dev/shm|, the access to the shared memory does nto result in any disk access at all
+\end{itemize}
+
+Modern exchanges take advantage of this to eliminate as much disk access from the critical path as possible, \lstinline|mmap(2)| is sued in the server to implement a message bus over which the component on the critical path communicate
+
+\begin{itemize}
+\item
+THe communication pathway has not network or disk access, and sending a message on this mmap message bus takes sub-microsecond
+\item
+By leveraging mmap to build an event store, coulped with the event sourcing design paradigm which we will discuss enxt, modern exchanges can build low latency microservices inside a server
+\end{itemize}
+
+\subsubsection{Event sourcing}
+
+We discussed event sourcing in the ``Digital Wallet'' chapter on page 341. Please refer to that chapter for an in-depth review of event sourcing.
+
+\begin{itemize}
+\item
+The concept of event sourcing is not hard to understand
+\item
+In a traditional application, states are persisted in a database
+\item
+When something goes wrong, it is hard to trace the source of the issue
+\item
+THe databse only keeps the current states, and there are not records of the events that have led to the current states
+\item
+IN event sourcing, instead of storign the currrent states, it keeps an immutable log of all state-changing events
+\item
+These evens are the golden source of truth.
+\item
+See Figure 13.17 for a comparison
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_17}
+    \caption{}
+  \end{center}
+\end{figure}
+
+On the left is a classic database schema.
+
+\begin{itemize}
+\item
+It keeps track of the order status for an order, but it does not contain any information about how an order arrives at athe current state. On the right is the event sourcing counterpart
+\item
+It tracks all the events that change the order status, and it can recover order states by replaying all the events in sequence
+\item
+Figure 13.18 shows an event sourcing design using the mmap event store as a emssage bus
+\item
+THis looks very much like the Pub-Sub model in Kafka
+\item
+In fact, if there is no strict latency requirement, Kafka could be used.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_18}
+    \caption{}
+  \end{center}
+\end{figure}
+\end{itemize}
+
+In the diagram, the external domain communicates with the trading domain using FIX that we introduced in the Business Knowledge 101 section on page 382.
+
+\begin{itemize}
+\item
+The gateway transforms FIX to ``FIX over Simple BInray Encoding'' (SBE) for fast and compact encoding and sends each order as a \lstinline|NewOrderEvent| via the Evetn Store Client in a pre-defined format (see event store entry in the diagram)
+\item
+THe order mamanger (embeededin the matching engine) receives the \lstinline|NewOrderEvent| from the event store, validates it, and adds it to its interal order states The order is then sent ot the matching core
+\item
+If the order gets matched, an \lstinline|OrderFilledEvent| is generated and sent ot the event store.
+\item
+Other components such as the market data procesor and the reporter subscribe to the event store and process those events accordingly.
+\end{itemize}
+
+This desing follows the high-level design closely, but there are some adjustments to make it work more efficeintly in the event sourcing pardigm.
+
+The first difference is the order manager.
+
+\begin{itemize}
+\item
+The order manager becomes a resuable library that is embeeeded in different components
+\item
+It makes sense for this design because the states of the orders are important fo rmultiple components
+\item
+Having a centralized order manager for other components to update or query the order states would hurt latency, especially if those coponents are not on the critical trading path, as is the case fo rthe reporter in the diagram
+\item
+Although each component maintains the order states by itself with event sourcing the states a re guranteed to be identical and replayable
+\item
+Another key difference is that the sequencer is nowhere to be seen
+\item
+What happened to it?
+\item
+With the event sourcing design, we have one single event store for all messages
+\item
+Note the event  store entry contains a \lstinline|sequence| field
+\item
+This field is injected by the sequencer
+\end{itemize}
+
+There is only one sequencer for each event store.
+
+\begin{itemize}
+\item
+It is a bad practice to have multiple sequencers, as they will fight for the right to write to the event store
+\item
+In a busy system like an exchange, a lot of time would be wasted on lock contention.
+\item
+Therefore, the sequecner is a single writer which sequences the events before sending them to the event store
+\item
+Unlike the sequencer in the high-level design which also functions as a message store, the sequencer here only does one simple thing and is super fast
+\item
+Figure 13.19 shows a design for the sequencer in a memory-map (mmap) environment
+\item
+The sequencer pulls events from the ring buffer that is local to each component
+\item
+FOr each event, it stamps a sequence ID on the event and sends it to the event store
+\item
+We can have backup sesquencers for high availability in case the primary sequencer goes down
+\end{itemize}
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_19}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 AUG 2026 02:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.7.10)  30 AUG 2026 03:33
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -3421,17 +3421,54 @@ File: images/figure_13_15.jpg Graphic file (type jpg)
 <use images/figure_13_15.jpg>
 Package pdftex.def Info: images/figure_13_15.jpg  used on input line 17630.
 (pdftex.def)             Requested size: 276.00105pt x 206.96411pt.
- [443 <./images/figure_13_15.jpg>] (./system_design_interview.aux)
+ [443 <./images/figure_13_15.jpg>]
+<images/figure_13_16.jpg, id=1710, 6578.5775pt x 5845.84pt>
+File: images/figure_13_16.jpg Graphic file (type jpg)
+<use images/figure_13_16.jpg>
+Package pdftex.def Info: images/figure_13_16.jpg  used on input line 17660.
+(pdftex.def)             Requested size: 276.00105pt x 245.21141pt.
+[444 <./images/figure_13_16.jpg>]
+<images/figure_13_17.jpg, id=1714, 6379.835pt x 3990.91pt>
+File: images/figure_13_17.jpg Graphic file (type jpg)
+<use images/figure_13_17.jpg>
+Package pdftex.def Info: images/figure_13_17.jpg  used on input line 17730.
+(pdftex.def)             Requested size: 276.00105pt x 172.64102pt.
+ [445]
+<images/figure_13_18.jpg, id=1719, 5229.5375pt x 5978.335pt>
+File: images/figure_13_18.jpg Graphic file (type jpg)
+<use images/figure_13_18.jpg>
+Package pdftex.def Info: images/figure_13_18.jpg  used on input line 17751.
+(pdftex.def)             Requested size: 276.00105pt x 315.44543pt.
+ [446 <./images/figure_13_17.jpg>]
+Overfull \hbox (10.06256pt too wide) in paragraph at lines 17761--17763
+\OT1/cmr/m/n/10 (SBE) for fast and com-pact en-cod-ing and sends each or-der as
+ a []
+ []
+
+
+Overfull \hbox (37.14699pt too wide) in paragraph at lines 17763--17765
+[]\OT1/cmr/m/n/10 THe or-der ma-manger (em-beededin the match-ing en-gine) re-c
+eives the []
+ []
+
+[447 <./images/figure_13_18.jpg>] [448]
+<images/figure_13_19.jpg, id=1729, 6134.92pt x 5922.125pt>
+File: images/figure_13_19.jpg Graphic file (type jpg)
+<use images/figure_13_19.jpg>
+Package pdftex.def Info: images/figure_13_19.jpg  used on input line 17818.
+(pdftex.def)             Requested size: 276.00105pt x 266.39377pt.
+ [449 <./images/figure_13_19.jpg>]
+(./system_design_interview.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 29090 strings out of 467533
- 679421 string characters out of 5422138
+ 29146 strings out of 467533
+ 680865 string characters out of 5422138
  1135777 words of memory out of 5000000
- 57649 multiletter control sequences out of 15000+600000
+ 57705 multiletter control sequences out of 15000+600000
  633229 words of font info for 59 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  116i,13n,121p,516b,1712s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -3448,10 +3485,10 @@ sfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 i10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt9.pfb
 ></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/f
 onts/type1/public/cm-super/sftt0900.pfb>
-Output written on system_design_interview.pdf (443 pages, 1127448828 bytes).
+Output written on system_design_interview.pdf (449 pages, 1145598983 bytes).
 PDF statistics:
- 1788 PDF objects out of 2073 (max. 8388607)
- 1024 compressed objects within 11 object streams
+ 1811 PDF objects out of 2073 (max. 8388607)
+ 1037 compressed objects within 11 object streams
  0 named destinations out of 1000 (max. 500000)
- 1413 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1433 words of extra memory for PDF output out of 10000 (max. 10000000)
 
