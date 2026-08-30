@@ -17585,4 +17585,51 @@ By reducing or eliminating network and disk usage
 By reducing execution time for each task
 \end{itemize}
 \end{enumerate}
+
+Let's review the first point. As shown in the high-level design, the critical trading path includes the following:
+
+\begin{align*}
+\textit{gateway} \rightarrow \textit{order manager} \rightarrow \textit{sequencer} \rightarrow \textit{matching engine}
+\end{align*}
+
+The critical path only contains the ncessary components, even logging is removed from the critical path to achieve low latency.
+
+\begin{itemize}
+\item
+NOw let's lok at the second point
+\item
+in the high-level design, teh coponents on the cirtical path run on dividual servers connected over the network
+\item
+The roudn trip network latency is about 500 microseconds
+\item
+When there are multiple components all communicating over the entwork on the critical path, the total network latency adds up to single-digit milliseconds
+\item
+In addition, the sequencer is anevent store that persists events to disk
+\item
+Even assuming an efficient design that leverages the performance advantage of sequential writes, the latency of disk access still measures in tens of millisecond
+\item
+To learn more about network and disk access latency, see ``Latency Numbers Every Programmer Should Know'' [16]
+\end{itemize}
+
+Accounting for both network and disk access latency, the toal end-to-end latency adds up to tens of millseconds.
+
+\begin{itemize}
+\item
+While this number was respectable in the early days of the exchange, it is no longer sufficient as exchanges compete for ultra-low latency
+\item
+TO stay ahead of the competittion,exchanges over time evolve their design to reduce the end-to-end latency on the critical path to tens of micrseconds, primarily by exploring options to reduce or eliminate network and disk access latency
+\item
+A time-tested design eliminates the network hops by putting everything on the same server
+\item
+When all components are on the same server, they can communicate via mmap [17] as an event store (more on this later)
+\end{itemize}
+
+Figure 13.15 shows a low-latency design with all the components on a single server.
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_15}
+    \caption{}
+  \end{center}
+\end{figure}
+
 \end{document}
