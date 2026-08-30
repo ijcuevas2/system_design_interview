@@ -16810,4 +16810,21 @@ See below for an example of a securities transaction encoded in FIX [8].
 8=FIX.4.2.| 9=176 | 35=8 | 49=PHLX | 56=PERS | 52=20071123-05:30:00.000 | 11=ATOMNOCCC9990900 | 20=3 | 150=e | 39=e | 55=MSFT | 167=CS | 54=1 | 38=15 | 40=2 | 44=15 | 58=PHLX EQUITY TESTING | 59=0 | 47=C | 32=0 | 31=0 | 151=15 | 14=0 | 6=0 | 10=128 |
 \end{lstlisting}
 
+\subsubsection{High-level design}
+
+Now that we have some basic understanding of the key concepts, let's take a look at the high-level design, as shown in Figure 13.6.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=0.8\linewidth]{figure_13_6}
+    \caption{}
+  \end{center}
+\end{figure}
+
+Let's trace the life of an order through various components in the diagram to see hwo the pieces fit together.
+
+First, we follow the order through the \textbf{trading flow}. THis is the critical path with strict latency requirements. Evetyhing has to happen fast in the flow:
+
+
+
 \end{document}
