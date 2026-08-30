@@ -16899,4 +16899,47 @@ They have different latency requirements
 Now let's examine each of the three flows in more detail
 \end{itemize}
 
+\subsection{Trading flow}
+
+The trading flow is on the critical path of the exchange. Everything must happen fast. The heart of the trading flow is the matching engine. Let's go over that first.
+
+\subsection{Matching engine}
+
+The matching engine is also called the cross engine. Here are the primary responsibilites of th matching engine:
+
+\begin{enumerate}
+\item
+
+\begin{itemize}
+\item
+Maintain the order book for each symbol
+\item
+An order book is a list of buy and sell orders for a symbol
+\item
+We explain the construction of an order book in the Data models section later
+\end{itemize}
+
+\item
+
+\begin{itemize}
+\item
+Match buy and sell orders
+\item
+A match results in two executions (one from the buy side and the other from the sell side)
+\item
+The matching function must be fast and accurate
+\end{itemize}
+\item
+Distribute the execution stream as market data
+\end{enumerate}
+
+A highly available matching engine implementation must be able to produce matches in a deterministic order.
+
+\begin{itemize}
+\item
+That is, given a known sequence of orders as an input, the matching engine must prdouce the same sequence of executions (fills) as an output when the sequence is replayed
+\item
+This determinism is a foundation of high availability which we will discuss at length in the deep dive section
+\end{itemize}
+
 \end{document}
